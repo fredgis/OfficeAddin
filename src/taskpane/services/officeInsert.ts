@@ -1,5 +1,7 @@
 /**
  * Service for inserting images and text into PowerPoint slides via Office.js API.
+ * Uses the Common API (setSelectedDataAsync) for image insertion with positioning,
+ * and the PowerPoint-specific API for slide management and text boxes.
  */
 
 export type LayoutOption = 'full' | 'left-half' | 'right-half' | 'quarter-tl' | 'quarter-tr' | 'quarter-bl' | 'quarter-br';
@@ -26,25 +28,35 @@ const LAYOUT_POSITIONS: Record<LayoutOption, InsertPosition> = {
   'quarter-br': { left: SLIDE_WIDTH / 2 + MARGIN / 2, top: SLIDE_HEIGHT / 2 + MARGIN / 2, width: (SLIDE_WIDTH / 2) - 1.5 * MARGIN, height: (SLIDE_HEIGHT / 2) - 1.5 * MARGIN },
 };
 
+/** Promisified wrapper around Office.context.document.setSelectedDataAsync for image insertion */
+function setImageAsync(base64Image: string, pos: InsertPosition): Promise<void> {
+  return new Promise((resolve, reject) => {
+    Office.context.document.setSelectedDataAsync(
+      base64Image,
+      {
+        coercionType: Office.CoercionType.Image,
+        imageLeft: pos.left,
+        imageTop: pos.top,
+        imageWidth: pos.width,
+        imageHeight: pos.height,
+      },
+      (result) => {
+        if (result.status === Office.AsyncResultStatus.Failed) {
+          reject(new Error(result.error.message));
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
 /**
  * Insert a base64 image into the current slide
  */
 export async function insertImageToCurrentSlide(base64Image: string, layout: LayoutOption = 'full'): Promise<void> {
   const pos = LAYOUT_POSITIONS[layout];
-  await PowerPoint.run(async (context) => {
-    const slides = context.presentation.slides;
-    slides.load('items');
-    await context.sync();
-
-    const currentSlide = slides.items[slides.items.length - 1];
-    currentSlide.shapes.addImage(base64Image, {
-      left: pos.left,
-      top: pos.top,
-      width: pos.width,
-      height: pos.height,
-    });
-    await context.sync();
-  });
+  await setImageAsync(base64Image, pos);
 }
 
 /**
@@ -52,21 +64,17 @@ export async function insertImageToCurrentSlide(base64Image: string, layout: Lay
  */
 export async function insertImageToNewSlide(base64Image: string, layout: LayoutOption = 'full', title?: string): Promise<void> {
   const pos = LAYOUT_POSITIONS[layout];
+
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
     slides.add();
     await context.sync();
 
-    slides.load('items');
+    slides.load('items/id');
     await context.sync();
 
     const newSlide = slides.items[slides.items.length - 1];
-    newSlide.shapes.addImage(base64Image, {
-      left: pos.left,
-      top: pos.top,
-      width: pos.width,
-      height: pos.height,
-    });
+    context.presentation.setSelectedSlides([newSlide.id]);
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
@@ -78,6 +86,69 @@ export async function insertImageToNewSlide(base64Image: string, layout: LayoutO
     }
 
     await context.sync();
+  });
+
+  await setImageAsync(base64Image, pos);
+}
+
+/**
+ * Insert a text box into the current slide
+ */
+export async function insertTextBoxToCurrentSlide(
+  text: string,
+  options?: { left?: number; top?: number; width?: number; height?: number }
+): Promise<void> {
+  const left = options?.left ?? MARGIN;
+  const top = options?.top ?? MARGIN;
+  const width = options?.width ?? SLIDE_WIDTH - 2 * MARGIN;
+  const height = options?.height ?? SLIDE_HEIGHT - 2 * MARGIN;
+  await PowerPoint.run(async (context) => {
+    const slides = context.presentation.slides;
+    slides.load('items');
+    await context.sync();
+
+    const currentSlide = slides.items[slides.items.length - 1];
+    currentSlide.shapes.addTextBox(text, { left, top, width, height });
+    await context.sync();
+  });
+}
+
+/**
+ * Insert an image (left 60%) and insights text (right 40%) on a new slide
+ */
+export async function insertImageWithInsights(
+  imageBase64: string,
+  insightsText: string
+): Promise<void> {
+  const imgWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.6;
+  const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
+  const contentHeight = SLIDE_HEIGHT - 2 * MARGIN;
+
+  await PowerPoint.run(async (context) => {
+    const slides = context.presentation.slides;
+    slides.add();
+    await context.sync();
+
+    slides.load('items/id');
+    await context.sync();
+
+    const newSlide = slides.items[slides.items.length - 1];
+    context.presentation.setSelectedSlides([newSlide.id]);
+
+    newSlide.shapes.addTextBox(insightsText, {
+      left: MARGIN + imgWidth + MARGIN,
+      top: MARGIN,
+      width: txtWidth,
+      height: contentHeight,
+    });
+    await context.sync();
+  });
+
+  await setImageAsync(imageBase64, {
+    left: MARGIN,
+    top: MARGIN,
+    width: imgWidth,
+    height: contentHeight,
   });
 }
 

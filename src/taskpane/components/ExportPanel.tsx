@@ -17,6 +17,7 @@ import {
 import { useExportPage } from '../hooks/usePowerBI';
 import type { ReportPage, ExportResult } from '../types/powerbi';
 import { InsertPanel } from './InsertPanel';
+import { InsightsPanel } from './InsightsPanel';
 
 const useStyles = makeStyles({
   root: {
@@ -135,7 +136,14 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
       )}
 
       {result && !exportMutation.isPending && (
-        <InsertPanel exportResult={result} pageName={page.displayName} />
+        <>
+          <InsertPanel exportResult={result} pageName={page.displayName} />
+          <InsightsPanel
+            reportId={reportId}
+            page={page}
+            exportResult={result}
+          />
+        </>
       )}
     </div>
   );
