@@ -22,6 +22,9 @@ param useExisting bool = false
 @description('Resource ID of an existing Azure OpenAI resource (required when useExisting is true)')
 param existingOpenAiResourceId string = ''
 
+@description('Principal ID of the Static Web App managed identity for RBAC assignment')
+param swaPrincipalId string = ''
+
 resource openAi 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = if (!useExisting) {
   name: name
   location: location
@@ -49,6 +52,19 @@ resource gpt4oDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-
       name: 'gpt-4o'
       version: '2024-08-06'
     }
+  }
+}
+
+// Cognitive Services OpenAI User role — allows the SWA managed identity to call the OpenAI API
+var cognitiveServicesOpenAIUserRoleId = '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+
+resource openAiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!useExisting && !empty(swaPrincipalId)) {
+  scope: openAi
+  name: guid(openAi.id, swaPrincipalId, cognitiveServicesOpenAIUserRoleId)
+  properties: {
+    principalId: swaPrincipalId
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', cognitiveServicesOpenAIUserRoleId)
+    principalType: 'ServicePrincipal'
   }
 }
 

@@ -16,6 +16,9 @@ resource staticWebApp 'Microsoft.Web/staticSites@2023-12-01' = {
     name: 'Standard'
     tier: 'Standard'
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     allowConfigFileUpdates: true
     stagingEnvironmentPolicy: 'Enabled'
@@ -30,7 +33,6 @@ resource appSettings 'Microsoft.Web/staticSites/config@2023-12-01' = {
     ENTRA_TENANT_ID: entraTenantId
     ENTRA_CLIENT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=entra-client-secret)'
     AZURE_OPENAI_ENDPOINT: openAiEndpoint
-    AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=openai-api-key)'
     AZURE_OPENAI_DEPLOYMENT: openAiDeployment
     APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectionString
   }
@@ -38,3 +40,4 @@ resource appSettings 'Microsoft.Web/staticSites/config@2023-12-01' = {
 
 output name string = staticWebApp.name
 output url string = 'https://${staticWebApp.properties.defaultHostname}'
+output principalId string = staticWebApp.identity.principalId

@@ -23,9 +23,6 @@
     "openAiEndpoint": {
       "value": "${AZURE_OPENAI_ENDPOINT}"
     },
-    "openAiApiKey": {
-      "value": "${AZURE_OPENAI_API_KEY}"
-    },
     "openAiDeployment": {
       "value": "${AZURE_OPENAI_DEPLOYMENT}"
     },

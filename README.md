@@ -17,7 +17,7 @@ A PowerPoint Office Add-in that integrates with Microsoft Fabric and Power BI to
 | Frontend | React + TypeScript + Office.js + Fluent UI v9 |
 | Backend | Azure Functions (Node.js v4 / TypeScript) |
 | Auth | MSAL.js + Entra ID (SSO + OBO flow) |
-| AI | Azure OpenAI (GPT-4o) |
+| AI | Azure OpenAI (GPT-4o) via Managed Identity |
 | Data | Power BI REST API + Export API |
 | Hosting | Azure Static Web Apps |
 | IaC | Bicep + Azure Developer CLI (`azd`) |
@@ -68,9 +68,8 @@ ENTRA_CLIENT_SECRET=<your-client-secret>
 
 # Power BI (no extra config — uses OBO token)
 
-# Azure OpenAI
+# Azure OpenAI (no API key needed — uses Managed Identity in Azure, az login locally)
 AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com
-AZURE_OPENAI_API_KEY=<your-api-key>
 AZURE_OPENAI_DEPLOYMENT=gpt-4o
 ```
 
@@ -86,7 +85,6 @@ For the Azure Functions backend, create `api/local.settings.json`:
     "ENTRA_TENANT_ID": "<your-tenant-id>",
     "ENTRA_CLIENT_SECRET": "<your-client-secret>",
     "AZURE_OPENAI_ENDPOINT": "https://<your-resource>.openai.azure.com",
-    "AZURE_OPENAI_API_KEY": "<your-api-key>",
     "AZURE_OPENAI_DEPLOYMENT": "gpt-4o"
   },
   "Host": {
@@ -95,6 +93,18 @@ For the Azure Functions backend, create `api/local.settings.json`:
   }
 }
 ```
+
+> **Note:** No `AZURE_OPENAI_API_KEY` is needed. The backend uses `DefaultAzureCredential` from `@azure/identity`, which automatically uses:
+> - **Managed Identity** when deployed to Azure (via system-assigned identity on the Static Web App)
+> - **Azure CLI / VS Code credentials** when running locally (requires `az login`)
+>
+> For local development, ensure you have the **Cognitive Services OpenAI User** role on your Azure OpenAI resource:
+> ```bash
+> az role assignment create \
+>   --assignee <your-user-object-id-or-email> \
+>   --role "Cognitive Services OpenAI User" \
+>   --scope /subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.CognitiveServices/accounts/<openai-resource>
+> ```
 
 ### 4. Set up Entra ID App Registration
 
@@ -184,10 +194,12 @@ azd deploy      # Deploy app code
 ```
 
 This provisions:
-- **Azure Static Web App** (frontend + integrated Azure Functions)
-- **Azure Key Vault** (secrets: client secret, OpenAI API key)
-- **Azure OpenAI** resource (GPT-4o deployment)
+- **Azure Static Web App** (frontend + integrated Azure Functions) with **system-assigned Managed Identity**
+- **Azure Key Vault** (secrets: Entra client secret)
+- **Azure OpenAI** resource (GPT-4o deployment) with **RBAC role assignment** (Cognitive Services OpenAI User → SWA Managed Identity)
 - **Application Insights** (telemetry and monitoring)
+
+> **No API keys for Azure OpenAI.** The Static Web App's managed identity is automatically granted the `Cognitive Services OpenAI User` role on the OpenAI resource via Bicep RBAC.
 
 ### Update manifest for production
 

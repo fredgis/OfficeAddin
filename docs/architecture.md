@@ -309,7 +309,7 @@ sequenceDiagram
 graph TB
     subgraph RG["Azure Resource Group"]
         SWA["Azure Static Web App<br/><i>Frontend + API</i>"]
-        KV["Azure Key Vault<br/><i>Client Secret, API Keys</i>"]
+        KV["Azure Key Vault<br/><i>Entra Secret</i>"]
         AOAI["Azure OpenAI<br/><i>GPT-4o Deployment</i>"]
         AI["Application Insights<br/><i>Monitoring & Logs</i>"]
     end
@@ -345,8 +345,8 @@ graph TB
 |--------|----------|---------|
 | `infra/main.bicep` | Root template | Orchestrates all modules |
 | `infra/modules/staticwebapp.bicep` | Static Web App | Hosts frontend + Azure Functions |
-| `infra/modules/keyvault.bicep` | Key Vault | Stores secrets (client secret, OpenAI key) |
-| `infra/modules/openai.bicep` | Azure OpenAI | GPT-4o deployment for insights |
+| `infra/modules/keyvault.bicep` | Key Vault | Stores secrets (Entra client secret) |
+| `infra/modules/openai.bicep` | Azure OpenAI | GPT-4o deployment + RBAC for Managed Identity |
 | `infra/modules/monitoring.bicep` | Application Insights | Telemetry and logging |
 
 ---
@@ -421,6 +421,7 @@ OfficeAddin/
 | Auth Strategy | SSO + Dialog fallback | Best UX with SSO, reliable fallback for consent |
 | Backend Pattern | Azure Functions (v4) | Integrated with Static Web Apps, serverless |
 | Token Flow | On-Behalf-Of (OBO) | Delegated access, respects user permissions |
+| OpenAI Auth | Managed Identity (DefaultAzureCredential) | No API keys, RBAC-based, auto-rotated |
 | Export Approach | Power BI Export API (async) | High-quality images, supports all visuals |
 | AI Model | GPT-4o | Best quality/speed balance for insights |
 | IaC | Bicep + azd | First-class Azure support, repeatable deployments |

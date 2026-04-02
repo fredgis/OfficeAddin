@@ -40,9 +40,10 @@ azd up
 ```
 
 This deploys:
-- **Azure Static Web App** (Standard tier) — hosts the frontend and API
-- **Azure Key Vault** — stores Entra client secret and OpenAI API key
+- **Azure Static Web App** (Standard tier) — hosts the frontend and API, with system-assigned Managed Identity
+- **Azure Key Vault** — stores Entra client secret
 - **Application Insights + Log Analytics** — monitoring and diagnostics
+- **RBAC role assignment** — `Cognitive Services OpenAI User` on the OpenAI resource for the SWA Managed Identity
 
 Configure environment variables when prompted, or set them in `.azure/<env>/.env`:
 
@@ -52,9 +53,10 @@ ENTRA_CLIENT_ID=<your-client-id>
 ENTRA_TENANT_ID=<your-tenant-id>
 ENTRA_CLIENT_SECRET=<your-client-secret>
 AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
-AZURE_OPENAI_API_KEY=<your-api-key>
 AZURE_OPENAI_DEPLOYMENT=gpt-4o
 ```
+
+> **No API key needed for Azure OpenAI.** The Static Web App's system-assigned Managed Identity is automatically granted the `Cognitive Services OpenAI User` role via Bicep RBAC.
 
 ### 2. Update manifest.xml for Production
 

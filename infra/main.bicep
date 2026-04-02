@@ -22,10 +22,6 @@ param entraClientSecret string = ''
 @description('Azure OpenAI endpoint')
 param openAiEndpoint string = ''
 
-@secure()
-@description('Azure OpenAI API key')
-param openAiApiKey string = ''
-
 @description('Azure OpenAI deployment name')
 param openAiDeployment string = 'gpt-4o'
 
@@ -53,7 +49,6 @@ module keyVault './modules/keyvault.bicep' = {
     location: location
     tags: tags
     entraClientSecret: entraClientSecret
-    openAiApiKey: openAiApiKey
   }
 }
 
@@ -75,6 +70,7 @@ module openAi './modules/openai.bicep' = if (deployOpenAi) {
     location: location
     tags: tags
     deploymentName: openAiDeployment
+    swaPrincipalId: web.outputs.principalId
   }
 }
 

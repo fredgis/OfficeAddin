@@ -4,8 +4,6 @@ param tags object = {}
 
 @secure()
 param entraClientSecret string = ''
-@secure()
-param openAiApiKey string = ''
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: name
@@ -25,14 +23,6 @@ resource entraSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (!empty
   name: 'entra-client-secret'
   properties: {
     value: entraClientSecret
-  }
-}
-
-resource openAiSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (!empty(openAiApiKey)) {
-  parent: keyVault
-  name: 'openai-api-key'
-  properties: {
-    value: openAiApiKey
   }
 }
 

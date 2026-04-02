@@ -1,7 +1,20 @@
 import axios from 'axios';
+import { DefaultAzureCredential } from '@azure/identity';
 import { InsightContext, InsightItem } from '../types/insights.js';
 
 // ── Environment configuration (read lazily so tests can set process.env) ─────
+
+const AZURE_OPENAI_SCOPE = 'https://cognitiveservices.azure.com/.default';
+
+// Singleton credential — uses Managed Identity in Azure, developer credentials locally
+let credential: DefaultAzureCredential | null = null;
+
+function getCredential(): DefaultAzureCredential {
+  if (!credential) {
+    credential = new DefaultAzureCredential();
+  }
+  return credential;
+}
 
 // ── System prompt ───────────────────────────────────────────────────────────
 
@@ -17,16 +30,17 @@ Do not include any text outside the JSON array.`;
 
 // ── Auth header builder ─────────────────────────────────────────────────────
 
-/** Build auth headers: prefer OBO token, fall back to api-key. */
-function buildAuthHeaders(oboToken?: string): Record<string, string> {
+/** Build auth headers: prefer OBO token, fall back to Managed Identity (DefaultAzureCredential). */
+async function buildAuthHeaders(oboToken?: string): Promise<Record<string, string>> {
   if (oboToken) {
     return { Authorization: `Bearer ${oboToken}` };
   }
-  const key = process.env.AZURE_OPENAI_KEY || '';
-  if (key) {
-    return { 'api-key': key };
+  // Fallback: acquire token via DefaultAzureCredential (Managed Identity in Azure, CLI/VS Code locally)
+  const tokenResponse = await getCredential().getToken(AZURE_OPENAI_SCOPE);
+  if (!tokenResponse?.token) {
+    throw new Error('Failed to acquire Azure OpenAI token via Managed Identity (DefaultAzureCredential)');
   }
-  throw new Error('No Azure OpenAI credentials available: provide an OBO token or set AZURE_OPENAI_KEY');
+  return { Authorization: `Bearer ${tokenResponse.token}` };
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────
@@ -60,7 +74,7 @@ export async function generateInsights(context: InsightContext): Promise<Insight
       {
         headers: {
           'Content-Type': 'application/json',
-          ...buildAuthHeaders(context.openAIToken),
+          ...(await buildAuthHeaders(context.openAIToken)),
         },
         timeout: 60_000,
       },
