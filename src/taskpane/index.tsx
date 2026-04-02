@@ -58,20 +58,31 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     // Re-detect theme if Office signals a change
+    let handlerId: string | undefined;
     if (Office.context?.officeTheme && typeof Office.context.document?.addHandlerAsync === 'function') {
+      const handler = () => setTheme(detectOfficeTheme());
       Office.context.document.addHandlerAsync(
         Office.EventType.DocumentSelectionChanged,
-        () => setTheme(detectOfficeTheme()),
+        handler,
+        (result) => { if (result.status === Office.AsyncResultStatus.Succeeded) handlerId = result.value; }
       );
     }
 
     // React to OS high-contrast changes
     const mq = window.matchMedia?.('(forced-colors: active)');
+    const mqHandler = () => setTheme(detectOfficeTheme());
     if (mq?.addEventListener) {
-      const handler = () => setTheme(detectOfficeTheme());
-      mq.addEventListener('change', handler);
-      return () => mq.removeEventListener('change', handler);
+      mq.addEventListener('change', mqHandler);
     }
+
+    return () => {
+      if (handlerId && typeof Office.context.document?.removeHandlerAsync === 'function') {
+        Office.context.document.removeHandlerAsync(Office.EventType.DocumentSelectionChanged);
+      }
+      if (mq?.removeEventListener) {
+        mq.removeEventListener('change', mqHandler);
+      }
+    };
   }, []);
 
   return (
@@ -88,11 +99,20 @@ const Root: React.FC = () => {
 };
 
 Office.onReady(() => {
-  const container = document.getElementById('root');
-  if (!container) {
-    throw new Error('Root element not found');
-  }
+  try {
+    const container = document.getElementById('root');
+    if (!container) {
+      throw new Error('Root element not found');
+    }
 
-  const root = createRoot(container);
-  root.render(<Root />);
+    const root = createRoot(container);
+    root.render(<Root />);
+  } catch (err) {
+    // Show a user-friendly error if Office.js or React fails to initialize
+    const el = document.getElementById('root') || document.body;
+    el.innerHTML = `<div style="padding:2rem;font-family:sans-serif">
+      <h2>Failed to load add-in</h2>
+      <p>${err instanceof Error ? err.message : 'Unknown error'}</p>
+    </div>`;
+  }
 });

@@ -8,7 +8,9 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 /** Decode the payload of a JWT (no validation — that happens on the backend). */
 function parseUserFromToken(token: string): AuthUser | null {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
     return {
       id: payload.oid || payload.sub || '',
       name: payload.name || '',
@@ -30,6 +32,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Keep token in a ref so getToken() always sees the latest value
   const tokenRef = useRef<string | null>(null);
+  // Lock to prevent concurrent token refresh attempts (avoids multiple dialogs)
+  const refreshLockRef = useRef<Promise<string> | null>(null);
 
   const acquireToken = useCallback(async (): Promise<string> => {
     // SSO first, dialog fallback
@@ -66,25 +70,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   /** Returns a valid token, silently refreshing via SSO if possible. */
   const getToken = useCallback(async (): Promise<string> => {
-    // Try to refresh silently via SSO first
-    const token = await trySSOAuth();
-    if (token) {
-      tokenRef.current = token;
-      return token;
-    }
-    // If SSO refresh failed and we still have a token, return it
-    if (tokenRef.current) {
-      return tokenRef.current;
-    }
-    // Last resort: interactive dialog
-    const dialogToken = await openAuthDialog();
-    tokenRef.current = dialogToken;
-    return dialogToken;
+    // If a refresh is already in progress, wait for it instead of spawning another
+    if (refreshLockRef.current) return refreshLockRef.current;
+
+    refreshLockRef.current = (async () => {
+      try {
+        // Try to refresh silently via SSO first
+        const token = await trySSOAuth();
+        if (token) {
+          tokenRef.current = token;
+          const user = parseUserFromToken(token);
+          setState(prev => ({ ...prev, token, user, isAuthenticated: true }));
+          return token;
+        }
+        // If SSO refresh failed and we still have a token, return it
+        if (tokenRef.current) {
+          return tokenRef.current;
+        }
+        // Last resort: interactive dialog
+        const dialogToken = await openAuthDialog();
+        tokenRef.current = dialogToken;
+        const dialogUser = parseUserFromToken(dialogToken);
+        setState(prev => ({ ...prev, token: dialogToken, user: dialogUser, isAuthenticated: true }));
+        return dialogToken;
+      } finally {
+        refreshLockRef.current = null;
+      }
+    })();
+
+    return refreshLockRef.current;
   }, []);
 
-  // Auto-login on mount
+  // Auto-login on mount; listen for auth:expired events from API interceptors
   useEffect(() => {
     login();
+
+    const handleAuthExpired = () => {
+      tokenRef.current = null;
+      setState(prev => ({ ...prev, isAuthenticated: false, token: null, error: 'Session expired' }));
+      login();
+    };
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => window.removeEventListener('auth:expired', handleAuthExpired);
   }, [login]);
 
   return (

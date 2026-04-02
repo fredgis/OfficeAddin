@@ -107,6 +107,10 @@ export async function insertTextBoxToCurrentSlide(
     slides.load('items');
     await context.sync();
 
+    if (slides.items.length === 0) {
+      throw new Error('No slides in the presentation');
+    }
+
     const currentSlide = slides.items[slides.items.length - 1];
     currentSlide.shapes.addTextBox(text, { left, top, width, height });
     await context.sync();

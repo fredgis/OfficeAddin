@@ -12,7 +12,7 @@
 2. **Start the dev server**
 
    ```bash
-   npm run dev
+   npm start
    ```
 
    This starts webpack-dev-server on `https://localhost:3000` and the Azure Functions API on port 7071.

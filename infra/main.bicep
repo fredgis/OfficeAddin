@@ -28,12 +28,10 @@ param openAiDeployment string = 'gpt-4o'
 @description('Deploy a new Azure OpenAI resource (false = reference existing)')
 param deployOpenAi bool = false
 
-@description('Principal ID for RBAC assignments')
-param principalId string = ''
-
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName, project: 'OfficeAddin', environment: environmentName }
+var openAiResourceName = 'oai-${resourceToken}'
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: 'rg-${environmentName}'
@@ -66,7 +64,7 @@ module openAi './modules/openai.bicep' = if (deployOpenAi) {
   name: 'openai'
   scope: rg
   params: {
-    name: 'oai-${resourceToken}'
+    name: openAiResourceName
     location: location
     tags: tags
     deploymentName: openAiDeployment
@@ -85,8 +83,17 @@ module web './modules/staticwebapp.bicep' = {
     entraClientId: entraClientId
     entraTenantId: entraTenantId
     keyVaultName: keyVault.outputs.name
-    openAiEndpoint: deployOpenAi ? openAi.outputs.endpoint : openAiEndpoint
+    openAiEndpoint: deployOpenAi ? 'https://${openAiResourceName}.openai.azure.com/' : openAiEndpoint
     openAiDeployment: openAiDeployment
+  }
+}
+
+module kvRbac './modules/keyvault-rbac.bicep' = {
+  name: 'keyvault-rbac'
+  scope: rg
+  params: {
+    keyVaultName: keyVault.outputs.name
+    principalId: web.outputs.principalId
   }
 }
 

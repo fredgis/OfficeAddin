@@ -68,6 +68,6 @@ resource openAiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-0
   }
 }
 
-output endpoint string = !useExisting ? openAi.properties.endpoint : ''
-output name string = !useExisting ? openAi.name : ''
-output id string = !useExisting ? openAi.id : existingOpenAiResourceId
+output endpoint string = !useExisting && openAi != null ? openAi.properties.endpoint : ''
+output name string = !useExisting && openAi != null ? openAi.name : ''
+output id string = !useExisting && openAi != null ? openAi.id : existingOpenAiResourceId

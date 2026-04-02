@@ -94,19 +94,27 @@ export const BatchInsertPanel: React.FC<BatchInsertPanelProps> = ({
     setProgressTotal(selected.length);
     setProgressCurrent(0);
 
+    const images: Array<{ base64: string; title?: string }> = [];
+    const failures: string[] = [];
+
     try {
-      // Export any pages not yet cached
-      const images: Array<{ base64: string; title?: string }> = [];
+      // Export any pages not yet cached, collecting failures individually
       for (const page of selected) {
         const cacheKey = `${reportId}:${page.name}`;
         let result = exportCache[cacheKey];
         if (!result) {
-          result = await exportMutation.mutateAsync({
-            reportId,
-            pageName: page.name,
-            format: 'PNG',
-          });
-          onExportComplete(result);
+          try {
+            result = await exportMutation.mutateAsync({
+              reportId,
+              pageName: page.name,
+              format: 'PNG',
+            });
+            onExportComplete(result);
+          } catch {
+            failures.push(page.displayName);
+            setProgressCurrent((prev) => prev + 1);
+            continue;
+          }
         }
         images.push({
           base64: result.image,
@@ -114,12 +122,21 @@ export const BatchInsertPanel: React.FC<BatchInsertPanelProps> = ({
         });
       }
 
-      await batchInsertImages(images, 'full' as LayoutOption, (current, total) => {
-        setProgressCurrent(current);
-        setProgressTotal(total);
-      });
+      if (images.length > 0) {
+        await batchInsertImages(images, 'full' as LayoutOption, (current, total) => {
+          setProgressCurrent(current);
+          setProgressTotal(total);
+        });
+      }
 
-      setSuccessMsg(`Successfully inserted ${selected.length} slide(s).`);
+      if (failures.length > 0 && images.length > 0) {
+        setSuccessMsg(`Inserted ${images.length} slide(s). ${failures.length} page(s) failed to export.`);
+        setErrorMsg(`Failed to export: ${failures.join(', ')}`);
+      } else if (failures.length > 0) {
+        setErrorMsg(`All exports failed: ${failures.join(', ')}`);
+      } else {
+        setSuccessMsg(`Successfully inserted ${images.length} slide(s).`);
+      }
     } catch (err) {
       setErrorMsg(`Batch insert failed: ${(err as Error).message}`);
     } finally {
