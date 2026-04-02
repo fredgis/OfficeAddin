@@ -1,5 +1,20 @@
 # PowerPoint Office Add-in for Microsoft Fabric & Power BI
 
+## Implementation Status
+
+| Phase | Status | Commit |
+|-------|--------|--------|
+| Phase 1: Scaffolding | ✅ Complete | `a2f5371` |
+| Phase 2: Authentication | ✅ Complete | `a2f5371` |
+| Phase 3: Browsing | ✅ Complete | `c2f13a5` |
+| Phase 4: Export | ✅ Complete | `247cab2` |
+| Phase 5: Insert | ✅ Complete | `247cab2` |
+| Phase 6: AI Insights | ✅ Complete | `7858476` |
+| Phase 7: UI Polish | ✅ Complete | `fafedb1` |
+| Phase 8: Infrastructure | ✅ Complete | `550cb0a` |
+| Phase 9: Testing | ✅ Complete | `247cab2` (62/62 tests pass) |
+| Phase 10: Documentation | ✅ Complete | `e254df3` |
+
 ## Problem Statement
 
 Build a PowerPoint Office Add-in that allows users to browse their Microsoft Fabric / Power BI workspaces, select reports and pages, export report pages as high-quality images, insert them into PowerPoint slides, and generate AI-powered executive insights — all from within PowerPoint.
@@ -108,7 +123,7 @@ sequenceDiagram
 
 ---
 
-## Phase 1: Project Scaffolding & Dev Environment
+## Phase 1: Project Scaffolding & Dev Environment ✅
 
 ### 1.1 Initialize Office Add-in project
 - Use Yeoman Office generator (`yo office`) to scaffold a PowerPoint taskpane add-in with React + TypeScript
@@ -155,7 +170,7 @@ sequenceDiagram
 
 ---
 
-## Phase 2: Authentication with Entra ID
+## Phase 2: Authentication with Entra ID ✅
 
 ### 2.1 Create Entra ID App Registration
 - Register an app in Azure Entra ID
@@ -197,7 +212,7 @@ sequenceDiagram
 
 ---
 
-## Phase 3: Power BI Workspace & Report Browsing
+## Phase 3: Power BI Workspace & Report Browsing ✅
 
 ### 3.1 Backend — Workspace API endpoints
 - `GET /api/workspaces` — List workspaces the user has access to
@@ -231,7 +246,7 @@ sequenceDiagram
 
 ---
 
-## Phase 4: Report Page Export as Images
+## Phase 4: Report Page Export as Images ✅
 
 ### 4.1 Backend — Export endpoint
 - `POST /api/export` — Export a report page as an image
@@ -262,7 +277,7 @@ sequenceDiagram
 
 ---
 
-## Phase 5: Insert Images into PowerPoint Slides
+## Phase 5: Insert Images into PowerPoint Slides ✅
 
 ### 5.1 Office.js integration — Image insertion
 - Use `Office.context.document.setSelectedDataAsync()` with `Office.CoercionType.Image` to insert base64 images
@@ -296,7 +311,7 @@ sequenceDiagram
 
 ---
 
-## Phase 6: AI-Powered Executive Insights
+## Phase 6: AI-Powered Executive Insights ✅
 
 ### 6.1 Backend — Insights endpoint
 - `POST /api/insights` — Generate executive insights for a report/page
@@ -341,7 +356,7 @@ sequenceDiagram
 
 ---
 
-## Phase 7: UI Polish, Error Handling & Edge Cases
+## Phase 7: UI Polish, Error Handling & Edge Cases ✅
 
 ### 7.1 Fluent UI theming
 - Use `@fluentui/react-components` (Fluent UI v9) for consistent Microsoft look-and-feel
@@ -370,7 +385,7 @@ sequenceDiagram
 
 ---
 
-## Phase 8: Infrastructure & Deployment
+## Phase 8: Infrastructure & Deployment ✅
 
 ### 8.1 Azure infrastructure (Bicep + azd)
 - Define infrastructure as code in `infra/` directory:
@@ -399,7 +414,7 @@ sequenceDiagram
 
 ---
 
-## Phase 9: Testing & Quality Assurance
+## Phase 9: Testing & Quality Assurance ✅
 
 ### 9.1 Unit tests
 - Jest + React Testing Library for frontend components
@@ -427,7 +442,7 @@ sequenceDiagram
 
 ---
 
-## Phase 10: Documentation & Handoff
+## Phase 10: Documentation & Handoff ✅
 
 ### 10.1 Developer documentation
 - `README.md` — Project overview, quick start, architecture
