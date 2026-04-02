@@ -213,9 +213,16 @@ Invoke-Step "Configuring Entra ID" {
             Write-Info "Setting Application ID URI..."
             az ad app update --id $EntraClientId --identifier-uris "api://$EntraClientId" --output none 2>$null
 
-            # Expose API scope: access_as_user
+            # Expose API scope: access_as_user + pre-authorize Office clients
             Write-Info "Exposing access_as_user scope..."
             $scopeId = [guid]::NewGuid().ToString()
+            $officeClients = @(
+                "ea5a67f6-b6f3-4338-b240-c655ddc3cc8e"   # Office on the web
+                "d3590ed6-52b3-4102-aeff-aad2292ab01c"   # Office desktop (Windows)
+                "bc59ab01-8403-45c6-8796-ac3ef710b3e3"   # Outlook desktop / mobile
+                "57fb890c-0dab-4253-a5e0-7188c88b2bb4"   # Office web (alternate)
+                "1fec8e78-bce4-4aaf-ab1b-5451cc387264"   # Microsoft Teams
+            )
             $apiBody = @{
                 api = @{
                     oauth2PermissionScopes = @(@{
@@ -228,12 +235,17 @@ Invoke-Step "Configuring Entra ID" {
                         type                    = "User"
                         value                   = "access_as_user"
                     })
+                    preAuthorizedApplications = @(
+                        $officeClients | ForEach-Object {
+                            @{ appId = $_; delegatedPermissionIds = @($scopeId) }
+                        }
+                    )
                 }
-            } | ConvertTo-Json -Depth 5 -Compress
+            } | ConvertTo-Json -Depth 10 -Compress
             az rest --method PATCH `
                 --uri "https://graph.microsoft.com/v1.0/applications/$appObjectId" `
                 --headers "Content-Type=application/json" `
-                --body $apiBody --output none 2>$null
+                --body "$apiBody" --output none 2>$null
             Write-OK "Scope: api://$EntraClientId/access_as_user"
 
             # Redirect URIs (SPA)
@@ -259,26 +271,6 @@ Invoke-Step "Configuring Entra ID" {
                 --api-permissions "4ae1bf56-f562-4747-b7bc-2fa0874ed46f=Scope" `
                 --output none 2>$null
 
-            # Pre-authorize Office client applications
-            Write-Info "Authorizing Office clients..."
-            $officeClients = @(
-                "ea5a67f6-b6f3-4338-b240-c655ddc3cc8e"   # Office on the web
-                "d3590ed6-52b3-4102-aeff-aad2292ab01c"   # Office desktop (Windows)
-                "bc59ab01-8403-45c6-8796-ac3ef710b3e3"   # Outlook desktop / mobile
-                "57fb890c-0dab-4253-a5e0-7188c88b2bb4"   # Office web (alternate)
-                "1fec8e78-bce4-4aaf-ab1b-5451cc387264"   # Microsoft Teams
-            )
-            $preAuthBody = @{
-                api = @{
-                    preAuthorizedApplications = $officeClients | ForEach-Object {
-                        @{ appId = $_; delegatedPermissionIds = @($scopeId) }
-                    }
-                }
-            } | ConvertTo-Json -Depth 5 -Compress
-            az rest --method PATCH `
-                --uri "https://graph.microsoft.com/v1.0/applications/$appObjectId" `
-                --headers "Content-Type=application/json" `
-                --body $preAuthBody --output none 2>$null
             Write-OK "Office clients authorized (SSO)"
 
             # Create client secret
