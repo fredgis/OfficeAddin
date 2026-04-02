@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign In</title>
+  <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+</head>
+<body>
+  <p>Signing you in...</p>
+  <script>
+    // Replace YOUR_CLIENT_ID_HERE with the Entra ID app registration client ID
+    var CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
+
+    Office.onReady(function() {
+      var msalConfig = {
+        auth: {
+          clientId: CLIENT_ID,
+          authority: 'https://login.microsoftonline.com/common',
+          redirectUri: window.location.origin + '/dialog.html'
+        },
+        cache: { cacheLocation: 'memoryStorage' }
+      };
+
+      var msalInstance = new msal.PublicClientApplication(msalConfig);
+      msalInstance.initialize().then(function() {
+        return msalInstance.loginPopup({
+          scopes: ['api://' + CLIENT_ID + '/access_as_user']
+        });
+      }).then(function(response) {
+        Office.context.ui.messageParent(JSON.stringify({
+          status: 'success',
+          token: response.accessToken,
+          account: response.account
+        }));
+      }).catch(function(error) {
+        Office.context.ui.messageParent(JSON.stringify({
+          status: 'error',
+          error: error.message
+        }));
+      });
+    });
+  </script>
+</body>
+</html>

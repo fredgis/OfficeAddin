@@ -1,0 +1,22 @@
+{
+  "name": "fabric-storyboard-api",
+  "version": "1.0.0",
+  "description": "Azure Functions backend for Fabric Storyboard Copilot",
+  "main": "dist/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "func start",
+    "prestart": "npm run build",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@azure/functions": "^4",
+    "@azure/msal-node": "^2.0.0",
+    "axios": "^1.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "keyVaultVaults": "kv-",
+  "insightsComponents": "appi-",
+  "webStaticSites": "swa-",
+  "operationalInsightsWorkspaces": "log-"
+}
