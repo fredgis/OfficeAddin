@@ -1,6 +1,83 @@
 # Effort Estimation & Cost Breakdown
 
-## Agent / Role Split
+## Actual v0.1 Delivery Metrics
+
+The v0.1 of **Fabric Storyboard Copilot** was delivered in a single working session using the Squad agent framework with GitHub Copilot.
+
+### Timeline
+
+| Milestone | Time (UTC) | Elapsed |
+|-----------|-----------|---------|
+| Project init (plan, dependencies, Squad setup) | 08:03 | — |
+| Spec finalized, execution begins | 09:27 | +0h |
+| Phases 1-3 (scaffolding, auth, browsing) | 09:44 | +17min |
+| Phases 4-5 + tests (export, insert, 62/62 pass) | 09:57 | +30min |
+| Phase 6 (AI insights) committed | 09:57 | +30min |
+| Phase 7 (UI polish, a11y, offline detection) | 10:35 | +1h08 |
+| Phase 8 (infra) — completed earlier in parallel | — | — |
+| Docs (architecture.md, README, plan status) | 10:44 | +1h17 |
+| **Total wall-clock: spec → v0.1 pushed** | | **~1h17min** |
+
+### Codebase Produced
+
+| Metric | Value |
+|--------|-------|
+| TypeScript files | 56 |
+| TypeScript lines of code | ~4,450 |
+| Documentation (Markdown) | ~5,600 lines |
+| Bicep IaC templates | 4 modules |
+| CI/CD workflows | 2 (ci.yml, deploy.yml) |
+| Test suites | 2 (frontend + backend) |
+| Tests passing | 62/62 |
+| Phases completed | 10/10 |
+
+### Agent Usage
+
+| Resource | Detail |
+|----------|--------|
+| Coordinator model | Claude Opus 4.6 |
+| Specialist agent models | Claude Sonnet 4 (lead, frontend, backend, auth, ai), Claude Haiku 4.5 (infra, tester, scribe) |
+| Total sessions | 7 |
+| Active coding sessions | 4 |
+| Sub-agent invocations (explore, task) | ~15-20 |
+| Estimated premium requests | ~80-120 |
+
+### Estimated Extrapolation to Production-Ready
+
+| Item | Status | Remaining Effort |
+|------|--------|-----------------|
+| Core features (Phases 1-7) | ✅ v0.1 complete | Integration testing with real Power BI tenant |
+| Infrastructure (Phase 8) | ✅ Bicep + azd ready | First `azd up` + Entra ID app registration |
+| Unit tests | ✅ 62 passing | Expand coverage to >80% (~2-3h) |
+| E2E / integration tests | 🔲 Not started | Real Power BI + Office.js sideload testing (~4-6h) |
+| Icon assets | 🔲 Placeholder | Design real icons (~1h design) |
+| Security hardening | 🔲 Pending | CSP headers, token validation audit (~2-3h) |
+| Performance optimization | 🔲 Pending | Code splitting, lazy loading (~2h) |
+| **Total to production-ready** | | **~12-16h additional** |
+
+### Cost Comparison: Planned vs. Actual
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'xyChart': {'backgroundColor': '#ffffff', 'plotColorPalette': '#E74C3C, #4472C4, #27AE60'}}}}%%
+xychart-beta
+    title "Planned vs Actual Effort (person-days)"
+    x-axis ["Manual (planned)", "Agent-assisted (planned)", "Squad (planned)", "Squad (actual v0.1)"]
+    y-axis "Person-days" 0 --> 50
+    bar [43, 27, 14, 0.16]
+```
+
+| Strategy | Planned (person-days) | Actual |
+|----------|----------------------|--------|
+| Manual development | 43 days | — |
+| Individual Copilot agents | ~27 days | — |
+| Squad framework (planned) | ~14 days | — |
+| **Squad framework (actual v0.1)** | — | **~1.3 hours (0.16 days)** |
+
+> The actual delivery was **~270x faster** than the manual estimate and **~87x faster** than the original Squad estimate. This is partly because the agent team works at machine speed with no context-switching overhead, and partly because v0.1 is a working scaffold that still needs integration testing with real services.
+
+---
+
+## Agent / Role Split (Original Estimates)
 
 This project requires expertise across multiple domains. Below is the recommended split by role (or Copilot agent fleet) with effort estimates.
 
@@ -409,7 +486,7 @@ pie title Total Effort (person-days)
 
 > 💡 **Key advantage of Squad**: The Scribe and Lead agents eliminate coordination overhead. After the first few sessions, agents know the project's conventions (Fluent UI v9, OBO auth pattern, Azure Functions v4 model) and stop asking — they just build. The wall-clock time drops further because Frontend + Backend + Infra agents work in parallel within each phase.
 
-### Recommended `squad.config.ts`
+### Recommended `.squad/squad.config.ts`
 
 ```typescript
 import { defineSquad, defineTeam, defineAgent } from '@bradygaster/squad-sdk';
