@@ -1,28 +1,11 @@
-import { OpenAIClient } from '@azure/openai';
-import { TokenCredential, AccessToken, GetTokenOptions } from '@azure/core-auth';
+import axios from 'axios';
 import { InsightContext, InsightItem } from '../types/insights.js';
 
-// ── Environment configuration ───────────────────────────────────────────────
-
-const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT || '';
-const AZURE_OPENAI_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT || '';
-const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2024-02-15-preview';
-
-// ── Token credential wrapper ────────────────────────────────────────────────
-
-/** Wraps a static OBO token as a TokenCredential for the Azure OpenAI SDK. */
-class StaticTokenCredential implements TokenCredential {
-  constructor(private token: string) {}
-
-  async getToken(_scopes: string | string[], _options?: GetTokenOptions): Promise<AccessToken> {
-    return { token: this.token, expiresOnTimestamp: Date.now() + 3600 * 1000 };
-  }
-}
+// ── Environment configuration (read lazily so tests can set process.env) ─────
 
 // ── System prompt ───────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are an executive insights analyst for Power BI reports.
-Given information about a report page, generate 3-5 concise executive insights.
+const SYSTEM_PROMPT = `You are an executive insights analyst. Given the following Power BI report data, generate 3-5 concise, actionable insights suitable for an executive presentation. Format each insight as a bullet point with a bold headline.
 
 Each insight MUST have:
 - A **bold headline** (short, actionable phrase)
@@ -32,33 +15,58 @@ Each insight MUST have:
 Respond ONLY with a JSON array of objects with keys: "headline", "detail", "category".
 Do not include any text outside the JSON array.`;
 
+// ── Auth header builder ─────────────────────────────────────────────────────
+
+/** Build auth headers: prefer OBO token, fall back to api-key. */
+function buildAuthHeaders(oboToken?: string): Record<string, string> {
+  if (oboToken) {
+    return { Authorization: `Bearer ${oboToken}` };
+  }
+  const key = process.env.AZURE_OPENAI_KEY || '';
+  if (key) {
+    return { 'api-key': key };
+  }
+  throw new Error('No Azure OpenAI credentials available: provide an OBO token or set AZURE_OPENAI_KEY');
+}
+
 // ── Public API ──────────────────────────────────────────────────────────────
 
 export async function generateInsights(context: InsightContext): Promise<InsightItem[]> {
-  if (!AZURE_OPENAI_ENDPOINT) {
+  const endpoint = process.env.AZURE_OPENAI_ENDPOINT || '';
+  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || '';
+  const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-02-01';
+
+  if (!endpoint) {
     throw new Error('AZURE_OPENAI_ENDPOINT environment variable is not configured');
   }
-  if (!AZURE_OPENAI_DEPLOYMENT) {
+  if (!deployment) {
     throw new Error('AZURE_OPENAI_DEPLOYMENT environment variable is not configured');
   }
 
-  const credential = new StaticTokenCredential(context.openAIToken);
-  const client = new OpenAIClient(AZURE_OPENAI_ENDPOINT, credential, {
-    apiVersion: AZURE_OPENAI_API_VERSION,
-  });
-
   const userMessage = buildUserMessage(context);
+  const url = `${endpoint.replace(/\/+$/, '')}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
 
   try {
-    const response = await client.getChatCompletions(AZURE_OPENAI_DEPLOYMENT, [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: userMessage },
-    ], {
-      temperature: 0.7,
-      maxTokens: 1024,
-    });
+    const response = await axios.post(
+      url,
+      {
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userMessage },
+        ],
+        temperature: 0.7,
+        max_tokens: 1024,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...buildAuthHeaders(context.openAIToken),
+        },
+        timeout: 60_000,
+      },
+    );
 
-    const content = response.choices?.[0]?.message?.content;
+    const content = response.data?.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('Azure OpenAI returned an empty response');
     }
@@ -111,21 +119,26 @@ function parseInsights(content: string): InsightItem[] {
 }
 
 function handleOpenAIError(error: unknown): never {
-  if (error instanceof Error) {
-    const msg = error.message || '';
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+    const data = error.response?.data as Record<string, unknown> | undefined;
+    const innerMsg = data?.error
+      ? JSON.stringify(data.error)
+      : error.message;
 
-    if (msg.includes('content_filter') || msg.includes('ContentFilter')) {
-      throw new Error('Azure OpenAI: response was filtered by content safety policy');
-    }
-    if (msg.includes('429') || msg.includes('Rate limit')) {
-      throw new Error('Azure OpenAI: rate limit exceeded – try again later');
-    }
-    if (msg.includes('timeout') || msg.includes('ETIMEDOUT')) {
-      throw new Error('Azure OpenAI: request timed out');
-    }
-    if (msg.includes('401') || msg.includes('Unauthorized')) {
+    if (status === 401) {
       throw new Error('Azure OpenAI: unauthorized – token may be invalid or expired');
     }
+    if (status === 429) {
+      throw new Error('Azure OpenAI: rate limit exceeded – try again later');
+    }
+    if (innerMsg.includes('content_filter') || innerMsg.includes('ContentFilter')) {
+      throw new Error('Azure OpenAI: response was filtered by content safety policy');
+    }
+    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+      throw new Error('Azure OpenAI: request timed out');
+    }
+    throw new Error(`Azure OpenAI error (${status ?? 'unknown'}): ${innerMsg}`);
   }
   throw error;
 }
