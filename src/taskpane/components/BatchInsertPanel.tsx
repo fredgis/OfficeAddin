@@ -132,13 +132,13 @@ export const BatchInsertPanel: React.FC<BatchInsertPanelProps> = ({
       <Text weight="semibold" size={400}>Batch Insert</Text>
 
       <div className={styles.actions}>
-        <Button size="small" appearance="subtle" onClick={toggleAll}>
+        <Button size="small" appearance="subtle" onClick={toggleAll} aria-label={selectedNames.size === pages.length ? 'Deselect all pages' : 'Select all pages'}>
           {selectedNames.size === pages.length ? 'Deselect All' : 'Select All'}
         </Button>
         <Text size={200}>{selectedNames.size} of {pages.length} selected</Text>
       </div>
 
-      <div className={styles.pageList}>
+      <div className={styles.pageList} role="group" aria-label="Report pages for batch insert">
         {pages.map((page) => (
           <Checkbox
             key={page.name}
@@ -161,6 +161,7 @@ export const BatchInsertPanel: React.FC<BatchInsertPanelProps> = ({
         appearance="primary"
         onClick={handleBatchInsert}
         disabled={inserting || selectedNames.size === 0}
+        aria-label={`Insert ${selectedNames.size} pages as new slides`}
       >
         Insert All as New Slides
       </Button>

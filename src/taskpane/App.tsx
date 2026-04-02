@@ -11,6 +11,7 @@ import {
 } from '@fluentui/react-components';
 import { useAuth } from './services/auth';
 import { WorkspaceBrowser } from './components/WorkspaceBrowser';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const useStyles = makeStyles({
   root: {
@@ -73,7 +74,7 @@ export const App: React.FC = () => {
               <MessageBarBody>{error}</MessageBarBody>
             </MessageBar>
           )}
-          <Button appearance="primary" onClick={login}>
+          <Button appearance="primary" onClick={login} aria-label="Sign in with Microsoft">
             Sign in
           </Button>
         </div>
@@ -82,16 +83,18 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className={styles.root}>
-      <div className={styles.header}>
-        <Text weight="semibold">Fabric Storyboard Copilot</Text>
-        <Button appearance="subtle" size="small" onClick={logout}>
-          Sign out
-        </Button>
+    <ErrorBoundary>
+      <div className={styles.root}>
+        <div className={styles.header}>
+          <Text weight="semibold">Fabric Storyboard Copilot</Text>
+          <Button appearance="subtle" size="small" onClick={logout} aria-label="Sign out">
+            Sign out
+          </Button>
+        </div>
+        <div className={styles.content} role="main">
+          <WorkspaceBrowser />
+        </div>
       </div>
-      <div className={styles.content}>
-        <WorkspaceBrowser />
-      </div>
-    </div>
+    </ErrorBoundary>
   );
 };

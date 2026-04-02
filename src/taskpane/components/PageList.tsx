@@ -4,11 +4,12 @@ import {
   CardHeader,
   Body1,
   Caption1,
-  Spinner,
   MessageBar,
   MessageBarBody,
   Text,
   Button,
+  Skeleton,
+  SkeletonItem,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -39,6 +40,11 @@ const useStyles = makeStyles({
     paddingTop: tokens.spacingVerticalL,
     paddingBottom: tokens.spacingVerticalL,
   },
+  skeleton: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+  },
 });
 
 interface PageListProps {
@@ -52,7 +58,15 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
   const { data: pages, isLoading, error } = usePages(reportId);
 
   if (isLoading) {
-    return <Spinner size="small" label="Loading pages…" aria-label="Loading pages" />;
+    return (
+      <Skeleton aria-label="Loading pages">
+        <div className={styles.skeleton}>
+          <SkeletonItem size={48} />
+          <SkeletonItem size={48} />
+          <SkeletonItem size={48} />
+        </div>
+      </Skeleton>
+    );
   }
 
   if (error) {

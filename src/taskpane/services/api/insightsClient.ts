@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import type { InsightRequest, InsightResponse } from '../../types/insights';
+import type { InsightRequest, InsightResponse, DaxQueryRequest, DaxQueryResponse } from '../../types/insights';
 
 export class InsightsClient {
   private client: AxiosInstance;
@@ -28,6 +28,11 @@ export class InsightsClient {
 
   async generateInsights(request: InsightRequest): Promise<InsightResponse> {
     const { data } = await this.client.post('/insights', request);
+    return data;
+  }
+
+  async executeDaxQuery(request: DaxQueryRequest): Promise<DaxQueryResponse> {
+    const { data } = await this.client.post('/query', request);
     return data;
   }
 }

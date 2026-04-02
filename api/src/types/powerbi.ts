@@ -25,3 +25,30 @@ export interface Page {
 export interface PowerBIListResponse<T> {
   value: T[];
 }
+
+/** Request body for the export endpoint. */
+export interface ExportRequest {
+  reportId: string;
+  pageName: string;
+  format: 'PNG' | 'JPEG';
+  width?: number;
+  height?: number;
+}
+
+/** Status of an in-progress Power BI export operation. */
+export interface ExportStatus {
+  id: string;
+  status: 'NotStarted' | 'Running' | 'Succeeded' | 'Failed';
+  percentComplete: number;
+  reportId: string;
+  reportName?: string;
+  resourceLocation?: string;
+}
+
+/** Response returned by the export endpoint. */
+export interface ExportResponse {
+  image: string;
+  mimeType: string;
+  reportId: string;
+  pageName: string;
+}

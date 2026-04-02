@@ -2,10 +2,11 @@ import React, { useState, useMemo } from 'react';
 import {
   Combobox,
   Option,
-  Spinner,
   MessageBar,
   MessageBarBody,
   Text,
+  Skeleton,
+  SkeletonItem,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -23,6 +24,11 @@ const useStyles = makeStyles({
     textAlign: 'center',
     paddingTop: tokens.spacingVerticalL,
     paddingBottom: tokens.spacingVerticalL,
+  },
+  skeleton: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
   },
 });
 
@@ -43,7 +49,13 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
   }, [workspaces, query]);
 
   if (isLoading) {
-    return <Spinner size="small" label="Loading workspaces…" aria-label="Loading workspaces" />;
+    return (
+      <Skeleton aria-label="Loading workspaces">
+        <div className={styles.skeleton}>
+          <SkeletonItem size={32} />
+        </div>
+      </Skeleton>
+    );
   }
 
   if (error) {

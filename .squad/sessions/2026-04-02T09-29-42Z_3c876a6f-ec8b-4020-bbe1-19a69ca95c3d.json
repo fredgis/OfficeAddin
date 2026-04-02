@@ -1,7 +1,7 @@
 {
   "id": "3c876a6f-ec8b-4020-bbe1-19a69ca95c3d",
   "createdAt": "2026-04-02T09:27:56.890Z",
-  "lastActiveAt": "2026-04-02T09:58:21.798Z",
+  "lastActiveAt": "2026-04-02T10:27:45.889Z",
   "messages": [
     {
       "role": "agent",
@@ -24,6 +24,28 @@
       "agentName": "coordinator",
       "content": "Voici l'état du projet **Fabric Storyboard Copilot** :\n\n## ✅ Ce qui est fait (commité)\n\n| Phase | Statut | Détail |\n|-------|--------|--------|\n| **Phase 1 — Scaffolding** | ✅ Fait | Structure projet, webpack, ESLint, manifest.xml, Azure Functions |\n| **Phase 8 — Infra & Déploiement** | ✅ Fait | Bicep (SWA, Key Vault, OpenAI, Monitoring), `azure.yaml`, CI/CD GitHub Actions |\n| **Squad framework** | ✅ Fait | 8 agents configurés (Lead, Frontend, Backend, Auth, AI, Infra, Tester, Scribe) |\n\n## 🟡 Code existant mais non commité (untracked)\n\n| Composant | Fichiers |\n|-----------|----------|\n| **Frontend (React)** | `App.tsx`, 6 composants (`WorkspacePicker`, `ReportList`, `PageList`, `ExportPanel`, `BreadcrumbNav`, `WorkspaceBrowser`), hook `usePowerBI` |\n| **Auth (MSAL)** | `AuthContext`, `msalConfig`, `ssoAuth`, `dialogAuth`, `useAuth`, `dialog.html` |\n| **Services API** | `powerbiClient.ts`, API service index |\n| **Types** | `auth.ts`, `powerbi.ts` |\n| **Backend (Azure Functions)** | 5 endpoints (`workspaces`, `reports`, `pages`, `export`, `health`), middleware, services |\n| **Docs** | `deployment.md`, `entra-setup.md` |\n| **Config** | `package.json`, `tsconfig.json`, `staticwebapp.config.json` |\n\n## 🔴 Pas encore implémenté\n\n| Phase | Contenu |\n|-------|---------|\n| **Phase 4** | Export d'images Power BI (polling, progress) |\n| **Phase 5** | Insertion dans les slides PowerPoint (Office.js) |\n| **Phase 6** | Insights AI (Azure OpenAI, DAX queries, `POST /api/insights`) |\n| **Phase 7** | Polish UI, Fluent theming, error handling, accessibilité |\n| **Phase 9** | Tests (Jest + RTL) |\n| **Phase 10** | Documentation complète |\n\n## Résumé\n\nLe squelette est en place (Phases 1-3 partielles + Phase 8). Les fichiers frontend/backend/auth existent en local mais **ne sont pas encore commités**. Les fonctionnalités cœur (export images, insertion slides, AI insights) restent à implémenter. Que voulez-vous attaquer en priorité ?",
       "timestamp": "2026-04-02T09:58:21.797Z"
+    },
+    {
+      "role": "system",
+      "content": "❌ Something went wrong processing your message.\n   Try:\n   • Try again\n   • Run 'squad doctor' for diagnostics",
+      "timestamp": "2026-04-02T10:11:33.135Z"
+    },
+    {
+      "role": "agent",
+      "agentName": "coordinator",
+      "content": "Voici le **status clair** du projet **Fabric Storyboard Copilot** :\n\n---\n\n## 🏗️ État du projet — 2 avril 2026\n\n### ✅ Committé (sur `main`)\n| Phase | Description | Status |\n|-------|-------------|--------|\n| **Phase 1** | Scaffolding (React taskpane + Azure Functions) | ✅ Done |\n| **Phase 2** | Auth Entra ID (SSO + dialog + OBO) | ✅ Done |\n| **Phase 3** | Frontend browsing (workspaces, reports, pages) | ✅ Done |\n| **Phase 6** | AI insights (Azure OpenAI) | ✅ Done |\n| **Phase 8** | Infra Bicep + azd | ✅ Done |\n\n### 🔧 En cours (non committé — 23 fichiers modifiés, ~580 lignes ajoutées)\nDes améliorations significatives sont en working tree sur **tous les layers** :\n- **Frontend** : `App.tsx`, `InsightsPanel`, `PageList`, `ReportList`, `WorkspaceBrowser/Picker`, nouveau `CombinedInsertPanel`, `ErrorBoundary`\n- **Backend** : `openaiService`, `powerbiService`, nouveau endpoint `query.ts`, types `powerbi.ts` + `openai.ts`, dossier `prompts/`\n- **Services API** : `insightsClient`, `powerbiClient`, `officeInsert`\n- **Tests** : Nouveaux fichiers `__tests__/` (frontend + backend), `jest.config.js` ajouté\n\n### ⚠️ Problèmes détectés\n- **TypeScript ne compile pas** : les fichiers de test (`__tests__/`) échouent car `@types/jest` n'est pas dans le `tsconfig.json` ou pas installé correctement. Toutes les erreurs sont dans les mocks/tests (pas le code principal).\n\n### 📋 Phases restantes (selon `docs/plan.md`)\n| Phase | Description | Status |\n|-------|-------------|--------|\n| **Phase 4** | Export Power BI → image + insertion slides | 🟡 Partiellement en WIP |\n| **Phase 5** | Batch insert multi-pages | 🟡 Partiellement en WIP |\n| **Phase 7** | Tests & QA complets | 🟡 Démarré (fichiers créés, mais cassés) |\n\n### 🎯 Prochaines actions recommandées\n1. **Fixer le build** — résoudre les erreurs TS dans les tests (`@types/jest` + tsconfig)\n2. **Committer le WIP** — les ~580 lignes de changements devraient être committées\n3. **Compléter Phase 4/5** — export d'images et insertion batch\n4. **Stabiliser les tests** — faire passer la suite Jest\n\nBesoin que je lance l'équipe sur un de ces points ?",
+      "timestamp": "2026-04-02T10:13:53.725Z"
+    },
+    {
+      "role": "system",
+      "content": "❌ Something went wrong processing your message.\n   Try:\n   • Try again\n   • Run 'squad doctor' for diagnostics",
+      "timestamp": "2026-04-02T10:25:02.225Z"
+    },
+    {
+      "role": "agent",
+      "agentName": "coordinator",
+      "content": "Voici l'état du projet **Fabric Storyboard Copilot** :\n\n---\n\n### ✅ Ce qui est fait (committés + working tree)\n\n| Phase | Statut | Détail |\n|-------|--------|--------|\n| **1. Scaffolding** | ✅ Done | Structure projet, webpack, Azure Functions, manifest.xml |\n| **2. Auth Entra ID** | ✅ Done | SSO + Dialog fallback, OBO flow, AuthProvider |\n| **3. Browsing Power BI** | ✅ Done | Workspace / Report / Page browsing, API endpoints |\n| **4. Export images** | ✅ Done | Export endpoint avec polling, ExportPanel |\n| **5. Insert dans PPT** | ✅ Done | InsertPanel, BatchInsertPanel, officeInsert service |\n| **6. AI Insights** | ✅ Done | InsightsPanel, OpenAI service, prompts, DAX query endpoint |\n| **8. Infra & Deploy** | ✅ Done | Bicep templates, azd config |\n\n### 🟡 Reste à faire\n\n| Phase | Statut |\n|-------|--------|\n| **7. UI Polish & Error Handling** | 🔲 Non commencé (ErrorBoundary créé mais partiel) |\n| **Tests (Jest)** | 🔲 Squelettes créés (`__tests__/`) mais pas encore de couverture |\n\n### 🔨 Build\n\n- **Frontend** (webpack) : ✅ compile (3 warnings taille bundle uniquement)\n- **Backend** (tsc) : ✅ compile sans erreur\n\n### 📊 Résumé\n\nLe gros du développement est fait — **6 phases sur 8 implémentées**, les deux builds passent. Il reste le **polish UI** (Phase 7) et l'**écriture des tests**. Rien n'a encore été commité depuis la session précédente (26 fichiers modifiés + nouveaux dans le working tree).\n\n**Que veux-tu attaquer ?** Phase 7 (polish) ? Tests ? Ou commiter l'état actuel d'abord ?",
+      "timestamp": "2026-04-02T10:27:45.888Z"
     }
   ]
 }

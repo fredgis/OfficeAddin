@@ -13,13 +13,9 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import type { ExportResult, ReportPage } from '../types/powerbi';
-import type { InsightItem } from '../types/insights';
-import { useGenerateInsights } from '../hooks/useInsights';
-import {
-  insertTextBoxToCurrentSlide,
-  insertImageWithInsights,
-} from '../services/officeInsert';
+import type { InsightItem, InsightResult } from '../services/api/powerbiClient';
+import { useGenerateInsights } from '../hooks/usePowerBI';
+import { insertTextBoxToCurrentSlide } from '../services/officeInsert';
 
 const useStyles = makeStyles({
   root: {
@@ -37,10 +33,8 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalS,
   },
-  insightItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
+  insightCard: {
+    padding: tokens.spacingVerticalS,
   },
   actions: {
     display: 'flex',
@@ -51,26 +45,36 @@ const useStyles = makeStyles({
   editArea: {
     width: '100%',
   },
+  promptArea: {
+    width: '100%',
+  },
 });
 
 interface InsightsPanelProps {
   reportId: string;
-  page: ReportPage;
-  exportResult: ExportResult | null;
+  pageName: string;
+  reportName?: string;
+  workspaceName?: string;
+  datasetId?: string;
+  onInsightsGenerated?: (result: InsightResult) => void;
 }
 
 function formatInsightsText(insights: InsightItem[]): string {
-  return insights.map((item, i) => `${i + 1}. ${item.headline}\n${item.detail}`).join('\n\n');
+  return insights.map((item, i) => `${i + 1}. ${item.headline}\n${item.body}`).join('\n\n');
 }
 
 export const InsightsPanel: React.FC<InsightsPanelProps> = ({
   reportId,
-  page,
-  exportResult,
+  pageName,
+  reportName,
+  workspaceName,
+  datasetId,
+  onInsightsGenerated,
 }) => {
   const styles = useStyles();
   const insightsMutation = useGenerateInsights();
-  const [editedText, setEditedText] = useState<string>('');
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [editedText, setEditedText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [inserting, setInserting] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -86,17 +90,21 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
     insightsMutation.mutate(
       {
         reportId,
-        pageName: page.name,
-        imageBase64: exportResult?.image,
+        pageName,
+        reportName,
+        workspaceName,
+        datasetId,
+        customPrompt: customPrompt || undefined,
       },
       {
-        onSuccess: (response) => {
-          setEditedText(formatInsightsText(response.insights));
+        onSuccess: (result) => {
+          setEditedText(formatInsightsText(result.insights));
           setIsEditing(false);
+          onInsightsGenerated?.(result);
         },
       }
     );
-  }, [reportId, page.name, exportResult, insightsMutation, clearMessages]);
+  }, [reportId, pageName, reportName, workspaceName, datasetId, customPrompt, insightsMutation, clearMessages, onInsightsGenerated]);
 
   const handleInsertText = useCallback(async () => {
     clearMessages();
@@ -111,30 +119,26 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
     }
   }, [editedText, clearMessages]);
 
-  const handleInsertWithImage = useCallback(async () => {
-    if (!exportResult) return;
-    clearMessages();
-    setInserting(true);
-    try {
-      await insertImageWithInsights(exportResult.image, editedText);
-      setSuccessMsg('Page and insights inserted into a new slide.');
-    } catch (err) {
-      setErrorMsg(`Insert failed: ${(err as Error).message}`);
-    } finally {
-      setInserting(false);
-    }
-  }, [exportResult, editedText, clearMessages]);
-
   const insights = insightsMutation.data?.insights;
 
   return (
     <div className={styles.root} role="region" aria-label="AI Insights">
       <Card>
         <CardHeader
-          header={<Body1 className={styles.header}>AI Insights: {page.displayName}</Body1>}
+          header={<Body1 className={styles.header}>AI Insights</Body1>}
           description={<Caption1>Generate executive insights for this report page</Caption1>}
         />
       </Card>
+
+      <Textarea
+        className={styles.promptArea}
+        placeholder="Optional: custom prompt for insights…"
+        value={customPrompt}
+        onChange={(_e, data) => setCustomPrompt(data.value)}
+        resize="vertical"
+        rows={2}
+        aria-label="Custom prompt for insights"
+      />
 
       <div className={styles.actions}>
         <Button
@@ -148,7 +152,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
       </div>
 
       {insightsMutation.isPending && (
-        <Spinner size="medium" label="Generating insights… This may take a moment." />
+        <Spinner size="medium" label="Generating insights…" />
       )}
 
       {insightsMutation.isError && (
@@ -166,10 +170,10 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
               <Text weight="semibold">Generated Insights</Text>
               <div className={styles.insightsList}>
                 {insights.map((item, index) => (
-                  <div key={index} className={styles.insightItem}>
+                  <Card key={index} className={styles.insightCard}>
                     <Text weight="semibold">{item.headline}</Text>
-                    <Text>{item.detail}</Text>
-                  </div>
+                    <Text>{item.body}</Text>
+                  </Card>
                 ))}
               </div>
               <Button
@@ -211,16 +215,6 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
             >
               Insert Insights
             </Button>
-            {exportResult && (
-              <Button
-                appearance="secondary"
-                onClick={handleInsertWithImage}
-                disabled={inserting || !editedText}
-                aria-label="Insert page image with insights"
-              >
-                Insert Page + Insights
-              </Button>
-            )}
           </div>
         </>
       )}

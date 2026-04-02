@@ -111,6 +111,10 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
         <Radio value="full" label="Full Slide" />
         <Radio value="left-half" label="Left Half" />
         <Radio value="right-half" label="Right Half" />
+        <Radio value="quarter-tl" label="Quarter ↖" />
+        <Radio value="quarter-tr" label="Quarter ↗" />
+        <Radio value="quarter-bl" label="Quarter ↙" />
+        <Radio value="quarter-br" label="Quarter ↘" />
       </RadioGroup>
 
       <div className={styles.actions}>
@@ -118,6 +122,7 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
           appearance="primary"
           onClick={handleInsertCurrent}
           disabled={inserting}
+          aria-label="Insert image into current slide"
         >
           Insert into Current Slide
         </Button>
@@ -125,6 +130,7 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
           appearance="secondary"
           onClick={handleInsertNew}
           disabled={inserting}
+          aria-label="Insert image into new slide"
         >
           Insert into New Slide
         </Button>

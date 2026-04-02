@@ -1,27 +1,12 @@
 import axios, { AxiosError } from 'axios';
-import { Workspace, Report, Page, PowerBIListResponse } from '../types/powerbi.js';
+import { Workspace, Report, Page, PowerBIListResponse, ExportRequest, ExportStatus, ExportResponse } from '../types/powerbi.js';
 
 const POWER_BI_BASE_URL = 'https://api.powerbi.com/v1.0/myorg';
 
 // Re-export types so existing consumers still work
-export type { Workspace, Report, Page } from '../types/powerbi.js';
+export type { Workspace, Report, Page, ExportRequest, ExportStatus, ExportResponse } from '../types/powerbi.js';
 /** @deprecated Use Page instead */
 export type ReportPage = Page;
-
-export interface ExportRequest {
-  reportId: string;
-  pageName: string;
-  format: 'PNG' | 'JPEG';
-}
-
-export interface ExportStatus {
-  id: string;
-  status: 'NotStarted' | 'Running' | 'Succeeded' | 'Failed';
-  percentComplete: number;
-  reportId: string;
-  reportName?: string;
-  resourceLocation?: string;
-}
 
 function authHeader(accessToken: string) {
   return { Authorization: `Bearer ${accessToken}` };
@@ -108,14 +93,22 @@ export class PowerBIService {
     return getPages(this.accessToken, reportId);
   }
 
-  async startExport(reportId: string, pageName: string, format: 'PNG' | 'JPEG' = 'PNG'): Promise<string> {
+  async startExport(reportId: string, pageName: string, format: 'PNG' | 'JPEG' = 'PNG', width?: number, height?: number): Promise<string> {
     try {
+      const pageConfig: Record<string, unknown> = { pageName };
+      if (width || height) {
+        pageConfig.exportOptions = {
+          ...(width ? { width } : {}),
+          ...(height ? { height } : {}),
+        };
+      }
+
       const response = await axios.post(
         `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/ExportTo`,
         {
           format,
           powerBIReportConfiguration: {
-            pages: [{ pageName }],
+            pages: [pageConfig],
           },
         },
         { headers: this.headers },
@@ -161,7 +154,7 @@ export class PowerBIService {
       if (status.status === 'Failed') throw new Error('Export failed');
 
       await new Promise(resolve => setTimeout(resolve, delay));
-      delay = Math.min(delay * 1.5, 15000);
+      delay = Math.min(delay * 2, 30000);
     }
 
     throw new Error('Export timed out after 5 minutes');

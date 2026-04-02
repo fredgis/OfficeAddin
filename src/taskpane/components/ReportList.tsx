@@ -4,11 +4,12 @@ import {
   CardHeader,
   Body1,
   Caption1,
-  Spinner,
   MessageBar,
   MessageBarBody,
   Text,
   Input,
+  Skeleton,
+  SkeletonItem,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -33,6 +34,11 @@ const useStyles = makeStyles({
     paddingTop: tokens.spacingVerticalL,
     paddingBottom: tokens.spacingVerticalL,
   },
+  skeleton: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+  },
 });
 
 interface ReportListProps {
@@ -53,7 +59,16 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
   }, [reports, filter]);
 
   if (isLoading) {
-    return <Spinner size="small" label="Loading reports…" aria-label="Loading reports" />;
+    return (
+      <Skeleton aria-label="Loading reports">
+        <div className={styles.skeleton}>
+          <SkeletonItem size={32} />
+          <SkeletonItem size={48} />
+          <SkeletonItem size={48} />
+          <SkeletonItem size={48} />
+        </div>
+      </Skeleton>
+    );
   }
 
   if (error) {

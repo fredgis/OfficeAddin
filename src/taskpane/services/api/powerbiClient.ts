@@ -28,6 +28,17 @@ export interface ExportResult {
   pageName: string;
 }
 
+export interface InsightItem {
+  headline: string;
+  body: string;
+}
+
+export interface InsightResult {
+  insights: InsightItem[];
+  summary: string;
+  tokensUsed?: number;
+}
+
 export class PowerBIClient {
   private client: AxiosInstance;
 
@@ -70,6 +81,18 @@ export class PowerBIClient {
 
   async exportPage(reportId: string, pageName: string, format: 'PNG' | 'JPEG' = 'PNG'): Promise<ExportResult> {
     const { data } = await this.client.post('/export', { reportId, pageName, format });
+    return data;
+  }
+
+  async generateInsights(params: {
+    reportId: string;
+    pageName: string;
+    reportName?: string;
+    workspaceName?: string;
+    datasetId?: string;
+    customPrompt?: string;
+  }): Promise<InsightResult> {
+    const { data } = await this.client.post('/insights', params);
     return data;
   }
 }

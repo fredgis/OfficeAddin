@@ -82,6 +82,7 @@ export const WorkspaceBrowser: React.FC = () => {
               size="small"
               appearance={batchMode ? 'primary' : 'subtle'}
               onClick={() => setBatchMode((prev) => !prev)}
+              aria-label={batchMode ? 'Exit batch insert mode' : 'Enter batch insert mode'}
             >
               {batchMode ? 'Exit Batch Insert' : 'Batch Insert'}
             </Button>

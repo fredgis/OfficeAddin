@@ -118,11 +118,15 @@ export async function insertTextBoxToCurrentSlide(
  */
 export async function insertImageWithInsights(
   imageBase64: string,
-  insightsText: string
+  insightsText: string,
+  title?: string
 ): Promise<void> {
+  const titleHeight = title ? 35 : 0;
+  const titleGap = title ? MARGIN / 2 : 0;
+  const contentTop = MARGIN + titleHeight + titleGap;
+  const contentHeight = SLIDE_HEIGHT - contentTop - MARGIN;
   const imgWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.6;
   const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
-  const contentHeight = SLIDE_HEIGHT - 2 * MARGIN;
 
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
@@ -135,9 +139,18 @@ export async function insertImageWithInsights(
     const newSlide = slides.items[slides.items.length - 1];
     context.presentation.setSelectedSlides([newSlide.id]);
 
+    if (title) {
+      newSlide.shapes.addTextBox(title, {
+        left: MARGIN,
+        top: 5,
+        width: SLIDE_WIDTH - 2 * MARGIN,
+        height: titleHeight,
+      });
+    }
+
     newSlide.shapes.addTextBox(insightsText, {
       left: MARGIN + imgWidth + MARGIN,
-      top: MARGIN,
+      top: contentTop,
       width: txtWidth,
       height: contentHeight,
     });
@@ -146,7 +159,7 @@ export async function insertImageWithInsights(
 
   await setImageAsync(imageBase64, {
     left: MARGIN,
-    top: MARGIN,
+    top: contentTop,
     width: imgWidth,
     height: contentHeight,
   });

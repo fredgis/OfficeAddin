@@ -61,3 +61,21 @@ export function useExportPage() {
     },
   });
 }
+
+export function useGenerateInsights() {
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async (params: {
+      reportId: string;
+      pageName: string;
+      reportName?: string;
+      workspaceName?: string;
+      datasetId?: string;
+      customPrompt?: string;
+    }) => {
+      const token = await getToken();
+      const client = new PowerBIClient(token);
+      return client.generateInsights(params);
+    },
+  });
+}

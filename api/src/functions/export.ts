@@ -3,16 +3,11 @@ import { validateToken } from '../middleware/authMiddleware.js';
 import { exchangeForPowerBIToken } from '../services/authService.js';
 import { PowerBIService } from '../services/powerbiService.js';
 import { handleError, createErrorResponse } from '../middleware/errorHandler.js';
-
-interface ExportRequestBody {
-  reportId: string;
-  pageName: string;
-  format?: 'PNG' | 'JPEG';
-}
+import type { ExportRequest } from '../types/powerbi.js';
 
 export async function exportPage(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   try {
-    const body = await request.json() as ExportRequestBody;
+    const body = await request.json() as Partial<ExportRequest>;
 
     if (!body.reportId || !body.pageName) {
       return createErrorResponse('reportId and pageName are required', 400);
@@ -26,7 +21,7 @@ export async function exportPage(request: HttpRequest, context: InvocationContex
     context.log(`Starting export for report ${body.reportId}, page ${body.pageName}`);
 
     // Start export
-    const exportId = await service.startExport(body.reportId, body.pageName, format);
+    const exportId = await service.startExport(body.reportId, body.pageName, format, body.width, body.height);
     context.log(`Export started with ID: ${exportId}`);
 
     // Poll for completion
