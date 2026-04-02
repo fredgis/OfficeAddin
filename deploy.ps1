@@ -526,9 +526,18 @@ Write-Host "  Application URL       $script:SwaUrl" -ForegroundColor White
 Write-Host "  Environment           $EnvironmentName" -ForegroundColor White
 Write-Host "  Resource Group        rg-$EnvironmentName" -ForegroundColor White
 Write-Host "  Entra Client ID       $script:EntraClientId" -ForegroundColor White
+Write-Host "  Entra Client Secret   $script:EntraClientSecret" -ForegroundColor White
 Write-Host "  Tenant ID             $script:AzTenantId" -ForegroundColor White
 Write-Host "  Key Vault             $script:KvName" -ForegroundColor White
 Write-Host "  Production Manifest   dist/manifest-prod.xml" -ForegroundColor White
+Write-Host ""
+Write-Host "  ── Redeploy Command ──" -ForegroundColor Yellow
+Write-Host "  .\deploy.ps1 -EnvironmentName $EnvironmentName -Location $Location ``" -ForegroundColor Gray
+Write-Host "      -EntraClientId `"$script:EntraClientId`" ``" -ForegroundColor Gray
+Write-Host "      -EntraClientSecret `"$script:EntraClientSecret`" ``" -ForegroundColor Gray
+if ($OpenAiEndpoint) {
+    Write-Host "      -OpenAiEndpoint `"$OpenAiEndpoint`"" -ForegroundColor Gray
+}
 Write-Host ""
 Write-Host "  ── Next Steps ──" -ForegroundColor Yellow
 Write-Host "  1. Sideload dist/manifest-prod.xml in PowerPoint (Insert → My Add-ins)" -ForegroundColor Gray
