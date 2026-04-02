@@ -410,8 +410,9 @@ Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
     $script:SwaUrl  = (azd env get-value AZURE_STATIC_WEB_APP_URL  2>$null)
     $script:SwaName = (azd env get-value AZURE_STATIC_WEB_APP_NAME 2>$null)
     $script:KvName  = (azd env get-value AZURE_KEY_VAULT_NAME      2>$null)
+    $script:RgName  = (azd env get-value AZURE_RESOURCE_GROUP      2>$null)
 
-    Write-OK "Resource group: rg-$($script:EnvironmentName)"
+    Write-OK "Resource group: $script:RgName"
     Write-OK "Static Web App: $script:SwaName"
     Write-OK "Key Vault: $script:KvName"
     Write-OK "URL: $script:SwaUrl"
@@ -531,7 +532,7 @@ Write-Host "╚═════════════════════�
 Write-Host ""
 Write-Host "  Application URL       $script:SwaUrl" -ForegroundColor White
 Write-Host "  Environment           $($script:EnvironmentName)" -ForegroundColor White
-Write-Host "  Resource Group        rg-$($script:EnvironmentName)" -ForegroundColor White
+Write-Host "  Resource Group        $($script:RgName)" -ForegroundColor White
 Write-Host "  Entra Client ID       $script:EntraClientId" -ForegroundColor White
 Write-Host "  Entra Client Secret   $script:EntraClientSecret" -ForegroundColor White
 Write-Host "  Tenant ID             $script:AzTenantId" -ForegroundColor White

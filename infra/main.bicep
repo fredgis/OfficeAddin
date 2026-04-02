@@ -34,8 +34,10 @@ var tags = { 'azd-env-name': environmentName, project: 'OfficeAddin', environmen
 var swaName = '${abbrs.webStaticSites}${resourceToken}'
 var openAiResourceName = 'oai-${resourceToken}'
 
+var rgName = 'rg-fabricaddin-${resourceToken}'
+
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: 'rg-${environmentName}'
+  name: rgName
   location: location
   tags: tags
 }
@@ -102,5 +104,6 @@ output AZURE_STATIC_WEB_APP_NAME string = web.outputs.name
 output AZURE_STATIC_WEB_APP_URL string = web.outputs.url
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_APP_INSIGHTS_NAME string = monitoring.outputs.name
+output AZURE_RESOURCE_GROUP string = rgName
 // azd service-to-resource mapping
 output SERVICE_WEB_RESOURCE_NAME string = web.outputs.name
