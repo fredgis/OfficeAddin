@@ -456,6 +456,9 @@ Invoke-Step "Generating production manifest" {
     $dst = Join-Path $RepoRoot "dist" "manifest-prod.xml"
 
     $content = (Get-Content $src -Raw) -replace 'https://localhost:3000', $script:SwaUrl
+    # Add SWA domain to AppDomains so Office.js trusts the add-in origin
+    $swaDomain = "    <AppDomain>$($script:SwaUrl)</AppDomain>`n  </AppDomains>"
+    $content = $content -replace '</AppDomains>', $swaDomain
     Set-Content -Path $dst -Value $content -Encoding UTF8
     Write-OK "dist/manifest-prod.xml"
 }

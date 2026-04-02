@@ -98,7 +98,23 @@ const Root: React.FC = () => {
   );
 };
 
+// Add a timeout fallback — if Office.onReady doesn't fire within 10s,
+// render anyway (handles cases where Office.js context is unavailable)
+let officeReady = false;
+
 Office.onReady(() => {
+  officeReady = true;
+  renderApp();
+});
+
+setTimeout(() => {
+  if (!officeReady) {
+    console.warn('Office.onReady did not fire within 10s — rendering without Office context');
+    renderApp();
+  }
+}, 10000);
+
+function renderApp() {
   try {
     const container = document.getElementById('root');
     if (!container) {
@@ -108,11 +124,10 @@ Office.onReady(() => {
     const root = createRoot(container);
     root.render(<Root />);
   } catch (err) {
-    // Show a user-friendly error if Office.js or React fails to initialize
     const el = document.getElementById('root') || document.body;
     el.innerHTML = `<div style="padding:2rem;font-family:sans-serif">
       <h2>Failed to load add-in</h2>
       <p>${err instanceof Error ? err.message : 'Unknown error'}</p>
     </div>`;
   }
-});
+}
