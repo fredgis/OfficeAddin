@@ -138,17 +138,19 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
 
       {inserting && <Spinner size="small" label="Inserting image…" />}
 
-      {successMsg && (
-        <MessageBar intent="success">
-          <MessageBarBody>{successMsg}</MessageBarBody>
-        </MessageBar>
-      )}
+      <div aria-live="polite">
+        {successMsg && (
+          <MessageBar intent="success">
+            <MessageBarBody>{successMsg}</MessageBarBody>
+          </MessageBar>
+        )}
 
-      {errorMsg && (
-        <MessageBar intent="error">
-          <MessageBarBody>{errorMsg}</MessageBarBody>
-        </MessageBar>
-      )}
+        {errorMsg && (
+          <MessageBar intent="error">
+            <MessageBarBody>{errorMsg}</MessageBarBody>
+          </MessageBar>
+        )}
+      </div>
     </div>
   );
 };

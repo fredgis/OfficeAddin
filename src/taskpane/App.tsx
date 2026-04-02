@@ -48,9 +48,21 @@ const useStyles = makeStyles({
     height: '100%',
     gap: tokens.spacingVerticalL,
   },
+  offlineBanner: {
+    backgroundColor: tokens.colorPaletteYellowBackground2,
+    paddingTop: tokens.spacingVerticalXS,
+    paddingBottom: tokens.spacingVerticalXS,
+    paddingLeft: tokens.spacingHorizontalM,
+    paddingRight: tokens.spacingHorizontalM,
+    textAlign: 'center',
+  },
 });
 
-export const App: React.FC = () => {
+interface AppProps {
+  isOffline?: boolean;
+}
+
+export const App: React.FC<AppProps> = ({ isOffline = false }) => {
   const styles = useStyles();
   const { isAuthenticated, isLoading, error, login, logout } = useAuth();
 
@@ -85,6 +97,11 @@ export const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <div className={styles.root}>
+        {isOffline && (
+          <div className={styles.offlineBanner} role="status" aria-live="polite">
+            <Text size={200} weight="semibold">You are offline. Some features may be unavailable.</Text>
+          </div>
+        )}
         <div className={styles.header}>
           <Text weight="semibold">Fabric Storyboard Copilot</Text>
           <Button appearance="subtle" size="small" onClick={logout} aria-label="Sign out">

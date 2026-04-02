@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
+  Button,
   Card,
   CardHeader,
   Body1,
@@ -48,7 +49,7 @@ interface ReportListProps {
 
 export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSelected }) => {
   const styles = useStyles();
-  const { data: reports, isLoading, error } = useReports(workspaceId);
+  const { data: reports, isLoading, error, refetch } = useReports(workspaceId);
   const [filter, setFilter] = useState('');
 
   const filtered = useMemo(() => {
@@ -73,9 +74,15 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
 
   if (error) {
     return (
-      <MessageBar intent="error">
-        <MessageBarBody>Failed to load reports: {(error as Error).message}</MessageBarBody>
-      </MessageBar>
+      <div role="alert">
+        <MessageBar intent="error">
+          <MessageBarBody>Failed to load reports: {(error as Error).message}</MessageBarBody>
+        </MessageBar>
+        <Button appearance="subtle" size="small" onClick={() => refetch()} aria-label="Retry loading reports"
+          style={{ marginTop: '8px', minHeight: '44px' }}>
+          Retry
+        </Button>
+      </div>
     );
   }
 

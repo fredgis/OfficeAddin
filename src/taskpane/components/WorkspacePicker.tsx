@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
+  Button,
   Combobox,
   Option,
   MessageBar,
@@ -38,7 +39,7 @@ interface WorkspacePickerProps {
 
 export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSelected }) => {
   const styles = useStyles();
-  const { data: workspaces, isLoading, error } = useWorkspaces();
+  const { data: workspaces, isLoading, error, refetch } = useWorkspaces();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -60,9 +61,15 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
 
   if (error) {
     return (
-      <MessageBar intent="error">
-        <MessageBarBody>Failed to load workspaces: {(error as Error).message}</MessageBarBody>
-      </MessageBar>
+      <div role="alert">
+        <MessageBar intent="error">
+          <MessageBarBody>Failed to load workspaces: {(error as Error).message}</MessageBarBody>
+        </MessageBar>
+        <Button appearance="subtle" size="small" onClick={() => refetch()} aria-label="Retry loading workspaces"
+          style={{ marginTop: '8px', minHeight: '44px' }}>
+          Retry
+        </Button>
+      </div>
     );
   }
 

@@ -3,6 +3,7 @@ import { PowerBIClient } from '../services/api/powerbiClient';
 import { useAuth } from '../services/auth';
 
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
+const retryDelay = (attempt: number) => Math.min(1000 * 2 ** attempt, 30000);
 
 export function useWorkspaces() {
   const { getToken } = useAuth();
@@ -15,6 +16,7 @@ export function useWorkspaces() {
     },
     staleTime: STALE_TIME,
     retry: 2,
+    retryDelay,
     refetchOnWindowFocus: false,
   });
 }
@@ -31,6 +33,7 @@ export function useReports(workspaceId: string | null) {
     enabled: !!workspaceId,
     staleTime: STALE_TIME,
     retry: 2,
+    retryDelay,
     refetchOnWindowFocus: false,
   });
 }
@@ -47,6 +50,7 @@ export function usePages(reportId: string | null) {
     enabled: !!reportId,
     staleTime: STALE_TIME,
     retry: 2,
+    retryDelay,
     refetchOnWindowFocus: false,
   });
 }

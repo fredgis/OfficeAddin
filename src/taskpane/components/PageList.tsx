@@ -55,7 +55,7 @@ interface PageListProps {
 
 export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, onExportPage }) => {
   const styles = useStyles();
-  const { data: pages, isLoading, error } = usePages(reportId);
+  const { data: pages, isLoading, error, refetch } = usePages(reportId);
 
   if (isLoading) {
     return (
@@ -71,9 +71,15 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
 
   if (error) {
     return (
-      <MessageBar intent="error">
-        <MessageBarBody>Failed to load pages: {(error as Error).message}</MessageBarBody>
-      </MessageBar>
+      <div role="alert">
+        <MessageBar intent="error">
+          <MessageBarBody>Failed to load pages: {(error as Error).message}</MessageBarBody>
+        </MessageBar>
+        <Button appearance="subtle" size="small" onClick={() => refetch()} aria-label="Retry loading pages"
+          style={{ marginTop: '8px', minHeight: '44px' }}>
+          Retry
+        </Button>
+      </div>
     );
   }
 

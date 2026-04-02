@@ -130,11 +130,22 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
       )}
 
       {exportMutation.isError && (
-        <MessageBar intent="error">
-          <MessageBarBody>
-            Export failed: {(exportMutation.error as Error).message}
-          </MessageBarBody>
-        </MessageBar>
+        <div role="alert">
+          <MessageBar intent="error">
+            <MessageBarBody>
+              Export failed: {(exportMutation.error as Error).message}
+            </MessageBarBody>
+          </MessageBar>
+          <Button
+            appearance="subtle"
+            size="small"
+            onClick={handleExport}
+            aria-label="Retry export"
+            style={{ marginTop: '8px', minHeight: '44px' }}
+          >
+            Retry Export
+          </Button>
+        </div>
       )}
 
       {result && !exportMutation.isPending && (

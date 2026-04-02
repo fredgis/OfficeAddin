@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { FluentProvider, webLightTheme, webDarkTheme } from '@fluentui/react-components';
+import {
+  FluentProvider,
+  webLightTheme,
+  webDarkTheme,
+  teamsHighContrastTheme,
+} from '@fluentui/react-components';
 import type { Theme } from '@fluentui/react-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
@@ -18,9 +23,13 @@ const queryClient = new QueryClient({
 /** Detect Office host theme; falls back to light theme. */
 function detectOfficeTheme(): Theme {
   try {
+    // Check for OS-level high-contrast mode
+    if (window.matchMedia?.('(forced-colors: active)').matches) {
+      return teamsHighContrastTheme;
+    }
+
     const officeTheme = Office.context?.officeTheme;
     if (officeTheme) {
-      // Office dark themes have a dark body background color
       const bg = officeTheme.bodyBackgroundColor?.toLowerCase();
       if (bg && (bg === '#000000' || bg === '#1e1e1e' || bg === '#2d2d2d' || parseInt(bg.replace('#', ''), 16) < 0x404040)) {
         return webDarkTheme;
@@ -34,6 +43,18 @@ function detectOfficeTheme(): Theme {
 
 const Root: React.FC = () => {
   const [theme, setTheme] = useState<Theme>(detectOfficeTheme);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const goOffline = () => setIsOffline(true);
+    const goOnline = () => setIsOffline(false);
+    window.addEventListener('offline', goOffline);
+    window.addEventListener('online', goOnline);
+    return () => {
+      window.removeEventListener('offline', goOffline);
+      window.removeEventListener('online', goOnline);
+    };
+  }, []);
 
   useEffect(() => {
     // Re-detect theme if Office signals a change
@@ -43,6 +64,14 @@ const Root: React.FC = () => {
         () => setTheme(detectOfficeTheme()),
       );
     }
+
+    // React to OS high-contrast changes
+    const mq = window.matchMedia?.('(forced-colors: active)');
+    if (mq?.addEventListener) {
+      const handler = () => setTheme(detectOfficeTheme());
+      mq.addEventListener('change', handler);
+      return () => mq.removeEventListener('change', handler);
+    }
   }, []);
 
   return (
@@ -50,7 +79,7 @@ const Root: React.FC = () => {
       <FluentProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <App />
+            <App isOffline={isOffline} />
           </AuthProvider>
         </QueryClientProvider>
       </FluentProvider>
