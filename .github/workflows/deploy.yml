@@ -1,0 +1,103 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      swa-url: ${{ steps.azd-output.outputs.swa-url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install azd
+        uses: Azure/setup-azd@v2
+
+      - name: Log in with Azure (federated credentials)
+        run: |
+          azd auth login \
+            --client-id "${{ secrets.AZURE_CLIENT_ID }}" \
+            --federated-credential-provider "github" \
+            --tenant-id "${{ secrets.AZURE_TENANT_ID }}"
+
+      - name: Provision infrastructure
+        run: azd provision --no-prompt
+        env:
+          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ENTRA_CLIENT_ID: ${{ secrets.ENTRA_CLIENT_ID }}
+          ENTRA_TENANT_ID: ${{ secrets.ENTRA_TENANT_ID }}
+          ENTRA_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
+          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_DEPLOYMENT: ${{ vars.AZURE_OPENAI_DEPLOYMENT }}
+
+      - name: Get deployment outputs
+        id: azd-output
+        run: |
+          SWA_URL=$(azd env get-value AZURE_STATIC_WEB_APP_URL 2>/dev/null || echo "")
+          echo "swa-url=$SWA_URL" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: provision
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install and build frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install and build API
+        working-directory: api
+        run: |
+          npm ci
+          npm run build
+
+      - name: Generate production manifest
+        if: ${{ needs.provision.outputs.swa-url != '' }}
+        run: |
+          SWA_URL="${{ needs.provision.outputs.swa-url }}"
+          sed "s|https://localhost:3000|${SWA_URL}|g" manifest.xml > dist/manifest.xml
+          echo "Production manifest generated with URL: ${SWA_URL}"
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: 'upload'
+          app_location: 'dist'
+          api_location: 'api'
+          output_location: ''
+          skip_app_build: true
+          skip_api_build: true
+
+      # ── Manifest Deployment Notes ──
+      # The production manifest (dist/manifest.xml) has Azure URLs baked in.
+      #
+      # Sideloading (dev/test):
+      #   1. Open PowerPoint → Insert → My Add-ins → Upload My Add-in
+      #   2. Browse to dist/manifest.xml and upload
+      #
+      # Admin deployment (org-wide):
+      #   1. Go to Microsoft 365 Admin Center → Settings → Integrated apps
+      #   2. Upload the production manifest.xml
+      #   3. Assign users/groups who should have access
+      #   4. The add-in will appear automatically in assigned users' PowerPoint

@@ -1,0 +1,27 @@
+name: fabric-storyboard-copilot
+metadata:
+  template: fabric-storyboard-copilot
+services:
+  web:
+    project: .
+    language: ts
+    host: staticwebapp
+    dist: dist
+    hooks:
+      prebuild:
+        run: npm ci
+      build:
+        run: npm run build
+  api:
+    project: api
+    language: ts
+    host: staticwebapp
+    hooks:
+      prebuild:
+        run: npm ci
+      build:
+        run: npm run build
+infra:
+  provider: bicep
+  path: infra
+  module: main
