@@ -335,6 +335,9 @@ Invoke-Step "Installing dependencies" {
 if (-not $SkipBuild) {
     Invoke-Step "Building application" {
         Set-Location $RepoRoot
+        # Inject Entra config so webpack DefinePlugin can embed them
+        $env:ENTRA_CLIENT_ID = $script:EntraClientId
+        $env:ENTRA_TENANT_ID = $script:AzTenantId
         $output = npm run build 2>&1
         if ($LASTEXITCODE -ne 0) {
             $output | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }

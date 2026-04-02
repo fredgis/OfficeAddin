@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -26,6 +27,10 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.ENTRA_CLIENT_ID': JSON.stringify(process.env.ENTRA_CLIENT_ID || ''),
+      'process.env.ENTRA_TENANT_ID': JSON.stringify(process.env.ENTRA_TENANT_ID || ''),
+    }),
     new HtmlWebpackPlugin({
       template: './src/taskpane/taskpane.html',
       filename: 'taskpane.html',
