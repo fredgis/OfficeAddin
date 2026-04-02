@@ -200,3 +200,235 @@ graph LR
 | **Total** | **43** | **~27** | **~37%** |
 
 > With Copilot agent fleet assistance, the project can be delivered in approximately **27 person-days** instead of 43 — a **37% reduction** in effort.
+
+---
+
+## Squad Framework Estimation
+
+[Squad](https://github.com/bradygaster/squad) orchestrates a persistent AI agent team via GitHub Copilot. Each specialist (frontend, backend, tester, lead, scribe) runs in its own context, accumulates project knowledge across sessions, and agents work **in parallel** — the coordinator chains follow-up tasks automatically.
+
+### Proposed Squad Team Composition
+
+```mermaid
+%%{init: {'theme': 'base'}}%%
+graph TD
+    subgraph Squad["🎬 Squad — Office Add-in Team"]
+        Lead["🏗️ Lead<br/><i>Architecture, task routing,<br/>decisions, code reviews</i>"]
+        Frontend["⚛️ Frontend Specialist<br/><i>React, Office.js, Fluent UI,<br/>taskpane components</i>"]
+        Backend["🔧 Backend Specialist<br/><i>Azure Functions, Power BI API,<br/>MSAL OBO, REST endpoints</i>"]
+        Auth["🔐 Auth Specialist<br/><i>Entra ID, MSAL.js, SSO,<br/>dialog auth, token mgmt</i>"]
+        AI["🧠 AI Specialist<br/><i>Azure OpenAI, prompt eng.,<br/>DAX queries, insights gen.</i>"]
+        Infra["🚀 Infra Specialist<br/><i>Bicep, azd, SWA, GitHub Actions,<br/>Key Vault, App Insights</i>"]
+        Tester["🧪 Tester<br/><i>Jest, RTL, integration tests,<br/>Office.js mocks, E2E</i>"]
+        Scribe["📋 Scribe<br/><i>Decisions log, knowledge mgmt,<br/>session history, docs</i>"]
+    end
+
+    Lead --> Frontend
+    Lead --> Backend
+    Lead --> Auth
+    Lead --> AI
+    Lead --> Infra
+    Lead --> Tester
+    Scribe -.->|logs everything| Lead
+
+    style Lead fill:#E74C3C,stroke:#C0392B,color:#fff
+    style Frontend fill:#4472C4,stroke:#2F5496,color:#fff
+    style Backend fill:#ED7D31,stroke:#C55A11,color:#fff
+    style Auth fill:#FFC000,stroke:#BF9000,color:#000
+    style AI fill:#70AD47,stroke:#548235,color:#fff
+    style Infra fill:#5B9BD5,stroke:#2E75B6,color:#fff
+    style Tester fill:#9B59B6,stroke:#7D3C98,color:#fff
+    style Scribe fill:#A5A5A5,stroke:#7F7F7F,color:#fff
+```
+
+### Squad Agent ↔ Phase Mapping
+
+```mermaid
+%%{init: {'theme': 'base'}}%%
+graph LR
+    subgraph P1["Phase 1 — Scaffolding"]
+        P1a["🏗️ Lead"]
+        P1b["⚛️ Frontend"]
+        P1c["🔧 Backend"]
+    end
+    subgraph P2["Phase 2 — Auth"]
+        P2a["🔐 Auth"]
+        P2b["🔧 Backend"]
+    end
+    subgraph P3["Phase 3 — Browsing"]
+        P3a["⚛️ Frontend"]
+        P3b["🔧 Backend"]
+    end
+    subgraph P4["Phase 4 — Export"]
+        P4a["⚛️ Frontend"]
+        P4b["🔧 Backend"]
+    end
+    subgraph P5["Phase 5 — Insert"]
+        P5a["⚛️ Frontend"]
+    end
+    subgraph P6["Phase 6 — AI"]
+        P6a["🧠 AI"]
+        P6b["⚛️ Frontend"]
+    end
+    subgraph P7["Phase 7 — Polish"]
+        P7a["⚛️ Frontend"]
+        P7b["🏗️ Lead"]
+    end
+    subgraph P8["Phase 8 — Infra"]
+        P8a["🚀 Infra"]
+    end
+    subgraph P9["Phase 9 — Testing"]
+        P9a["🧪 Tester"]
+        P9b["🏗️ Lead"]
+    end
+    subgraph P10["Phase 10 — Docs"]
+        P10a["📋 Scribe"]
+        P10b["🏗️ Lead"]
+    end
+
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P9 --> P10
+    P1 --> P8
+
+    style P1a fill:#E74C3C,stroke:#C0392B,color:#fff
+    style P7b fill:#E74C3C,stroke:#C0392B,color:#fff
+    style P9b fill:#E74C3C,stroke:#C0392B,color:#fff
+    style P10b fill:#E74C3C,stroke:#C0392B,color:#fff
+    style P1b fill:#4472C4,stroke:#2F5496,color:#fff
+    style P3a fill:#4472C4,stroke:#2F5496,color:#fff
+    style P4a fill:#4472C4,stroke:#2F5496,color:#fff
+    style P5a fill:#4472C4,stroke:#2F5496,color:#fff
+    style P6b fill:#4472C4,stroke:#2F5496,color:#fff
+    style P7a fill:#4472C4,stroke:#2F5496,color:#fff
+    style P1c fill:#ED7D31,stroke:#C55A11,color:#fff
+    style P2b fill:#ED7D31,stroke:#C55A11,color:#fff
+    style P3b fill:#ED7D31,stroke:#C55A11,color:#fff
+    style P4b fill:#ED7D31,stroke:#C55A11,color:#fff
+    style P2a fill:#FFC000,stroke:#BF9000,color:#000
+    style P6a fill:#70AD47,stroke:#548235,color:#fff
+    style P8a fill:#5B9BD5,stroke:#2E75B6,color:#fff
+    style P9a fill:#9B59B6,stroke:#7D3C98,color:#fff
+    style P10a fill:#A5A5A5,stroke:#7F7F7F,color:#fff
+```
+
+### Squad Parallel Execution Advantage
+
+Squad's coordinator launches all agents that can work simultaneously. This changes the execution model fundamentally: instead of sequential role-switching, multiple specialists run in parallel within a phase.
+
+```mermaid
+%%{init: {'theme': 'base'}}%%
+gantt
+    title Squad Parallel Execution Timeline
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+
+    section 🏗️ Phase 1 — Scaffold
+    Lead: architecture & routing     :crit, s1a, 2026-04-03, 1d
+    Frontend + Backend in parallel   :crit, s1b, after s1a, 1d
+
+    section 🔐 Phase 2 — Auth
+    Auth + Backend in parallel       :crit, s2, after s1b, 3d
+
+    section 📊 Phase 3 — Browse
+    Frontend + Backend in parallel   :crit, s3, after s2, 2d
+
+    section 📸 Phase 4 — Export
+    Frontend + Backend in parallel   :crit, s4, after s3, 2d
+
+    section 📝 Phase 5 — Insert
+    Frontend (Office.js)             :crit, s5, after s4, 2d
+
+    section 🧠 Phase 6 — AI
+    AI + Frontend in parallel        :crit, s6, after s5, 2d
+
+    section ✨ Phase 7 — Polish
+    Frontend + Lead review           :crit, s7, after s6, 2d
+
+    section 🚀 Phase 8 — Infra (parallel track)
+    Infra specialist                 :active, s8, after s1b, 4d
+
+    section 🧪 Phase 9 — Testing
+    Tester + Lead review             :crit, s9, after s7, 2d
+
+    section 📋 Phase 10 — Docs
+    Scribe + Lead                    :crit, s10, after s9, 1d
+```
+
+### Why Squad Outperforms Individual Agents
+
+| Factor | Individual Agents | Squad |
+|--------|------------------|-------|
+| **Context switching** | Manual — you re-explain context each session | Zero — each agent retains `history.md` across sessions |
+| **Parallel execution** | One agent at a time | Coordinator launches all eligible agents simultaneously |
+| **Decision tracking** | Lost between sessions | Persisted in `decisions.md`, shared across team |
+| **Knowledge compounding** | Starts fresh each session | Agents learn conventions, preferences, architecture over time |
+| **Coordination overhead** | You are the coordinator | Lead agent routes tasks, chains follow-ups automatically |
+| **Code review** | Separate step | Lead reviews inline, Tester writes tests as features land |
+| **Documentation** | Afterthought | Scribe documents continuously in real-time |
+
+### Effort Comparison: Manual vs. Individual Agents vs. Squad
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'xyChart': {'backgroundColor': '#ffffff', 'plotColorPalette': '#E74C3C, #27AE60, #4472C4'}}}}%%
+xychart-beta
+    title "Manual (red) vs Individual Agents (green) vs Squad (blue)"
+    x-axis ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10"]
+    y-axis "Person-days" 0 --> 6
+    bar [3, 5, 5, 4, 4, 5, 4, 5, 5, 3]
+    bar [1.8, 3.5, 3, 2.8, 2.4, 3.5, 3, 2.5, 3, 2]
+    bar [1.2, 2, 1.5, 1.5, 1.2, 1.5, 1.5, 1.5, 1.5, 0.5]
+```
+
+| Phase | Manual | Individual Agents | Squad | Squad Savings vs. Manual |
+|-------|--------|------------------|-------|------------------------|
+| 1 - Scaffolding | 3 | 1.8 | 1.2 | 60% |
+| 2 - Auth | 5 | 3.5 | 2.0 | 60% |
+| 3 - Browsing | 5 | 3.0 | 1.5 | 70% |
+| 4 - Export | 4 | 2.8 | 1.5 | 63% |
+| 5 - Insert | 4 | 2.4 | 1.2 | 70% |
+| 6 - AI Insights | 5 | 3.5 | 1.5 | 70% |
+| 7 - Polish | 4 | 3.0 | 1.5 | 63% |
+| 8 - Infrastructure | 5 | 2.5 | 1.5 | 70% |
+| 9 - Testing | 5 | 3.0 | 1.5 | 70% |
+| 10 - Documentation | 3 | 2.0 | 0.5 | 83% |
+| **Total** | **43** | **~27** | **~14** | **~67%** |
+
+### Summary: Three Execution Strategies
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'pie1': '#E74C3C', 'pie2': '#27AE60', 'pie3': '#4472C4'}}}%%
+pie title Total Effort (person-days)
+    "Manual — 43 days" : 43
+    "Individual Agents — 27 days" : 27
+    "Squad — 14 days" : 14
+```
+
+| Strategy | Total Effort | Wall-Clock (1 person) | Savings | Best For |
+|----------|-------------|----------------------|---------|----------|
+| 🔴 **Manual** | 43 days | ~9 weeks | — | Baseline |
+| 🟢 **Individual Agents** | ~27 days | ~5.5 weeks | 37% | Ad-hoc Copilot usage |
+| 🔵 **Squad** | ~14 days | ~3 weeks | 67% | Orchestrated team with persistent knowledge |
+
+> 💡 **Key advantage of Squad**: The Scribe and Lead agents eliminate coordination overhead. After the first few sessions, agents know the project's conventions (Fluent UI v9, OBO auth pattern, Azure Functions v4 model) and stop asking — they just build. The wall-clock time drops further because Frontend + Backend + Infra agents work in parallel within each phase.
+
+### Recommended `squad.config.ts`
+
+```typescript
+import { defineSquad, defineTeam, defineAgent } from '@bradygaster/squad-sdk';
+
+export default defineSquad({
+  team: defineTeam({
+    name: 'Fabric Add-in Squad',
+    members: ['@lead', '@frontend', '@backend', '@auth', '@ai', '@infra', '@tester', '@scribe']
+  }),
+  agents: [
+    defineAgent({ name: 'lead', role: 'Tech Lead & Architect', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'frontend', role: 'React + Office.js + Fluent UI Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'backend', role: 'Azure Functions + Power BI API Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'auth', role: 'Entra ID + MSAL + SSO/OBO Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'ai', role: 'Azure OpenAI + Prompt Engineering Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'infra', role: 'Bicep + azd + CI/CD Specialist', model: 'claude-haiku-4.5' }),
+    defineAgent({ name: 'tester', role: 'Jest + RTL + Integration Testing Specialist', model: 'claude-haiku-4.5' }),
+    defineAgent({ name: 'scribe', role: 'Documentation & Decision Logger', model: 'claude-haiku-4.5' }),
+  ],
+});
+```
