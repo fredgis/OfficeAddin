@@ -241,10 +241,12 @@ Invoke-Step "Configuring Entra ID" {
             $spaBody = @{
                 spa = @{ redirectUris = @("https://localhost:3000/dialog.html") }
             } | ConvertTo-Json -Depth 3 -Compress
+            $spaBodyPath = Join-Path $env:TEMP "fabric-spa-body-$($EntraClientId).json"
+            Set-Content -Path $spaBodyPath -Value $spaBody -Encoding utf8
             az rest --method PATCH `
                 --uri "https://graph.microsoft.com/v1.0/applications/$appObjectId" `
                 --headers "Content-Type=application/json" `
-                --body $spaBody --output none 2>$null
+                --body "@$spaBodyPath" --output none 2>$null
 
             # API permissions: Graph User.Read
             Write-Info "Adding API permissions..."
@@ -491,10 +493,12 @@ if ($script:CreatedNewApp -and $script:SwaUrl) {
                 )
             }
         } | ConvertTo-Json -Depth 3 -Compress
+        $spaBodyPath = Join-Path $env:TEMP "fabric-spa-prod-body-$($script:EntraClientId).json"
+        Set-Content -Path $spaBodyPath -Value $spaBody -Encoding utf8
         az rest --method PATCH `
             --uri "https://graph.microsoft.com/v1.0/applications/$($script:AppObjectId)" `
             --headers "Content-Type=application/json" `
-            --body $spaBody --output none 2>$null
+            --body "@$spaBodyPath" --output none 2>$null
         Write-OK "$($script:SwaUrl)/dialog.html"
     }
 }
