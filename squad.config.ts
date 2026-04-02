@@ -1,76 +1,18 @@
-import type { SquadConfig } from '@bradygaster/squad';
+import { defineSquad, defineTeam, defineAgent } from '@bradygaster/squad-sdk';
 
-/**
- * Squad Configuration for OfficeAddin
- * 
- */
-const config: SquadConfig = {
-  version: '1.0.0',
-  
-  models: {
-    defaultModel: 'claude-sonnet-4.5',
-    defaultTier: 'standard',
-    fallbackChains: {
-      premium: ['claude-opus-4.6', 'claude-opus-4.6-fast', 'claude-opus-4.5', 'claude-sonnet-4.5'],
-      standard: ['claude-sonnet-4.5', 'gpt-5.2-codex', 'claude-sonnet-4', 'gpt-5.2'],
-      fast: ['claude-haiku-4.5', 'gpt-5.1-codex-mini', 'gpt-4.1', 'gpt-5-mini']
-    },
-    preferSameProvider: true,
-    respectTierCeiling: true,
-    nuclearFallback: {
-      enabled: false,
-      model: 'claude-haiku-4.5',
-      maxRetriesBeforeNuclear: 3
-    }
-  },
-  
-  routing: {
-    rules: [
-      {
-        workType: 'feature-dev',
-        agents: ['@scribe'],
-        confidence: 'high'
-      },
-      {
-        workType: 'bug-fix',
-        agents: ['@scribe'],
-        confidence: 'high'
-      },
-      {
-        workType: 'testing',
-        agents: ['@scribe'],
-        confidence: 'high'
-      },
-      {
-        workType: 'documentation',
-        agents: ['@scribe'],
-        confidence: 'high'
-      }
-    ],
-    governance: {
-      eagerByDefault: true,
-      scribeAutoRuns: false,
-      allowRecursiveSpawn: false
-    }
-  },
-  
-  casting: {
-    allowlistUniverses: [
-      'The Usual Suspects',
-      'Breaking Bad',
-      'The Wire',
-      'Firefly'
-    ],
-    overflowStrategy: 'generic',
-    universeCapacity: {}
-  },
-  
-  platforms: {
-    vscode: {
-      disableModelSelection: false,
-      scribeMode: 'sync'
-    }
-  }
-};
-
-export default config;
+export default defineSquad({
+  team: defineTeam({
+    name: 'Fabric Add-in Squad',
+    members: ['@lead', '@frontend', '@backend', '@auth', '@ai', '@infra', '@tester', '@scribe']
+  }),
+  agents: [
+    defineAgent({ name: 'lead', role: 'Tech Lead & Architect', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'frontend', role: 'React + Office.js + Fluent UI Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'backend', role: 'Azure Functions + Power BI API Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'auth', role: 'Entra ID + MSAL + SSO/OBO Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'ai', role: 'Azure OpenAI + Prompt Engineering Specialist', model: 'claude-sonnet-4' }),
+    defineAgent({ name: 'infra', role: 'Bicep + azd + CI/CD Specialist', model: 'claude-haiku-4.5' }),
+    defineAgent({ name: 'tester', role: 'Jest + RTL + Integration Testing Specialist', model: 'claude-haiku-4.5' }),
+    defineAgent({ name: 'scribe', role: 'Documentation & Decision Logger', model: 'claude-haiku-4.5' }),
+  ],
+});

@@ -6,12 +6,15 @@ How to decide who handles what.
 
 | Work Type | Route To | Examples |
 |-----------|----------|----------|
-| {domain 1} | {Name} | {example tasks} |
-| {domain 2} | {Name} | {example tasks} |
-| {domain 3} | {Name} | {example tasks} |
-| Code review | {Name} | Review PRs, check quality, suggest improvements |
-| Testing | {Name} | Write tests, find edge cases, verify fixes |
-| Scope & priorities | {Name} | What to build next, trade-offs, decisions |
+| Architecture & coordination | Keaton (Lead) | Task routing, phase planning, cross-cutting decisions |
+| Frontend UI & components | McManus (Frontend) | React components, Fluent UI, Office.js slide insertion |
+| Backend API & integrations | Verbal (Backend) | Azure Functions endpoints, Power BI API calls, export polling |
+| Authentication & identity | Fenster (Auth) | Entra ID config, SSO, MSAL dialog, OBO flow |
+| AI & prompt engineering | Hicks (AI) | Azure OpenAI prompts, insight generation, DAX queries |
+| Infrastructure & deployment | Redfoot (Infra) | Bicep templates, azd config, GitHub Actions, Key Vault |
+| Code review | Keaton (Lead) | Review PRs, check quality, suggest improvements |
+| Testing | Kobayashi (Tester) | Write tests, find edge cases, verify fixes |
+| Scope & priorities | Keaton (Lead) | What to build next, trade-offs, decisions |
 | Async issue work (bugs, tests, small features) | @copilot 🤖 | Well-defined tasks matching capability profile |
 | Session logging | Scribe | Automatic — never needs routing |
 
