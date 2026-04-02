@@ -1,7 +1,31 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+function readDotEnv() {
+  const envPath = path.resolve(__dirname, '.env');
+  if (!fs.existsSync(envPath)) {
+    return {};
+  }
+
+  return fs
+    .readFileSync(envPath, 'utf8')
+    .split(/\r?\n/)
+    .filter((line) => line && !line.trim().startsWith('#') && line.includes('='))
+    .reduce((acc, line) => {
+      const idx = line.indexOf('=');
+      const key = line.slice(0, idx).trim();
+      const value = line.slice(idx + 1).trim();
+      acc[key] = value;
+      return acc;
+    }, {});
+}
+
+const fileEnv = readDotEnv();
+const entraClientId = process.env.ENTRA_CLIENT_ID || fileEnv.ENTRA_CLIENT_ID || '';
+const entraTenantId = process.env.ENTRA_TENANT_ID || fileEnv.ENTRA_TENANT_ID || '';
 
 module.exports = {
   entry: './src/taskpane/index.tsx',
@@ -28,8 +52,8 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.ENTRA_CLIENT_ID': JSON.stringify(process.env.ENTRA_CLIENT_ID || ''),
-      'process.env.ENTRA_TENANT_ID': JSON.stringify(process.env.ENTRA_TENANT_ID || ''),
+      'process.env.ENTRA_CLIENT_ID': JSON.stringify(entraClientId),
+      'process.env.ENTRA_TENANT_ID': JSON.stringify(entraTenantId),
     }),
     new HtmlWebpackPlugin({
       template: './src/taskpane/taskpane.html',
