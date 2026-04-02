@@ -401,12 +401,12 @@ Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
 
     # Generate or reuse a unique deployment ID for globally unique resource names
     $existingId = azd env get-value DEPLOYMENT_ID 2>$null
-    if ($existingId) {
+    if ($LASTEXITCODE -eq 0 -and $existingId) {
         $script:DeploymentId = $existingId
     } else {
         $script:DeploymentId = ([guid]::NewGuid().ToString("N").Substring(0, 13))
-        azd env set DEPLOYMENT_ID $script:DeploymentId --no-prompt
     }
+    azd env set DEPLOYMENT_ID $script:DeploymentId --no-prompt
     Write-OK "Deployment ID: $script:DeploymentId"
 
     if ($script:OpenAiEndpoint) {
