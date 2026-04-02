@@ -7,6 +7,7 @@ This project requires expertise across multiple domains. Below is the recommende
 ### Effort by Role
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'pie1': '#4472C4', 'pie2': '#ED7D31', 'pie3': '#FFC000', 'pie4': '#5B9BD5', 'pie5': '#70AD47', 'pie6': '#E74C3C', 'pieStrokeWidth': '2px', 'pieOuterStrokeWidth': '2px'}}}%%
 pie title Effort Distribution by Role
     "Frontend Dev (React + Office.js)" : 35
     "Backend Dev (Azure Functions)" : 25
@@ -31,8 +32,12 @@ pie title Effort Distribution by Role
 ### Effort by Phase
 
 ```mermaid
-bar
-    title Effort per Phase (person-days)
+%%{init: {'theme': 'base', 'themeVariables': {'xyChart': {'backgroundColor': '#ffffff', 'plotColorPalette': '#4472C4'}}}}%%
+xychart-beta
+    title "Effort per Phase (person-days)"
+    x-axis ["P1 Scaffold", "P2 Auth", "P3 Browse", "P4 Export", "P5 Insert", "P6 AI", "P7 Polish", "P8 Infra", "P9 Test", "P10 Docs"]
+    y-axis "Person-days" 0 --> 6
+    bar [3, 5, 5, 4, 4, 5, 4, 5, 5, 3]
 ```
 
 | Phase | Effort (person-days) | Frontend | Backend | Auth | DevOps | AI | QA |
@@ -94,8 +99,9 @@ bar
 ### Total Monthly Cost Summary
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'pie1': '#E74C3C', 'pie2': '#3498DB', 'pie3': '#F39C12', 'pie4': '#2ECC71', 'pie5': '#9B59B6', 'pieStrokeWidth': '2px'}}}%%
 pie title Monthly Azure Cost Breakdown (est.)
-    "Azure OpenAI (GPT-4o)" : 50
+    "Azure OpenAI (GPT-4o) 💰" : 50
     "Static Web Apps" : 9
     "Azure Functions" : 5
     "Application Insights" : 5
@@ -135,12 +141,48 @@ pie title Monthly Azure Cost Breakdown (est.)
 ### Effort Comparison: Manual vs. Agent-Assisted
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'xyChart': {'backgroundColor': '#ffffff', 'plotColorPalette': '#E74C3C, #27AE60'}}}}%%
 xychart-beta
-    title "Effort: Manual vs Agent-Assisted (person-days)"
-    x-axis ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10"]
+    title "Effort: Manual (red) vs Agent-Assisted (green) — person-days"
+    x-axis ["P1 Scaffold", "P2 Auth", "P3 Browse", "P4 Export", "P5 Insert", "P6 AI", "P7 Polish", "P8 Infra", "P9 Test", "P10 Docs"]
     y-axis "Person-days" 0 --> 6
     bar [3, 5, 5, 4, 4, 5, 4, 5, 5, 3]
     bar [1.8, 3.5, 3, 2.8, 2.4, 3.5, 3, 2.5, 3, 2]
+```
+
+### Agent Fleet Contribution Map
+
+```mermaid
+%%{init: {'theme': 'base'}}%%
+graph LR
+    subgraph Coding["🤖 Copilot Coding Agent<br/><i>40% savings</i>"]
+        C1["P1 Scaffold"]
+        C3["P3 Browse"]
+        C5["P5 Insert"]
+        C9["P9 Testing"]
+    end
+
+    subgraph CLI["⚡ Copilot CLI<br/><i>50% savings</i>"]
+        L8["P8 Infra & Deploy"]
+    end
+
+    subgraph Chat["💬 Copilot Chat<br/><i>30% savings</i>"]
+        H2["P2 Auth"]
+        H6["P6 AI Insights"]
+    end
+
+    subgraph Review["🔍 Code Review Agent<br/><i>Continuous</i>"]
+        R["All phases"]
+    end
+
+    style C1 fill:#4472C4,stroke:#2F5496,color:#fff
+    style C3 fill:#4472C4,stroke:#2F5496,color:#fff
+    style C5 fill:#4472C4,stroke:#2F5496,color:#fff
+    style C9 fill:#4472C4,stroke:#2F5496,color:#fff
+    style L8 fill:#70AD47,stroke:#548235,color:#fff
+    style H2 fill:#ED7D31,stroke:#C55A11,color:#fff
+    style H6 fill:#ED7D31,stroke:#C55A11,color:#fff
+    style R fill:#9B59B6,stroke:#7D3C98,color:#fff
 ```
 
 | Phase | Manual (days) | Agent-Assisted (days) | Savings |
