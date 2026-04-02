@@ -438,10 +438,10 @@ Invoke-Step "Deploying application to Azure" {
     $deployToken = az staticwebapp secrets list --name $script:SwaName --query "properties.apiKey" -o tsv 2>$null
     if (-not $deployToken) { throw "Could not retrieve SWA deployment token" }
 
-    # Deploy using SWA CLI (more reliable than azd deploy for SWA)
-    npx --yes @azure/static-web-apps-cli deploy `
-        --app-location dist `
+    # Deploy using SWA CLI — frontend from dist/, API from api/
+    npx --yes @azure/static-web-apps-cli deploy ./dist `
         --api-location api `
+        --api-language node --api-version 18 `
         --deployment-token $deployToken `
         --env production 2>&1 | ForEach-Object { Write-Host "  $_" }
     if ($LASTEXITCODE -ne 0) { throw "Application deployment failed" }

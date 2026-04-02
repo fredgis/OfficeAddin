@@ -31,6 +31,10 @@ module.exports = {
       filename: 'taskpane.html',
     }),
     new HtmlWebpackPlugin({
+      template: './src/taskpane/taskpane.html',
+      filename: 'index.html',
+    }),
+    new HtmlWebpackPlugin({
       template: './src/taskpane/dialog.html',
       filename: 'dialog.html',
       chunks: [],
@@ -41,6 +45,10 @@ module.exports = {
           from: 'assets',
           to: 'assets',
           noErrorOnMissing: true,
+        },
+        {
+          from: 'staticwebapp.config.json',
+          to: 'staticwebapp.config.json',
         },
       ],
     }),
