@@ -179,7 +179,51 @@ After sideloading, the add-in appears in the **Home** ribbon tab. Click the butt
 
 ## Deploy to Azure
 
-### Using Azure Developer CLI
+### 🚀 One-Click Automated Deployment (Recommended)
+
+The `deploy.ps1` script automates the **entire** deployment pipeline — from Entra ID app registration to Azure infrastructure provisioning to app deployment:
+
+```powershell
+# Full interactive deployment (prompts for all values):
+.\deploy.ps1
+
+# Non-interactive with existing resources:
+.\deploy.ps1 -EnvironmentName prod -Location westeurope `
+    -EntraClientId "00000000-..." -EntraClientSecret "secret" `
+    -OpenAiEndpoint "https://my-oai.openai.azure.com/"
+
+# Skip tests for faster deployment:
+.\deploy.ps1 -SkipTests
+```
+
+**What it does:**
+
+| Step | Action |
+|------|--------|
+| 1 | Validates prerequisites (Node.js, npm, az, azd) |
+| 2 | Authenticates with Azure (az login + azd auth) |
+| 3 | Creates Entra ID app registration (or uses existing) |
+| 4 | Installs dependencies, builds, and runs tests |
+| 5 | Provisions Azure infrastructure via Bicep |
+| 6 | Deploys app to Azure Static Web Apps |
+| 7 | Generates production `manifest-prod.xml` |
+| 8 | Configures `local.settings.json` and `.env` |
+| 9 | Sets up RBAC for local development |
+
+**Output:** The script prints the SWA URL and the production manifest path. Sideload `dist/manifest-prod.xml` in PowerPoint to start using the add-in.
+
+---
+
+### 📋 Manual Deployment
+
+<details>
+<summary>Click to expand manual deployment steps</summary>
+
+#### Step 1: Set up Entra ID
+
+Follow [docs/entra-setup.md](docs/entra-setup.md) to register an app, configure permissions, and generate a client secret.
+
+#### Step 2: Provision with Azure Developer CLI
 
 ```bash
 # Login to Azure
@@ -193,15 +237,26 @@ azd provision   # Create Azure resources (Bicep)
 azd deploy      # Deploy app code
 ```
 
+Configure environment variables when prompted, or set them in `.azure/<env>/.env`:
+
+```
+AZURE_LOCATION=eastus2
+ENTRA_CLIENT_ID=<your-client-id>
+ENTRA_TENANT_ID=<your-tenant-id>
+ENTRA_CLIENT_SECRET=<your-client-secret>
+AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+```
+
 This provisions:
 - **Azure Static Web App** (frontend + integrated Azure Functions) with **system-assigned Managed Identity**
-- **Azure Key Vault** (secrets: Entra client secret)
-- **Azure OpenAI** resource (GPT-4o deployment) with **RBAC role assignment** (Cognitive Services OpenAI User → SWA Managed Identity)
+- **Azure Key Vault** (secrets: Entra client secret) with **RBAC** for the SWA
+- **Azure OpenAI** resource (optional — GPT-4o deployment) with **RBAC role assignment** (Cognitive Services OpenAI User → SWA Managed Identity)
 - **Application Insights** (telemetry and monitoring)
 
 > **No API keys for Azure OpenAI.** The Static Web App's managed identity is automatically granted the `Cognitive Services OpenAI User` role on the OpenAI resource via Bicep RBAC.
 
-### Update manifest for production
+#### Step 3: Update manifest for production
 
 After deployment, update `manifest.xml` to replace `https://localhost:3000` with your Static Web App URL:
 
@@ -209,11 +264,22 @@ After deployment, update `manifest.xml` to replace `https://localhost:3000` with
 <SourceLocation DefaultValue="https://<your-swa>.azurestaticapps.net/taskpane.html" />
 ```
 
-### Admin Deployment
+Or use `sed` / PowerShell to generate a production manifest:
+
+```powershell
+(Get-Content manifest.xml) -replace 'https://localhost:3000', 'https://<your-swa>.azurestaticapps.net' |
+    Set-Content dist/manifest-prod.xml
+```
+
+#### Step 4: Sideload or admin-deploy
+
+For individual testing, sideload the manifest in PowerPoint (Insert → My Add-ins → Upload).
 
 For organization-wide deployment:
-1. Upload the updated `manifest.xml` to the **Microsoft 365 Admin Center** → **Integrated apps**
+1. Upload `manifest-prod.xml` to the **Microsoft 365 Admin Center** → **Integrated apps**
 2. Or deploy via **Teams Admin Center** → **Manage apps**
+
+</details>
 
 ## Project Structure
 
