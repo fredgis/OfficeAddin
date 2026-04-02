@@ -134,9 +134,13 @@ Invoke-Step "Authenticating with Azure" {
     $script:AzTenantId = $acct.tenantId
     $script:AzSubscriptionId = $acct.id
 
-    # Always refresh azd auth to avoid stale/expired tokens
-    Write-Info "Authenticating azd..."
-    azd auth login 2>$null
+    # Force fresh azd login — cached tokens may have expired refresh tokens
+    Write-Info "Authenticating azd (fresh login)..."
+    azd auth logout 2>$null
+    $azdOut = azd auth login 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "azd auth login failed: $azdOut"
+    }
     Write-OK "azd authenticated"
 }
 
