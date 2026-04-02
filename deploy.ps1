@@ -433,7 +433,17 @@ Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
 # ═══════════════════════════════════════════════════════════════════════
 Invoke-Step "Deploying application to Azure" {
     Set-Location $RepoRoot
-    azd deploy --no-prompt
+
+    # Get SWA deployment token
+    $deployToken = az staticwebapp secrets list --name $script:SwaName --query "properties.apiKey" -o tsv 2>$null
+    if (-not $deployToken) { throw "Could not retrieve SWA deployment token" }
+
+    # Deploy using SWA CLI (more reliable than azd deploy for SWA)
+    npx --yes @azure/static-web-apps-cli deploy `
+        --app-location dist `
+        --api-location api `
+        --deployment-token $deployToken `
+        --env production 2>&1 | ForEach-Object { Write-Host "  $_" }
     if ($LASTEXITCODE -ne 0) { throw "Application deployment failed" }
     Write-OK "Deployed to $script:SwaUrl"
 }
