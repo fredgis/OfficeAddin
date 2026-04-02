@@ -58,13 +58,13 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     // Re-detect theme if Office signals a change
-    let handlerId: string | undefined;
+    const handler = () => setTheme(detectOfficeTheme());
+    let registeredHandler = false;
     if (Office.context?.officeTheme && typeof Office.context.document?.addHandlerAsync === 'function') {
-      const handler = () => setTheme(detectOfficeTheme());
       Office.context.document.addHandlerAsync(
         Office.EventType.DocumentSelectionChanged,
         handler,
-        (result) => { if (result.status === Office.AsyncResultStatus.Succeeded) handlerId = result.value; }
+        (result) => { registeredHandler = result.status === Office.AsyncResultStatus.Succeeded; }
       );
     }
 
@@ -76,8 +76,8 @@ const Root: React.FC = () => {
     }
 
     return () => {
-      if (handlerId && typeof Office.context.document?.removeHandlerAsync === 'function') {
-        Office.context.document.removeHandlerAsync(Office.EventType.DocumentSelectionChanged);
+      if (registeredHandler && typeof Office.context.document?.removeHandlerAsync === 'function') {
+        Office.context.document.removeHandlerAsync(Office.EventType.DocumentSelectionChanged, { handler });
       }
       if (mq?.removeEventListener) {
         mq.removeEventListener('change', mqHandler);

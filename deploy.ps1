@@ -309,11 +309,19 @@ Invoke-Step "Configuring Entra ID" {
 # ═══════════════════════════════════════════════════════════════════════
 Invoke-Step "Installing dependencies" {
     Set-Location $RepoRoot
-    npm ci --silent 2>$null
+    $output = npm ci 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        $output | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+        throw "Frontend npm ci failed"
+    }
     Write-OK "Frontend packages installed"
 
     Set-Location "$RepoRoot\api"
-    npm ci --silent 2>$null
+    $output = npm ci 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        $output | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+        throw "Backend npm ci failed"
+    }
     Write-OK "Backend packages installed"
 
     Set-Location $RepoRoot
@@ -325,13 +333,19 @@ Invoke-Step "Installing dependencies" {
 if (-not $SkipBuild) {
     Invoke-Step "Building application" {
         Set-Location $RepoRoot
-        npm run build 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" }
+        $output = npm run build 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            $output | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+            throw "Frontend build failed"
+        }
         Write-OK "Frontend → dist/"
 
         Set-Location "$RepoRoot\api"
-        npm run build 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "Backend build failed" }
+        $output = npm run build 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            $output | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+            throw "Backend build failed"
+        }
         Write-OK "Backend → api/dist/"
 
         Set-Location $RepoRoot
@@ -344,14 +358,18 @@ if (-not $SkipBuild) {
 if (-not $SkipTests) {
     Invoke-Step "Running tests" {
         Set-Location $RepoRoot
-        npm test 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) { Write-Warn "Frontend tests have failures" }
-        else { Write-OK "Frontend: 23 tests passed" }
+        $output = npm test 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warn "Frontend tests have failures:"
+            $output | Select-Object -Last 10 | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+        } else { Write-OK "Frontend tests passed" }
 
         Set-Location "$RepoRoot\api"
-        npm test 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) { Write-Warn "Backend tests have failures" }
-        else { Write-OK "Backend: 40 tests passed" }
+        $output = npm test 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warn "Backend tests have failures:"
+            $output | Select-Object -Last 10 | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+        } else { Write-OK "Backend tests passed" }
 
         Set-Location $RepoRoot
     }
