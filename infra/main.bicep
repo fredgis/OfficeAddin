@@ -28,8 +28,11 @@ param openAiDeployment string = 'gpt-4o'
 @description('Deploy a new Azure OpenAI resource (false = reference existing)')
 param deployOpenAi bool = false
 
+@description('Unique deployment ID to ensure globally unique resource names')
+param deploymentId string
+
 var abbrs = loadJsonContent('./abbreviations.json')
-var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+var resourceToken = toLower(deploymentId)
 var tags = { 'azd-env-name': environmentName, project: 'OfficeAddin', environment: environmentName }
 var swaName = '${abbrs.webStaticSites}${resourceToken}'
 var openAiResourceName = 'oai-${resourceToken}'

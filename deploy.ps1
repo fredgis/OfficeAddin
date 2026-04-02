@@ -399,6 +399,16 @@ Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
     azd env set AZURE_OPENAI_DEPLOYMENT   $script:OpenAiDeployment        --no-prompt
     azd env set DEPLOY_OPENAI             "$($script:DeployOpenAi.ToString().ToLower())" --no-prompt
 
+    # Generate or reuse a unique deployment ID for globally unique resource names
+    $existingId = azd env get-value DEPLOYMENT_ID 2>$null
+    if ($existingId) {
+        $script:DeploymentId = $existingId
+    } else {
+        $script:DeploymentId = ([guid]::NewGuid().ToString("N").Substring(0, 13))
+        azd env set DEPLOYMENT_ID $script:DeploymentId --no-prompt
+    }
+    Write-OK "Deployment ID: $script:DeploymentId"
+
     if ($script:OpenAiEndpoint) {
         azd env set AZURE_OPENAI_ENDPOINT $script:OpenAiEndpoint --no-prompt
     }

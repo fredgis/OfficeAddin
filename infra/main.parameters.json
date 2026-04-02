@@ -25,6 +25,9 @@
     },
     "deployOpenAi": {
       "value": "${DEPLOY_OPENAI=false}"
+    },
+    "deploymentId": {
+      "value": "${DEPLOYMENT_ID}"
     }
   }
 }
