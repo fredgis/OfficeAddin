@@ -9,18 +9,9 @@ services:
     dist: dist
     hooks:
       prebuild:
-        run: npm ci
+        run: npm ci && cd api && npm ci
       build:
-        run: npm run build
-  api:
-    project: api
-    language: ts
-    host: staticwebapp
-    hooks:
-      prebuild:
-        run: npm ci
-      build:
-        run: npm run build
+        run: npm run build && cd api && npm run build
 infra:
   provider: bicep
   path: infra

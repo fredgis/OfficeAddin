@@ -102,6 +102,5 @@ output AZURE_STATIC_WEB_APP_NAME string = web.outputs.name
 output AZURE_STATIC_WEB_APP_URL string = web.outputs.url
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_APP_INSIGHTS_NAME string = monitoring.outputs.name
-// azd service-to-resource mapping (both services deploy to the same SWA)
+// azd service-to-resource mapping
 output SERVICE_WEB_RESOURCE_NAME string = web.outputs.name
-output SERVICE_API_RESOURCE_NAME string = web.outputs.name
