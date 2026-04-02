@@ -31,6 +31,7 @@ param deployOpenAi bool = false
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName, project: 'OfficeAddin', environment: environmentName }
+var swaName = '${abbrs.webStaticSites}${resourceToken}'
 var openAiResourceName = 'oai-${resourceToken}'
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -76,9 +77,9 @@ module web './modules/staticwebapp.bicep' = {
   name: 'staticwebapp'
   scope: rg
   params: {
-    name: '${abbrs.webStaticSites}${resourceToken}'
+    name: swaName
     location: location
-    tags: tags
+    tags: union(tags, { 'azd-service-name': 'web' })
     appInsightsConnectionString: monitoring.outputs.connectionString
     entraClientId: entraClientId
     entraTenantId: entraTenantId
@@ -101,3 +102,6 @@ output AZURE_STATIC_WEB_APP_NAME string = web.outputs.name
 output AZURE_STATIC_WEB_APP_URL string = web.outputs.url
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_APP_INSIGHTS_NAME string = monitoring.outputs.name
+// azd service-to-resource mapping (both services deploy to the same SWA)
+output SERVICE_WEB_RESOURCE_NAME string = web.outputs.name
+output SERVICE_API_RESOURCE_NAME string = web.outputs.name

@@ -383,7 +383,12 @@ if (-not $SkipTests) {
 Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
     Set-Location $RepoRoot
 
-    azd env new $script:EnvironmentName --no-prompt 2>$null
+    # Create or reuse azd environment
+    $envList = azd env list --output json 2>$null | ConvertFrom-Json -ErrorAction SilentlyContinue
+    $envExists = $envList | Where-Object { $_.Name -eq $script:EnvironmentName }
+    if (-not $envExists) {
+        azd env new $script:EnvironmentName --no-prompt 2>$null
+    }
     azd env select $script:EnvironmentName 2>$null
 
     azd env set AZURE_LOCATION            $script:Location            --no-prompt
