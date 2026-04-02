@@ -1,37 +1,33 @@
+import { PublicClientApplication } from '@azure/msal-browser';
+import { loginRequest, msalConfig } from './msalConfig';
+
 /**
- * Fallback authentication using the Office Dialog API.
- * Opens dialog.html which performs interactive MSAL login,
- * then sends the token back via Office.context.ui.messageParent().
+ * Interactive fallback authentication using a browser popup.
+ * This avoids Office Dialog API security-zone issues in Office on the web.
  */
-export function openAuthDialog(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const dialogUrl = `${window.location.origin}/dialog.html`;
-    Office.context.ui.displayDialogAsync(
-      dialogUrl,
-      { height: 60, width: 30, promptBeforeOpen: false },
-      (result) => {
-        if (result.status === Office.AsyncResultStatus.Failed) {
-          reject(new Error(`Dialog failed: ${result.error.message}`));
-          return;
-        }
-        const dialog = result.value;
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg: any) => {
-          dialog.close();
-          try {
-            const message = JSON.parse(arg.message);
-            if (message.status === 'success') {
-              resolve(message.token);
-            } else {
-              reject(new Error(message.error || 'Auth dialog failed'));
-            }
-          } catch {
-            reject(new Error('Invalid dialog response'));
-          }
-        });
-        dialog.addEventHandler(Office.EventType.DialogEventReceived, (arg: any) => {
-          reject(new Error(`Dialog event: ${arg.error}`));
-        });
-      }
-    );
-  });
+export async function openAuthDialog(): Promise<string> {
+  try {
+    const msal = new PublicClientApplication(msalConfig);
+    await msal.initialize();
+
+    const loginResponse = await msal.loginPopup(loginRequest);
+    if (loginResponse.accessToken) {
+      return loginResponse.accessToken;
+    }
+
+    const account = loginResponse.account ?? msal.getActiveAccount() ?? msal.getAllAccounts()[0];
+    if (!account) {
+      throw new Error('No signed-in account returned by Microsoft Entra ID');
+    }
+
+    const tokenResponse = await msal.acquireTokenSilent({
+      ...loginRequest,
+      account,
+    });
+
+    return tokenResponse.accessToken;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Interactive sign-in failed';
+    throw new Error(`Sign-in popup failed: ${message}`);
+  }
 }

@@ -35,19 +35,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Lock to prevent concurrent token refresh attempts (avoids multiple dialogs)
   const refreshLockRef = useRef<Promise<string> | null>(null);
 
-  const acquireToken = useCallback(async (): Promise<string> => {
-    // SSO first, dialog fallback
-    let token = await trySSOAuth();
-    if (!token) {
-      token = await openAuthDialog();
-    }
-    return token;
-  }, []);
-
-  const login = useCallback(async () => {
+  const bootstrapAuth = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     try {
-      const token = await acquireToken();
+      const token = await trySSOAuth();
+      if (!token) {
+        tokenRef.current = null;
+        setState({
+          isAuthenticated: false,
+          user: null,
+          token: null,
+          isLoading: false,
+          error: null,
+        });
+        return;
+      }
+
       const user = parseUserFromToken(token);
       tokenRef.current = token;
       setState({ isAuthenticated: true, user, token, isLoading: false, error: null });
@@ -61,7 +64,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         error: error instanceof Error ? error.message : 'Authentication failed',
       });
     }
-  }, [acquireToken]);
+  }, []);
+
+  const login = useCallback(async () => {
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    try {
+      let token = await trySSOAuth();
+      if (!token) {
+        token = await openAuthDialog();
+      }
+      const user = parseUserFromToken(token);
+      tokenRef.current = token;
+      setState({ isAuthenticated: true, user, token, isLoading: false, error: null });
+    } catch (error) {
+      tokenRef.current = null;
+      setState({
+        isAuthenticated: false,
+        user: null,
+        token: null,
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Authentication failed',
+      });
+    }
+  }, []);
 
   const logout = useCallback(() => {
     tokenRef.current = null;
@@ -101,18 +126,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return refreshLockRef.current;
   }, []);
 
-  // Auto-login on mount; listen for auth:expired events from API interceptors
+  // Try silent SSO on mount; only use interactive sign-in from explicit user actions
   useEffect(() => {
-    login();
+    bootstrapAuth();
 
     const handleAuthExpired = () => {
       tokenRef.current = null;
-      setState(prev => ({ ...prev, isAuthenticated: false, token: null, error: 'Session expired' }));
-      login();
+      setState(prev => ({
+        ...prev,
+        isAuthenticated: false,
+        token: null,
+        isLoading: false,
+        error: 'Session expired. Click Sign in to continue.',
+      }));
     };
     window.addEventListener('auth:expired', handleAuthExpired);
     return () => window.removeEventListener('auth:expired', handleAuthExpired);
-  }, [login]);
+  }, [bootstrapAuth]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, logout, getToken }}>
