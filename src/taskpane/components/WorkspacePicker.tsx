@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-  Dropdown,
+  Combobox,
   Option,
   Spinner,
   MessageBar,
   MessageBarBody,
+  Text,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -18,6 +19,11 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalS,
     width: '100%',
   },
+  empty: {
+    textAlign: 'center',
+    paddingTop: tokens.spacingVerticalL,
+    paddingBottom: tokens.spacingVerticalL,
+  },
 });
 
 interface WorkspacePickerProps {
@@ -27,9 +33,17 @@ interface WorkspacePickerProps {
 export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSelected }) => {
   const styles = useStyles();
   const { data: workspaces, isLoading, error } = useWorkspaces();
+  const [query, setQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    if (!workspaces) return [];
+    if (!query) return workspaces;
+    const lower = query.toLowerCase();
+    return workspaces.filter((ws) => ws.name.toLowerCase().includes(lower));
+  }, [workspaces, query]);
 
   if (isLoading) {
-    return <Spinner size="small" label="Loading workspaces…" />;
+    return <Spinner size="small" label="Loading workspaces…" aria-label="Loading workspaces" />;
   }
 
   if (error) {
@@ -40,23 +54,34 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
     );
   }
 
+  if (!workspaces || workspaces.length === 0) {
+    return (
+      <div className={styles.empty}>
+        <Text>No workspaces found.</Text>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.root}>
-      <Dropdown
-        placeholder="Select a workspace"
+      <Combobox
+        aria-label="Select a workspace"
+        placeholder="Search workspaces…"
+        freeform
+        onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
         onOptionSelect={(_event, data) => {
-          const workspace = workspaces?.find((w) => w.id === data.optionValue);
+          const workspace = workspaces.find((w) => w.id === data.optionValue);
           if (workspace) {
             onWorkspaceSelected(workspace);
           }
         }}
       >
-        {workspaces?.map((ws) => (
+        {filtered.map((ws) => (
           <Option key={ws.id} value={ws.id}>
             {ws.name}
           </Option>
         ))}
-      </Dropdown>
+      </Combobox>
     </div>
   );
 };

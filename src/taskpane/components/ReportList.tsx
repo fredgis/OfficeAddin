@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardHeader,
@@ -8,6 +8,7 @@ import {
   MessageBar,
   MessageBarBody,
   Text,
+  Input,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -42,9 +43,17 @@ interface ReportListProps {
 export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSelected }) => {
   const styles = useStyles();
   const { data: reports, isLoading, error } = useReports(workspaceId);
+  const [filter, setFilter] = useState('');
+
+  const filtered = useMemo(() => {
+    if (!reports) return [];
+    if (!filter) return reports;
+    const lower = filter.toLowerCase();
+    return reports.filter((r) => r.name.toLowerCase().includes(lower));
+  }, [reports, filter]);
 
   if (isLoading) {
-    return <Spinner size="small" label="Loading reports…" />;
+    return <Spinner size="small" label="Loading reports…" aria-label="Loading reports" />;
   }
 
   if (error) {
@@ -58,22 +67,37 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
   if (!reports || reports.length === 0) {
     return (
       <div className={styles.empty}>
-        <Text>No reports found in this workspace.</Text>
+        <Text>No reports in this workspace.</Text>
       </div>
     );
   }
 
   return (
     <div className={styles.root}>
-      {reports.map((report) => (
+      <Input
+        aria-label="Filter reports"
+        placeholder="Filter reports…"
+        value={filter}
+        onChange={(_e, data) => setFilter(data.value)}
+      />
+      {filtered.map((report) => (
         <Card
           key={report.id}
           className={styles.card}
+          role="button"
+          aria-label={`Select report ${report.name}`}
           onClick={() => onReportSelected(report)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onReportSelected(report);
+            }
+          }}
+          tabIndex={0}
         >
           <CardHeader
             header={<Body1>{report.name}</Body1>}
-            description={<Caption1>Dataset: {report.datasetId}</Caption1>}
+            description={report.datasetId ? <Caption1>Dataset: {report.datasetId}</Caption1> : undefined}
           />
         </Card>
       ))}

@@ -34,8 +34,8 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
   const styles = useStyles();
 
   return (
-    <div className={styles.root}>
-      <Breadcrumb>
+    <div className={styles.root} role="navigation" aria-label="Workspace navigation">
+      <Breadcrumb aria-label="Workspace breadcrumb">
         <BreadcrumbItem>
           <BreadcrumbButton onClick={onNavigateWorkspaces}>Workspaces</BreadcrumbButton>
         </BreadcrumbItem>

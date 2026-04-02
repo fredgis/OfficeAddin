@@ -52,7 +52,7 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
   const { data: pages, isLoading, error } = usePages(reportId);
 
   if (isLoading) {
-    return <Spinner size="small" label="Loading pages…" />;
+    return <Spinner size="small" label="Loading pages…" aria-label="Loading pages" />;
   }
 
   if (error) {
@@ -66,7 +66,7 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
   if (!pages || pages.length === 0) {
     return (
       <div className={styles.empty}>
-        <Text>No pages found in this report.</Text>
+        <Text>No pages found.</Text>
       </div>
     );
   }
@@ -77,7 +77,16 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
         <Card
           key={page.name}
           className={styles.card}
+          role="button"
+          aria-label={`Select page ${page.displayName}`}
           onClick={() => onPageSelected(page)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onPageSelected(page);
+            }
+          }}
+          tabIndex={0}
         >
           <div className={styles.cardContent}>
             <CardHeader
@@ -88,6 +97,7 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
               <Button
                 size="small"
                 appearance="subtle"
+                aria-label={`Export page ${page.displayName}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onExportPage(page);
