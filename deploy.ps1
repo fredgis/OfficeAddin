@@ -134,41 +134,39 @@ Invoke-Step "Authenticating with Azure" {
     $script:AzTenantId = $acct.tenantId
     $script:AzSubscriptionId = $acct.id
 
-    # azd login
-    $null = azd auth login --check-status 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        Write-Info "Authenticating azd..."
-        azd auth login
-    }
+    # Always refresh azd auth to avoid stale/expired tokens
+    Write-Info "Authenticating azd..."
+    azd auth login 2>$null
+    Write-OK "azd authenticated"
 }
 
 # ═══════════════════════════════════════════════════════════════════════
 # 3. Configuration (interactive prompts for missing values)
 # ═══════════════════════════════════════════════════════════════════════
 Invoke-Step "Gathering configuration" {
-    if (-not $EnvironmentName) {
-        $EnvironmentName = Read-OrDefault "Environment name (e.g., dev, staging, prod)" "dev"
+    if (-not $script:EnvironmentName) {
+        $script:EnvironmentName = Read-OrDefault "Environment name (e.g., dev, staging, prod)" "dev"
     }
-    Write-OK "Environment: $EnvironmentName"
+    Write-OK "Environment: $script:EnvironmentName"
 
-    if (-not $Location) {
-        $Location = Read-OrDefault "Azure region" "eastus2"
+    if (-not $script:Location) {
+        $script:Location = Read-OrDefault "Azure region" "eastus2"
     }
-    Write-OK "Location: $Location"
+    Write-OK "Location: $script:Location"
 
     $script:DeployOpenAi = $false
-    if (-not $OpenAiEndpoint) {
+    if (-not $script:OpenAiEndpoint) {
         $choice = Read-OrDefault "Deploy a NEW Azure OpenAI resource? (y/n)" "n"
         if ($choice -eq "y") {
             $script:DeployOpenAi = $true
-            Write-OK "Will deploy Azure OpenAI resource with $OpenAiDeployment"
+            Write-OK "Will deploy Azure OpenAI resource with $script:OpenAiDeployment"
         } else {
-            $OpenAiEndpoint = Read-Host "  Existing Azure OpenAI endpoint URL"
-            if (-not $OpenAiEndpoint) { throw "Azure OpenAI endpoint is required" }
+            $script:OpenAiEndpoint = Read-Host "  Existing Azure OpenAI endpoint URL"
+            if (-not $script:OpenAiEndpoint) { throw "Azure OpenAI endpoint is required" }
         }
     }
-    if ($OpenAiEndpoint) { Write-OK "OpenAI endpoint: $OpenAiEndpoint" }
-    Write-OK "OpenAI deployment: $OpenAiDeployment"
+    if ($script:OpenAiEndpoint) { Write-OK "OpenAI endpoint: $script:OpenAiEndpoint" }
+    Write-OK "OpenAI deployment: $script:OpenAiDeployment"
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -192,7 +190,7 @@ Invoke-Step "Configuring Entra ID" {
             $EntraClientSecret = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
                 [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secStr))
         } else {
-            $appDisplayName = "Fabric Storyboard Copilot ($EnvironmentName)"
+            $appDisplayName = "Fabric Storyboard Copilot ($script:EnvironmentName)"
             Write-Info "Registering app: $appDisplayName"
 
             # Create app
@@ -381,19 +379,19 @@ if (-not $SkipTests) {
 Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
     Set-Location $RepoRoot
 
-    azd env new $EnvironmentName --no-prompt 2>$null
-    azd env select $EnvironmentName 2>$null
+    azd env new $script:EnvironmentName --no-prompt 2>$null
+    azd env select $script:EnvironmentName 2>$null
 
-    azd env set AZURE_LOCATION            $Location            --no-prompt
+    azd env set AZURE_LOCATION            $script:Location            --no-prompt
     azd env set AZURE_SUBSCRIPTION_ID     $script:AzSubscriptionId --no-prompt
     azd env set ENTRA_CLIENT_ID           $script:EntraClientId    --no-prompt
     azd env set ENTRA_TENANT_ID           $script:AzTenantId       --no-prompt
     azd env set ENTRA_CLIENT_SECRET       $script:EntraClientSecret --no-prompt
-    azd env set AZURE_OPENAI_DEPLOYMENT   $OpenAiDeployment        --no-prompt
+    azd env set AZURE_OPENAI_DEPLOYMENT   $script:OpenAiDeployment        --no-prompt
     azd env set DEPLOY_OPENAI             "$($script:DeployOpenAi.ToString().ToLower())" --no-prompt
 
-    if ($OpenAiEndpoint) {
-        azd env set AZURE_OPENAI_ENDPOINT $OpenAiEndpoint --no-prompt
+    if ($script:OpenAiEndpoint) {
+        azd env set AZURE_OPENAI_ENDPOINT $script:OpenAiEndpoint --no-prompt
     }
 
     Write-Info "Running azd provision (this may take a few minutes)..."
@@ -404,7 +402,7 @@ Invoke-Step "Provisioning Azure infrastructure (Bicep via azd)" {
     $script:SwaName = (azd env get-value AZURE_STATIC_WEB_APP_NAME 2>$null)
     $script:KvName  = (azd env get-value AZURE_KEY_VAULT_NAME      2>$null)
 
-    Write-OK "Resource group: rg-$EnvironmentName"
+    Write-OK "Resource group: rg-$($script:EnvironmentName)"
     Write-OK "Static Web App: $script:SwaName"
     Write-OK "Key Vault: $script:KvName"
     Write-OK "URL: $script:SwaUrl"
@@ -465,8 +463,8 @@ Invoke-Step "Generating local development settings" {
             ENTRA_CLIENT_ID          = $script:EntraClientId
             ENTRA_TENANT_ID          = $script:AzTenantId
             ENTRA_CLIENT_SECRET      = $script:EntraClientSecret
-            AZURE_OPENAI_ENDPOINT    = if ($OpenAiEndpoint) { $OpenAiEndpoint } else { "https://oai-$EnvironmentName.openai.azure.com/" }
-            AZURE_OPENAI_DEPLOYMENT  = $OpenAiDeployment
+            AZURE_OPENAI_ENDPOINT    = if ($script:OpenAiEndpoint) { $script:OpenAiEndpoint } else { "https://oai-$($script:EnvironmentName).openai.azure.com/" }
+            AZURE_OPENAI_DEPLOYMENT  = $script:OpenAiDeployment
         }
         Host = @{
             CORS            = "https://localhost:3000"
@@ -482,8 +480,8 @@ Invoke-Step "Generating local development settings" {
     $envContent = @"
 ENTRA_CLIENT_ID=$($script:EntraClientId)
 ENTRA_TENANT_ID=$($script:AzTenantId)
-AZURE_OPENAI_ENDPOINT=$(if ($OpenAiEndpoint) { $OpenAiEndpoint } else { "https://oai-$EnvironmentName.openai.azure.com/" })
-AZURE_OPENAI_DEPLOYMENT=$OpenAiDeployment
+AZURE_OPENAI_ENDPOINT=$(if ($script:OpenAiEndpoint) { $script:OpenAiEndpoint } else { "https://oai-$($script:EnvironmentName).openai.azure.com/" })
+AZURE_OPENAI_DEPLOYMENT=$($script:OpenAiDeployment)
 "@
     $envPath = Join-Path $RepoRoot ".env"
     Set-Content -Path $envPath -Value $envContent -Encoding UTF8
@@ -496,9 +494,9 @@ AZURE_OPENAI_DEPLOYMENT=$OpenAiDeployment
 Invoke-Step "Setting up RBAC for local dev (Cognitive Services OpenAI User)" {
     $currentUser = az ad signed-in-user show --query "id" -o tsv 2>$null
     if ($currentUser) {
-        if ($OpenAiEndpoint) {
+        if ($script:OpenAiEndpoint) {
             $oaiId = az cognitiveservices account list `
-                --query "[?properties.endpoint=='$OpenAiEndpoint'].id | [0]" -o tsv 2>$null
+                --query "[?properties.endpoint=='$($script:OpenAiEndpoint)'].id | [0]" -o tsv 2>$null
             if ($oaiId) {
                 az role assignment create --assignee $currentUser `
                     --role "Cognitive Services OpenAI User" `
@@ -523,8 +521,8 @@ Write-Host "║           ✅  Deployment Complete!                       ║" -
 Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 Write-Host "  Application URL       $script:SwaUrl" -ForegroundColor White
-Write-Host "  Environment           $EnvironmentName" -ForegroundColor White
-Write-Host "  Resource Group        rg-$EnvironmentName" -ForegroundColor White
+Write-Host "  Environment           $($script:EnvironmentName)" -ForegroundColor White
+Write-Host "  Resource Group        rg-$($script:EnvironmentName)" -ForegroundColor White
 Write-Host "  Entra Client ID       $script:EntraClientId" -ForegroundColor White
 Write-Host "  Entra Client Secret   $script:EntraClientSecret" -ForegroundColor White
 Write-Host "  Tenant ID             $script:AzTenantId" -ForegroundColor White
@@ -532,11 +530,11 @@ Write-Host "  Key Vault             $script:KvName" -ForegroundColor White
 Write-Host "  Production Manifest   dist/manifest-prod.xml" -ForegroundColor White
 Write-Host ""
 Write-Host "  ── Redeploy Command ──" -ForegroundColor Yellow
-Write-Host "  .\deploy.ps1 -EnvironmentName $EnvironmentName -Location $Location ``" -ForegroundColor Gray
-Write-Host "      -EntraClientId `"$script:EntraClientId`" ``" -ForegroundColor Gray
-Write-Host "      -EntraClientSecret `"$script:EntraClientSecret`" ``" -ForegroundColor Gray
-if ($OpenAiEndpoint) {
-    Write-Host "      -OpenAiEndpoint `"$OpenAiEndpoint`"" -ForegroundColor Gray
+Write-Host "  .\deploy.ps1 -EnvironmentName $($script:EnvironmentName) -Location $($script:Location) ``" -ForegroundColor Gray
+Write-Host "      -EntraClientId `"$($script:EntraClientId)`" ``" -ForegroundColor Gray
+Write-Host "      -EntraClientSecret `"$($script:EntraClientSecret)`" ``" -ForegroundColor Gray
+if ($script:OpenAiEndpoint) {
+    Write-Host "      -OpenAiEndpoint `"$($script:OpenAiEndpoint)`"" -ForegroundColor Gray
 }
 Write-Host ""
 Write-Host "  ── Next Steps ──" -ForegroundColor Yellow
