@@ -16,46 +16,95 @@ Build a PowerPoint Office Add-in that allows users to browse their Microsoft Fab
 
 ## Architecture Overview
 
-```
-┌──────────────────────────────────────────────────────┐
-│                 PowerPoint Desktop / Web              │
-│  ┌─────────────────────────────────────────────────┐  │
-│  │            Office Add-in Taskpane               │  │
-│  │  (React + TypeScript + Office.js + MSAL.js)     │  │
-│  │                                                 │  │
-│  │  ┌───────────┐ ┌──────────┐ ┌───────────────┐  │  │
-│  │  │   Auth    │ │ Workspace│ │  Slide Insert  │  │  │
-│  │  │  Module   │ │ Browser  │ │   + AI Panel   │  │  │
-│  │  └───────────┘ └──────────┘ └───────────────┘  │  │
-│  └───────────────────┬─────────────────────────────┘  │
-│                      │ HTTPS                          │
-└──────────────────────┼────────────────────────────────┘
-                       │
-        ┌──────────────▼──────────────────┐
-        │   Azure Static Web Apps         │
-        │   + Integrated Azure Functions  │
-        │                                 │
-        │  /api/workspaces    ──► Power BI REST API
-        │  /api/reports       ──► Power BI REST API
-        │  /api/pages         ──► Power BI REST API
-        │  /api/export        ──► Power BI Export API
-        │  /api/insights      ──► Azure OpenAI (GPT-4o)
-        └─────────────────────────────────┘
-                       │
-        ┌──────────────▼──────────────────┐
-        │          Entra ID               │
-        │  (App Registration, OBO flow)   │
-        └─────────────────────────────────┘
+```mermaid
+%%{init: {'theme': 'base'}}%%
+graph TD
+    subgraph PPT["🖥️ PowerPoint Desktop / Web"]
+        subgraph Taskpane["Office Add-in Taskpane<br/><i>React + TypeScript + Office.js + MSAL.js</i>"]
+            AuthMod["🔐 Auth<br/>Module"]
+            WsBrowser["📊 Workspace<br/>Browser"]
+            SlidePanel["📝 Slide Insert<br/>+ AI Panel"]
+        end
+    end
+
+    subgraph SWA["☁️ Azure Static Web Apps + Azure Functions"]
+        EP1["/api/workspaces"]
+        EP2["/api/reports"]
+        EP3["/api/pages"]
+        EP4["/api/export"]
+        EP5["/api/insights"]
+    end
+
+    PBI["📊 Power BI<br/>REST API"]
+    PBIEX["📸 Power BI<br/>Export API"]
+    AOAI["🤖 Azure OpenAI<br/>GPT-4o"]
+    ENTRA["🔑 Entra ID<br/>App Registration + OBO"]
+
+    Taskpane -- "HTTPS" --> SWA
+    EP1 --> PBI
+    EP2 --> PBI
+    EP3 --> PBI
+    EP4 --> PBIEX
+    EP5 --> AOAI
+    SWA <--> ENTRA
+
+    style PPT fill:#E8F0FE,stroke:#4472C4,stroke-width:2px,color:#000
+    style Taskpane fill:#D6E4F0,stroke:#2F5496,stroke-width:2px,color:#000
+    style AuthMod fill:#FFC000,stroke:#BF9000,color:#000
+    style WsBrowser fill:#4472C4,stroke:#2F5496,color:#fff
+    style SlidePanel fill:#70AD47,stroke:#548235,color:#fff
+    style SWA fill:#F0E6FF,stroke:#9B59B6,stroke-width:2px,color:#000
+    style EP1 fill:#D5A6E6,stroke:#9B59B6,color:#000
+    style EP2 fill:#D5A6E6,stroke:#9B59B6,color:#000
+    style EP3 fill:#D5A6E6,stroke:#9B59B6,color:#000
+    style EP4 fill:#D5A6E6,stroke:#9B59B6,color:#000
+    style EP5 fill:#D5A6E6,stroke:#9B59B6,color:#000
+    style PBI fill:#ED7D31,stroke:#C55A11,color:#fff
+    style PBIEX fill:#ED7D31,stroke:#C55A11,color:#fff
+    style AOAI fill:#70AD47,stroke:#548235,color:#fff
+    style ENTRA fill:#5B9BD5,stroke:#2E75B6,color:#fff
 ```
 
 ## Auth Flow
 
-1. User opens the add-in in PowerPoint
-2. Frontend uses MSAL.js to acquire an access token silently (SSO attempt via `OfficeRuntime.auth.getAccessToken`)
-3. If silent auth fails, fallback to Office Dialog API for interactive Entra ID login
-4. Frontend sends the token to Azure Functions backend
-5. Backend validates the token and uses On-Behalf-Of (OBO) flow to get a delegated token for Power BI REST API and Azure OpenAI
-6. Backend calls downstream APIs with the OBO token
+```mermaid
+%%{init: {'theme': 'base'}}%%
+sequenceDiagram
+    actor User
+    participant PPT as 🖥️ PowerPoint
+    participant Addin as 📋 Add-in Taskpane
+    participant Dialog as 🔐 Auth Dialog
+    participant Func as ☁️ Azure Functions
+    participant Entra as 🔑 Entra ID
+    participant PBI as 📊 Power BI API
+    participant AOAI as 🤖 Azure OpenAI
+
+    User->>PPT: Opens add-in
+    PPT->>Addin: Load taskpane
+
+    rect rgb(232, 240, 254)
+        Note over Addin,Entra: SSO Attempt
+        Addin->>Entra: OfficeRuntime.auth.getAccessToken()
+        alt SSO succeeds
+            Entra-->>Addin: Bootstrap token ✅
+        else SSO fails
+            Addin->>Dialog: Office.context.ui.displayDialogAsync()
+            Dialog->>Entra: MSAL interactive login
+            Entra-->>Dialog: Auth code → token
+            Dialog-->>Addin: messageParent(token) ✅
+        end
+    end
+
+    rect rgb(240, 230, 255)
+        Note over Addin,AOAI: OBO Token Exchange
+        Addin->>Func: API call + bearer token
+        Func->>Entra: OBO exchange (ConfidentialClientApplication)
+        Entra-->>Func: Power BI token + OpenAI token
+        Func->>PBI: Delegated API call
+        PBI-->>Func: Data response
+        Func-->>Addin: Result
+    end
+```
 
 ---
 
