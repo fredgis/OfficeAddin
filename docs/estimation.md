@@ -315,42 +315,41 @@ graph LR
 Squad's coordinator launches all agents that can work simultaneously. This changes the execution model fundamentally: instead of sequential role-switching, multiple specialists run in parallel within a phase.
 
 ```mermaid
-%%{init: {'theme': 'base'}}%%
 gantt
     title Squad Parallel Execution Timeline
     dateFormat YYYY-MM-DD
     axisFormat %b %d
 
-    section 🏗️ Phase 1 — Scaffold
-    Lead: architecture & routing     :crit, s1a, 2026-04-03, 1d
-    Frontend + Backend in parallel   :crit, s1b, after s1a, 1d
+    section Phase 1 Scaffold
+    Lead architecture and routing    :crit, s1a, 2026-04-03, 1d
+    Frontend and Backend parallel    :crit, s1b, after s1a, 1d
 
-    section 🔐 Phase 2 — Auth
-    Auth + Backend in parallel       :crit, s2, after s1b, 3d
+    section Phase 2 Auth
+    Auth and Backend parallel        :crit, s2, after s1b, 3d
 
-    section 📊 Phase 3 — Browse
-    Frontend + Backend in parallel   :crit, s3, after s2, 2d
+    section Phase 3 Browse
+    Frontend and Backend parallel    :crit, s3, after s2, 2d
 
-    section 📸 Phase 4 — Export
-    Frontend + Backend in parallel   :crit, s4, after s3, 2d
+    section Phase 4 Export
+    Frontend and Backend parallel    :crit, s4, after s3, 2d
 
-    section 📝 Phase 5 — Insert
-    Frontend (Office.js)             :crit, s5, after s4, 2d
+    section Phase 5 Insert
+    Frontend Office.js               :crit, s5, after s4, 2d
 
-    section 🧠 Phase 6 — AI
-    AI + Frontend in parallel        :crit, s6, after s5, 2d
+    section Phase 6 AI
+    AI and Frontend parallel         :crit, s6, after s5, 2d
 
-    section ✨ Phase 7 — Polish
-    Frontend + Lead review           :crit, s7, after s6, 2d
+    section Phase 7 Polish
+    Frontend and Lead review         :crit, s7, after s6, 2d
 
-    section 🚀 Phase 8 — Infra (parallel track)
+    section Phase 8 Infra (parallel)
     Infra specialist                 :active, s8, after s1b, 4d
 
-    section 🧪 Phase 9 — Testing
-    Tester + Lead review             :crit, s9, after s7, 2d
+    section Phase 9 Testing
+    Tester and Lead review           :crit, s9, after s7, 2d
 
-    section 📋 Phase 10 — Docs
-    Scribe + Lead                    :crit, s10, after s9, 1d
+    section Phase 10 Docs
+    Scribe and Lead                  :crit, s10, after s9, 1d
 ```
 
 ### Why Squad Outperforms Individual Agents

@@ -75,26 +75,26 @@ gantt
     dateFormat  YYYY-MM-DD
     axisFormat  %b %d
 
-    section 🔵 Foundation
+    section Foundation
     Phase 1 - Scaffolding           :crit, p1, 2026-04-03, 3d
 
-    section 🟠 Authentication
+    section Authentication
     Phase 2 - Entra ID Auth         :crit, p2, after p1, 5d
 
-    section 🟡 Core Features
+    section Core Features
     Phase 3 - Workspace Browsing    :crit, p3, after p2, 5d
     Phase 4 - Report Export         :crit, p4, after p3, 4d
     Phase 5 - Slide Insertion       :crit, p5, after p4, 4d
 
-    section 🟢 AI & Polish
+    section AI and Polish
     Phase 6 - AI Insights           :crit, p6, after p5, 5d
     Phase 7 - UI Polish             :crit, p7, after p6, 4d
 
-    section 🔵 Infrastructure (Parallel)
-    Phase 8 - Infra & Deploy        :active, p8, after p1, 8d
+    section Infrastructure (Parallel)
+    Phase 8 - Infra and Deploy      :active, p8, after p1, 8d
 
-    section 🔴 Quality
-    Phase 9 - Testing & QA          :crit, p9, after p7, 5d
+    section Quality
+    Phase 9 - Testing and QA        :crit, p9, after p7, 5d
     Phase 10 - Documentation        :crit, p10, after p9, 3d
 ```
 
