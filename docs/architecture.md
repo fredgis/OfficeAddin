@@ -41,7 +41,7 @@ graph TD
     PBI["Power BI REST API"]
     PBIEX["Power BI Export API"]
 
-    Taskpane -- "HTTPS + Bearer Token" --> API
+    Taskpane -- "HTTPS + X-Fabric-Storyboard-Authorization" --> API
     PPT -- "Load" --> STATIC
     MW --> ENTRA
     FN_WS --> PBI
@@ -232,7 +232,7 @@ graph LR
 | `/api/workspaces` | GET | List user workspaces | Power BI `GET /v1.0/myorg/groups` |
 | `/api/workspaces/:id/reports` | GET | List reports in workspace | Power BI `GET /v1.0/myorg/groups/:id/reports` |
 | `/api/reports/:id/pages` | GET | List pages in report | Power BI `GET /v1.0/myorg/reports/:id/pages` |
-| `/api/export` | POST | Export page as image (PNG/JPEG) | Power BI Export API (async polling) |
+| `/api/export` | POST | Export page as image (PNG/PDF) | Power BI Export API (async polling) |
 | `/api/insights` | POST | Generate AI executive insights | Azure OpenAI GPT-4o |
 | `/api/query` | POST | Execute DAX query on dataset | Power BI `executeQueries` |
 
@@ -250,16 +250,16 @@ sequenceDiagram
     participant PPT as PowerPoint
 
     User->>UI: Select page → "Export"
-    UI->>API: POST /api/export {reportId, pageName, format}
-    API->>PBI: POST /reports/:id/ExportTo
+    UI->>API: POST /api/export {reportId, pageName, format, workspaceId}
+    API->>PBI: POST /groups/{workspaceId}/reports/:id/ExportTo
     PBI-->>API: exportId
 
     loop Poll until complete
-        API->>PBI: GET /reports/:id/exports/:exportId
+        API->>PBI: GET /groups/{workspaceId}/reports/:id/exports/:exportId
         PBI-->>API: status: Running | Succeeded
     end
 
-    API->>PBI: GET /exports/:exportId/file
+    API->>PBI: GET /groups/{workspaceId}/exports/:exportId/file
     PBI-->>API: Image binary
     API-->>UI: {image: base64, mimeType}
 
@@ -419,9 +419,12 @@ OfficeAddin/
 | UI Framework | Fluent UI v9 | Native Microsoft look-and-feel, theme-aware |
 | State Management | React Query | Built-in caching, retry, background refresh |
 | Auth Strategy | SSO + Dialog fallback | Best UX with SSO, reliable fallback for consent |
+| Auth Header | `X-Fabric-Storyboard-Authorization` | SWA overwrites `Authorization` with internal HS256 token; custom header preserves Entra token |
 | Backend Pattern | Azure Functions (v4) | Integrated with Static Web Apps, serverless |
 | Token Flow | On-Behalf-Of (OBO) | Delegated access, respects user permissions |
 | OpenAI Auth | Managed Identity (DefaultAzureCredential) | No API keys, RBAC-based, auto-rotated |
-| Export Approach | Power BI Export API (async) | High-quality images, supports all visuals |
+| Export Approach | Power BI Export API (async, workspace-scoped) | High-quality images, supports all visuals; uses `/groups/{workspaceId}/...` endpoints |
+| Export Formats | PNG, PDF | JPEG is not a valid Power BI ExportToFile format (returns 400) |
 | AI Model | GPT-4o | Best quality/speed balance for insights |
 | IaC | Bicep + azd | First-class Azure support, repeatable deployments |
+| Secrets | Direct SWA app settings | SWA does **not** support `@Microsoft.KeyVault()` references (App Service-only) |

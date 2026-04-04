@@ -56,7 +56,26 @@ AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
 AZURE_OPENAI_DEPLOYMENT=gpt-4o
 ```
 
+> ⚠️ **Critical SWA limitation:** Azure Static Web Apps do **not** support `@Microsoft.KeyVault()` references in app settings. Set `ENTRA_CLIENT_SECRET` directly as a plain value via `az staticwebapp appsettings set`.
+
+> **Note:** `AZURE_OPENAI_ENDPOINT` must be the base URL only (e.g., `https://myresource.openai.azure.com/`). Do **not** include `/openai/v1/` — the backend appends the full path automatically.
+
 > **No API key needed for Azure OpenAI.** The Static Web App's system-assigned Managed Identity is automatically granted the `Cognitive Services OpenAI User` role via Bicep RBAC.
+
+### 2. Deploy with SWA CLI
+
+When deploying manually with the SWA CLI, always include the API language flags:
+
+```bash
+npx @azure/static-web-apps-cli deploy \
+  --app-location ./dist \
+  --api-location ./api \
+  --api-language node \
+  --api-version 18 \
+  --deployment-token <your-token>
+```
+
+> Without `--api-language node --api-version 18`, the API layer will **not** be deployed and all `/api/*` calls will return 404.
 
 ### 2. Update manifest.xml for Production
 

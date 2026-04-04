@@ -70,7 +70,7 @@ Everything else is automated:
  4. Configuring Entra ID          ✓ App registered, scopes, secret
  5. Installing dependencies       ✓ npm ci (frontend + backend)
  6. Building application          ✓ webpack + tsc
- 7. Running tests                 ✓ 63 tests passed
+ 7. Running tests                 ✓ 68 tests passed
  8. Provisioning infrastructure   ✓ SWA, Key Vault, App Insights, RBAC
  9. Deploying application         ✓ https://xxx.azurestaticapps.net
 10. Generating manifest           ✓ dist/manifest-prod.xml
@@ -106,12 +106,12 @@ At the end, the script displays the **Entra Client ID**, **Client Secret**, and 
 | Resource | Purpose | Auth |
 |----------|---------|------|
 | **Azure Static Web App** (Standard) | Frontend + API hosting | System-assigned Managed Identity |
-| **Azure Key Vault** | Stores Entra client secret (for OBO flow) | SWA reads via Managed Identity (RBAC) |
+| **Azure Key Vault** | Stores secrets (provisioning-time use) | SWA reads via Managed Identity (RBAC) |
 | **Azure OpenAI** (optional) | GPT-4o for AI insights | SWA calls via Managed Identity (RBAC) |
 | **Application Insights** | Monitoring and diagnostics | Connection string |
 | **Entra ID App Registration** | SSO + OBO token exchange | Client secret in Key Vault |
 
-> **🔒 Security model:** No API keys in code or config. Azure OpenAI is accessed via Managed Identity. The Entra client secret (required by OAuth2 OBO flow) is stored in Key Vault and accessed by the SWA via Managed Identity RBAC.
+> **🔒 Security model:** No API keys in code or config. Azure OpenAI is accessed via Managed Identity. The Entra client secret (required by OAuth2 OBO flow) is set directly as an SWA app setting (Azure Static Web Apps do **not** support `@Microsoft.KeyVault()` references — that feature is App Service-only).
 
 ---
 
@@ -154,6 +154,9 @@ ENTRA_CLIENT_SECRET=<your-client-secret>
 AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
 AZURE_OPENAI_DEPLOYMENT=gpt-4o
 ```
+
+> ⚠️ **SWA limitation:** `ENTRA_CLIENT_SECRET` must be set as a plain value — SWA does not support Key Vault references.  
+> **Note:** `AZURE_OPENAI_ENDPOINT` must be the base URL only. Do not append `/openai/v1/`.
 
 #### Step 3: Generate production manifest
 

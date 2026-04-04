@@ -12,7 +12,7 @@
 | Phase 6: AI Insights | ✅ Complete | `7858476` |
 | Phase 7: UI Polish | ✅ Complete | `fafedb1` |
 | Phase 8: Infrastructure | ✅ Complete | `550cb0a` |
-| Phase 9: Testing | ✅ Complete | `247cab2` (62/62 tests pass) |
+| Phase 9: Testing | ✅ Complete | `247cab2` (68/68 tests pass) |
 | Phase 10: Documentation | ✅ Complete | `e254df3` |
 
 ## Problem Statement
@@ -250,9 +250,9 @@ sequenceDiagram
 
 ### 4.1 Backend — Export endpoint
 - `POST /api/export` — Export a report page as an image
-  - Request body: `{ reportId, pageName, format: "PNG" | "JPEG", width?, height? }`
-  - Uses the Power BI Export API:
-    1. `POST https://api.powerbi.com/v1.0/myorg/reports/{reportId}/ExportTo` with:
+  - Request body: `{ reportId, pageName, workspaceId, format: "PNG" | "PDF", width?, height? }`
+  - Uses the Power BI Export API (workspace-scoped):
+    1. `POST https://api.powerbi.com/v1.0/myorg/groups/{workspaceId}/reports/{reportId}/ExportTo` with:
        ```json
        {
          "format": "PNG",
@@ -261,17 +261,17 @@ sequenceDiagram
          }
        }
        ```
-    2. Poll `GET https://api.powerbi.com/v1.0/myorg/reports/{reportId}/exports/{exportId}` until status is `Succeeded`
+    2. Poll `GET https://api.powerbi.com/v1.0/myorg/groups/{workspaceId}/reports/{reportId}/exports/{exportId}` until status is `Succeeded`
     3. Download the exported file via `GET .../exports/{exportId}/file`
   - Return the image as base64-encoded data or a temporary URL
 - Handle export polling with exponential backoff (export can take 10-60s)
 - Implement a timeout (max 5 minutes) and proper error messages
 
 ### 4.2 Frontend — Export service & progress UI
-- Add `exportPage(reportId, pageName, format)` to the API client
+- Add `exportPage(reportId, pageName, workspaceId, format)` to the API client
 - Show a progress indicator while the export is running
 - Cache recently exported images to avoid redundant API calls
-- Allow the user to select image format (PNG/JPEG) and optional resolution
+- Allow the user to select image format (PNG/PDF) and optional resolution
 
 **Validation**: Selecting a report page triggers an export; the image is returned successfully and can be previewed in the taskpane.
 

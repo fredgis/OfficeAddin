@@ -32,12 +32,14 @@ Step-by-step guide for configuring Azure Entra ID (Azure AD) for **Fabric Storyb
 | API | Permission | Type |
 |---|---|---|
 | Microsoft Graph | `User.Read` | Delegated |
-| Power BI Service | `https://analysis.windows.net/powerbi/api/.default` | Delegated |
-| Azure Cognitive Services | `https://cognitiveservices.azure.com/.default` | Delegated |
+| Power BI Service | `Report.Read.All` | Delegated |
+| Power BI Service | `Workspace.Read.All` | Delegated |
+| Power BI Service | `Dataset.Read.All` | Delegated |
+| Azure Cognitive Services | `user_impersonation` | Delegated |
 
 3. Click **Grant admin consent for \<tenant\>** (requires Global Admin or Privileged Role Administrator).
 
-> **Note:** The `.default` scopes are used with the On-Behalf-Of (OBO) flow in the backend. The frontend only requests `api://<client-id>/access_as_user`.
+> **Note:** The backend requests `https://analysis.windows.net/powerbi/api/.default` during the OBO flow, which expands to the delegated Power BI permissions granted on the app registration. For Azure OpenAI, the backend requests `https://cognitiveservices.azure.com/.default`. The frontend only requests `api://<client-id>/access_as_user`.
 
 ## 4. Expose an API
 
@@ -70,13 +72,19 @@ Step-by-step guide for configuring Azure Entra ID (Azure AD) for **Fabric Storyb
 
 ## 6. Environment Variables
 
-Set the following environment variables in your Azure Functions (local: `local.settings.json`, production: App Settings / Key Vault references):
+Set the following environment variables in your Azure Functions (local: `local.settings.json`, production: SWA App Settings):
+
+> ⚠️ **Important:** Azure Static Web Apps do **not** support `@Microsoft.KeyVault()` references in app settings (that is an App Service-only feature). Set secrets directly as SWA app settings via `az staticwebapp appsettings set`.
 
 ```
 ENTRA_CLIENT_ID=<your-application-client-id>
 ENTRA_TENANT_ID=<your-directory-tenant-id>
-ENTRA_CLIENT_SECRET=@Microsoft.KeyVault(SecretUri=https://<vault>.vault.azure.net/secrets/entra-client-secret)
+ENTRA_CLIENT_SECRET=<your-client-secret-value>
+AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
 ```
+
+> **Note:** `AZURE_OPENAI_ENDPOINT` must be the base URL only (e.g., `https://myresource.openai.azure.com/`). Do **not** append `/openai/v1/` — the backend constructs the full path automatically.
 
 For the frontend (set via webpack `DefinePlugin` or `.env`):
 

@@ -17,7 +17,7 @@
 | 🔵 Low | 4 | 0 | 4 |
 | **Total** | **19** | **15** | **4** |
 
-**Test results after fixes:** 63/63 passing (40 backend, 23 frontend)
+**Test results after fixes:** 68/68 passing (45 backend, 23 frontend)
 
 ---
 
@@ -152,4 +152,20 @@ All type files, all hooks, `App.tsx`, `WorkspaceBrowser.tsx`, `WorkspacePicker.t
 2. **Managed Identity for OpenAI is well-implemented** — `DefaultAzureCredential` with OBO-first fallback is the recommended Azure pattern.
 3. **Bicep modularity is good** — separate modules for each resource, conditional deployment for OpenAI, RBAC properly scoped.
 4. **Frontend separation of concerns** — clean split between API clients, hooks (React Query), and components. Fluent UI used consistently.
-5. **Test coverage** — 63 tests cover auth, middleware, services, API clients, and Office.js insertion. Could benefit from component-level tests in the future.
+5. **Test coverage** — 68 tests cover auth, middleware, services, API clients, and Office.js insertion. Could benefit from component-level tests in the future.
+
+---
+
+## Post-Review Fixes (Integration Phase)
+
+After the initial code review, additional issues were discovered during live integration testing with Azure services:
+
+| # | Severity | Issue | Fix |
+|---|----------|-------|-----|
+| P1 | 🔴 Critical | SWA does not support `@Microsoft.KeyVault()` references; secret was literal string → AADSTS7000215 | Set `ENTRA_CLIENT_SECRET` directly as SWA app setting |
+| P2 | 🟠 High | Power BI Export API: JPEG is not a valid format (returns 400) | Replaced JPEG with PDF across entire stack |
+| P3 | 🟠 High | Export 403: using `/reports/{id}/ExportTo` (My Workspace only) | Threaded `workspaceId` through entire export flow; use `/groups/{workspaceId}/...` |
+| P4 | 🟠 High | SWA overwrites `Authorization` header with internal HS256 token | Switched to custom `X-Fabric-Storyboard-Authorization` header |
+| P5 | 🟡 Medium | Azure OpenAI 404: endpoint had `/openai/v1/` suffix, code already builds path | Fixed endpoint to base URL only |
+| P6 | 🟡 Medium | Missing Azure Cognitive Services `user_impersonation` scope | Added permission + admin consent |
+| P7 | 🟡 Medium | SWA CLI deploy missing `--api-language node --api-version 18` | Added flags to deploy command |
