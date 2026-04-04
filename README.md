@@ -18,6 +18,10 @@ A PowerPoint Office Add-in that integrates with Microsoft Fabric and Power BI to
 ![Taskpane UI](images/IMG3.png)
 *Main taskpane: workspace browser with breadcrumb navigation (Workspaces > FGIMain > Store Sales), export button, preview with layout options, and AI Insights section.*
 
+### Complete Workflow
+![Complete Workflow](images/IMG4.png)
+*Full session with 6 slides populated from Retail Analysis report. Taskpane shows workspace navigation (Chapter11 > Retail Analysis), District Monthly Sales export with layout options, and AI Insights generation.*
+
 ## Documentation
 
 - [Architecture](docs/architecture.md) — System architecture, component diagrams, data flows (Mermaid)
