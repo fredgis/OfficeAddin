@@ -363,6 +363,29 @@ Built with **GitHub Copilot CLI** (Claude Opus 4.6) after the Squad scaffold
 
 ---
 
+# One-Click Deployment via AI Agent
+
+The entire Azure deployment — Entra ID, infrastructure, build, tests, deploy — is handled by a single agent-driven script
+
+<div class="cols">
+<div class="col">
+
+<img src="DEPLOY1.png" width="480" style="border-radius:8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);" />
+
+*Deployment in progress — agent orchestrates all 11 steps*
+
+</div>
+<div class="col">
+
+<img src="DEPLOY2.png" width="480" style="border-radius:8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);" />
+
+*Deployment complete — production URL, secrets, redeploy command*
+
+</div>
+</div>
+
+---
+
 <!-- _class: dark -->
 
 # 📊 The Result: 43 Days → 13.3 Hours

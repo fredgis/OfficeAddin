@@ -99,6 +99,10 @@ Everything else is automated:
 
 At the end, the script displays the **Entra Client ID**, **Client Secret**, and a **copy-paste redeploy command** for future runs.
 
+| Deployment in progress | Deployment complete |
+|:---:|:---:|
+| ![Deployment in progress](images/DEPLOY1.png) | ![Deployment complete](images/DEPLOY2.png) |
+
 <details>
 <summary><b>Non-interactive / CI usage</b></summary>
 
