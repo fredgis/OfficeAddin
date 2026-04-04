@@ -44,7 +44,9 @@ style: |
   section.dark h2 { color: #a78bfa; }
   section.dark strong { color: #34d399; }
   section.dark th { background: #334155; color: #e2e8f0; }
-  section.dark td { border-color: #334155; }
+  section.dark td { border-color: #334155; color: #e2e8f0; }
+  section.dark tr:nth-child(even) { background: #1e293b; }
+  section.dark tr:nth-child(odd) { background: #0f172a; }
 
   section.accent {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white;
