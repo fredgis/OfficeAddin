@@ -99,9 +99,9 @@ Everything else is automated:
 
 At the end, the script displays the **Entra Client ID**, **Client Secret**, and a **copy-paste redeploy command** for future runs.
 
-| Add-in result with AI insights | One-click deployment to Azure |
-|:---:|:---:|
-| ![Add-in with insights](images/DEPLOY1.png) | ![Deployment complete](images/DEPLOY2.png) |
+![Deployment in progress](images/DEPLOY1.png)
+
+![Deployment complete](images/DEPLOY2.png)
 
 <details>
 <summary><b>Non-interactive / CI usage</b></summary>
