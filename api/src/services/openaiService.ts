@@ -167,7 +167,7 @@ function parseInsights(content: string): InsightItem[] {
 
   return parsed.map((item: Record<string, unknown>) => ({
     headline: String(item.headline ?? ''),
-    detail: String(item.detail ?? ''),
+    body: String(item.detail ?? item.body ?? ''),
     category: item.category ? String(item.category) : undefined,
   }));
 }
