@@ -17,7 +17,6 @@ style: |
   }
   section::after { font-size: 10px; color: #94a3b8; }
 
-  /* ─── COVER ─── */
   section.cover {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center;
@@ -25,15 +24,13 @@ style: |
     color: white; padding: 50px;
   }
   section.cover h1 {
-    font-size: 2.4em; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 0.15em;
+    font-size: 2.4em; font-weight: 900; margin-bottom: 0.15em;
     background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    border: none;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; border: none;
   }
   section.cover h2 { font-size: 1.15em; font-weight: 300; color: #e2e8f0; margin-bottom: 0.2em; border: none; }
   section.cover h3 { font-size: 0.8em; font-weight: 300; color: #cbd5e1; opacity: 0.7; }
 
-  /* ─── DIVIDERS ─── */
   section.divider {
     display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -42,7 +39,6 @@ style: |
   section.divider h1 { font-size: 2.4em; font-weight: 900; color: #60a5fa; border: none; margin-bottom: 0.1em; }
   section.divider h2 { font-size: 1em; font-weight: 300; color: #94a3b8; border-left: 4px solid #6366f1; padding-left: 14px; }
 
-  /* ─── DARK ─── */
   section.dark { background: #0f172a; color: #e2e8f0; }
   section.dark h1 { color: #60a5fa; }
   section.dark h2 { color: #a78bfa; }
@@ -50,36 +46,29 @@ style: |
   section.dark th { background: #334155; color: #e2e8f0; }
   section.dark td { border-color: #334155; }
 
-  /* ─── ACCENT ─── */
   section.accent {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    color: white;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white;
   }
   section.accent h1 { color: white; font-size: 1.5em; border: none; }
   section.accent h3 { color: #fde68a; }
   section.accent strong { color: #fde68a; }
   section.accent blockquote { border-left-color: #fde68a; color: #e2e8f0; background: rgba(255,255,255,0.1); }
 
-  /* ─── SUCCESS ─── */
   section.success {
-    background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
-    color: white;
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); color: white;
   }
   section.success h1 { color: #6ee7b7; border: none; }
   section.success strong { color: #fde68a; }
 
-  /* ─── HEADINGS ─── */
   h1 { color: #0f172a; font-size: 1.45em; font-weight: 800; border-bottom: 3px solid #6366f1; padding-bottom: 5px; margin: 0 0 12px 0; }
   h2 { color: #475569; font-weight: 600; font-size: 0.85em; margin: 8px 0 4px 0; }
   h3 { color: #6366f1; font-weight: 700; font-size: 0.78em; margin: 6px 0 3px 0; }
 
-  /* ─── TABLES ─── */
   table { font-size: 0.72em; width: 100%; border-collapse: collapse; margin: 4px 0; }
   th { background: #1e293b; color: white; padding: 4px 8px; font-weight: 600; }
   td { padding: 3px 8px; border-bottom: 1px solid #e2e8f0; }
   tr:nth-child(even) { background: #f1f5f9; }
 
-  /* ─── INLINE ─── */
   strong { color: #4f46e5; }
   em { color: #7c3aed; font-style: normal; }
   code { background: #f1f5f9; color: #e11d48; padding: 1px 4px; border-radius: 3px; font-size: 0.82em; }
@@ -91,7 +80,6 @@ style: |
     font-style: italic; color: #475569; font-size: 0.8em;
   }
 
-  /* ─── LAYOUT ─── */
   .cols { display: flex; gap: 1.5em; align-items: flex-start; }
   .col { flex: 1; }
 
@@ -99,10 +87,8 @@ style: |
   li { margin-bottom: 2px; }
   p { margin: 4px 0; }
 
+  img[alt~="diagram"] { box-shadow: none; border-radius: 0; }
   img { border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-
-  /* ─── MERMAID ─── */
-  .mermaid svg { max-height: 340px; }
 ---
 
 <!-- _class: cover -->
@@ -156,7 +142,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # The Taskpane Experience
 
-![w:780 center](../images/IMG3.png)
+<p align="center"><img src="IMG3.png" width="780" /></p>
 
 *Workspace browser • breadcrumb navigation • PNG export • layout options • AI insights*
 
@@ -164,7 +150,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Insert Page with Insights
 
-![w:780 center](../images/IMG1.png)
+<p align="center"><img src="IMG1.png" width="780" /></p>
 
 *One-click result: chart image (60%) + GPT-4o Vision insights (40%) on the same slide*
 
@@ -172,7 +158,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Complete Workflow
 
-![w:780 center](../images/IMG4.png)
+<p align="center"><img src="IMG4.png" width="780" /></p>
 
 *6 slides populated from Retail Analysis — image export + AI executive insights side-by-side*
 
@@ -180,7 +166,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Architecture
 
-``![w:900 center](diagrams/architecture.png)``
+<p align="center"><img src="diagrams/architecture.png" width="900" /></p>
 
 | Layer | Technology | Role |
 |-------|-----------|------|
@@ -256,7 +242,7 @@ A project estimated at **43 man-days** using conventional development
 
 # Our Squad: 8 Specialized Agents
 
-``![w:900 center](diagrams/squad-agents.png)``
+<p align="center"><img src="diagrams/squad-agents.png" width="900" alt="diagram" /></p>
 
 | Agent | Model | Role |
 |-------|-------|------|
@@ -318,8 +304,8 @@ Each agent gets the **right model** for its job — not one-size-fits-all
 | Spec finalized, execution begins | +0h |
 | **Phases 1-3** — scaffolding, auth, browsing | **+17 min** |
 | **Phases 4-5** + 62 tests — export, insert | **+30 min** |
-| **Phase 6** — AI insights committed | **+30 min** |
-| **Phase 7** — UI polish, a11y, offline detection | **+1h 08** |
+| **Phase 6** — AI insights | **+30 min** |
+| **Phase 7** — UI polish, a11y | **+1h 08** |
 | **Phase 8** — infrastructure (in parallel) | *concurrent* |
 | **Phase 10** — documentation | **+1h 17** |
 | 🎯 **v0.1 scaffold complete** | **~1h 17min** |
@@ -406,7 +392,7 @@ Built with **GitHub Copilot CLI** (Claude Opus 4.6) after the Squad scaffold
 </div>
 </div>
 
-``![w:500 center](diagrams/effort-pie.png)``
+<p align="center"><img src="diagrams/effort-pie.png" width="420" alt="diagram" /></p>
 
 ---
 
@@ -481,14 +467,13 @@ Built with **GitHub Copilot CLI** (Claude Opus 4.6) after the Squad scaffold
 </div>
 </div>
 
-> *"Copilot CLI is the foundation. Squad runs **on top of** Copilot CLI."*
-> — Dina Berry, Microsoft (Squad for Content)
+> *"Copilot CLI is the foundation. Squad runs **on top of** Copilot CLI."* — Dina Berry
 
 ---
 
 # Copilot CLI + Squad: Complementary, Not Competing
 
-``![w:800 center](diagrams/cli-squad.png)``
+<p align="center"><img src="diagrams/cli-squad.png" width="700" alt="diagram" /></p>
 
 | | Copilot CLI | Squad |
 |---|---|---|
@@ -497,7 +482,7 @@ Built with **GitHub Copilot CLI** (Claude Opus 4.6) after the Squad scaffold
 | **Memory** | Session only | Persistent (`decisions.md`, `history.md`) |
 | **Coordination** | Manual (you direct) | Automatic (Lead routes tasks) |
 
-> *"People often assume they're competing tools. They're not. Copilot CLI is the foundation. Squad sits on top."* — Dina Berry
+> *"People often assume they're competing tools. They're not."* — Dina Berry
 
 ---
 
@@ -558,7 +543,7 @@ Built with **GitHub Copilot CLI** (Claude Opus 4.6) after the Squad scaffold
 
 > *"Autonomy is not a switch — it's a progression. You earn it."* — Tamir Dresher
 
-``![w:900 center](diagrams/scaling.png)``
+<p align="center"><img src="diagrams/scaling.png" width="850" alt="diagram" /></p>
 
 | Level | Mode | Human Role | Squad Role |
 |:---:|------|-----|-------|
@@ -640,7 +625,7 @@ Pre-built agents for common domains — ready to integrate into Squad or Fleet
 
 # The Complete Toolchain
 
-``![w:900 center](diagrams/toolchain.png)``
+<p align="center"><img src="diagrams/toolchain.png" width="850" alt="diagram" /></p>
 
 | Tool | Role | When |
 |------|------|------|
@@ -683,7 +668,7 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 # Cost Optimization: Right Model, Right Job
 
-``![w:500 center](diagrams/cost-tiers.png)``
+<p align="center"><img src="diagrams/cost-tiers.png" width="500" alt="diagram" /></p>
 
 | Tier | Model | Cost | Use For |
 |:---:|-------|:---:|---------|
@@ -815,10 +800,6 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 > Speckit (spec) → Agent Store (components) → Squad / Fleet (dev) → Copilot CLI (integration) → Production
 
-> The **specification** becomes the client deliverable
-> **Code** is generated by agents
-> **Humans** supervise, validate, and bring business expertise
-
 ---
 
 # Emerging Roles in Consulting
@@ -913,4 +894,3 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 **Fabric Storyboard Copilot** — github.com/fredgis/OfficeAddin
 
 🛠️ GitHub Copilot CLI · Squad · Agent Store · Speckit
-
