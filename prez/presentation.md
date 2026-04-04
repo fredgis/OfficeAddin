@@ -2,162 +2,107 @@
 marp: true
 theme: uncover
 paginate: true
-math: mathjax
+size: 16:9
 style: |
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
 
-  :root {
-    --color-bg: #f8fafc;
-    --color-fg: #1e293b;
-    --color-primary: #0078d4;
-    --color-accent: #6366f1;
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-danger: #ef4444;
-  }
-
   section {
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    background: var(--color-bg);
-    color: var(--color-fg);
-    padding: 50px 60px;
-    line-height: 1.5;
+    font-size: 19px;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 35px 50px 30px;
+    line-height: 1.35;
+    overflow: hidden;
   }
-
-  section::after {
-    font-size: 0.6em;
-    color: #94a3b8;
-  }
+  section::after { font-size: 10px; color: #94a3b8; }
 
   /* ─── COVER ─── */
   section.cover {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center;
     background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #0078d4 100%);
-    color: white;
-    padding: 60px;
+    color: white; padding: 50px;
   }
   section.cover h1 {
-    font-size: 2.6em;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.15em;
+    font-size: 2.4em; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 0.15em;
     background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    border: none;
   }
-  section.cover h2 {
-    font-size: 1.3em;
-    font-weight: 300;
-    opacity: 0.9;
-    margin-bottom: 0.3em;
-    color: #e2e8f0;
-  }
-  section.cover h3 {
-    font-size: 0.9em;
-    font-weight: 300;
-    opacity: 0.6;
-    color: #cbd5e1;
-  }
+  section.cover h2 { font-size: 1.15em; font-weight: 300; color: #e2e8f0; margin-bottom: 0.2em; border: none; }
+  section.cover h3 { font-size: 0.8em; font-weight: 300; color: #cbd5e1; opacity: 0.7; }
 
-  /* ─── SECTION DIVIDERS ─── */
+  /* ─── DIVIDERS ─── */
   section.divider {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: white;
-    padding: 80px;
+    color: white; padding: 70px;
   }
-  section.divider h1 {
-    font-size: 2.8em;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.1em;
-    color: #60a5fa;
-  }
-  section.divider h2 {
-    font-size: 1.1em;
-    font-weight: 300;
-    color: #94a3b8;
-    border-left: 4px solid #6366f1;
-    padding-left: 16px;
-  }
+  section.divider h1 { font-size: 2.4em; font-weight: 900; color: #60a5fa; border: none; margin-bottom: 0.1em; }
+  section.divider h2 { font-size: 1em; font-weight: 300; color: #94a3b8; border-left: 4px solid #6366f1; padding-left: 14px; }
 
   /* ─── DARK ─── */
-  section.dark {
-    background: #0f172a;
-    color: #e2e8f0;
-  }
+  section.dark { background: #0f172a; color: #e2e8f0; }
   section.dark h1 { color: #60a5fa; }
   section.dark h2 { color: #a78bfa; }
   section.dark strong { color: #34d399; }
   section.dark th { background: #334155; color: #e2e8f0; }
+  section.dark td { border-color: #334155; }
 
   /* ─── ACCENT ─── */
   section.accent {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
   }
-  section.accent h1 { color: white; font-size: 1.8em; }
+  section.accent h1 { color: white; font-size: 1.5em; border: none; }
+  section.accent h3 { color: #fde68a; }
   section.accent strong { color: #fde68a; }
-  section.accent blockquote { border-left-color: #fde68a; color: #e2e8f0; }
+  section.accent blockquote { border-left-color: #fde68a; color: #e2e8f0; background: rgba(255,255,255,0.1); }
 
   /* ─── SUCCESS ─── */
   section.success {
     background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
     color: white;
   }
-  section.success h1 { color: #6ee7b7; }
+  section.success h1 { color: #6ee7b7; border: none; }
   section.success strong { color: #fde68a; }
 
-  /* ─── CONTENT STYLES ─── */
-  h1 {
-    color: #0f172a;
-    font-size: 1.7em;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    border-bottom: 3px solid #6366f1;
-    padding-bottom: 8px;
-    margin-bottom: 20px;
-  }
-  h2 { color: #475569; font-weight: 600; font-size: 1em; }
-  h3 { color: #6366f1; font-weight: 700; font-size: 0.9em; }
+  /* ─── HEADINGS ─── */
+  h1 { color: #0f172a; font-size: 1.45em; font-weight: 800; border-bottom: 3px solid #6366f1; padding-bottom: 5px; margin: 0 0 12px 0; }
+  h2 { color: #475569; font-weight: 600; font-size: 0.85em; margin: 8px 0 4px 0; }
+  h3 { color: #6366f1; font-weight: 700; font-size: 0.78em; margin: 6px 0 3px 0; }
 
-  table { font-size: 0.68em; width: 100%; border-collapse: collapse; }
-  th { background: #1e293b; color: white; padding: 8px 12px; font-weight: 600; }
-  td { padding: 6px 12px; border-bottom: 1px solid #e2e8f0; }
+  /* ─── TABLES ─── */
+  table { font-size: 0.72em; width: 100%; border-collapse: collapse; margin: 4px 0; }
+  th { background: #1e293b; color: white; padding: 4px 8px; font-weight: 600; }
+  td { padding: 3px 8px; border-bottom: 1px solid #e2e8f0; }
   tr:nth-child(even) { background: #f1f5f9; }
 
+  /* ─── INLINE ─── */
   strong { color: #4f46e5; }
   em { color: #7c3aed; font-style: normal; }
-  code { background: #f1f5f9; color: #e11d48; padding: 2px 6px; border-radius: 4px; font-size: 0.82em; }
+  code { background: #f1f5f9; color: #e11d48; padding: 1px 4px; border-radius: 3px; font-size: 0.82em; }
+  pre { font-size: 0.68em; margin: 4px 0; padding: 8px; line-height: 1.3; }
 
   blockquote {
-    border-left: 4px solid #6366f1;
-    padding: 8px 16px;
-    margin: 12px 0;
-    background: #f1f5f9;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: #475569;
-    font-size: 0.88em;
+    border-left: 3px solid #6366f1; padding: 4px 12px; margin: 6px 0;
+    background: #f1f5f9; border-radius: 0 6px 6px 0;
+    font-style: italic; color: #475569; font-size: 0.8em;
   }
 
-  .cols { display: flex; gap: 2em; align-items: flex-start; }
+  /* ─── LAYOUT ─── */
+  .cols { display: flex; gap: 1.5em; align-items: flex-start; }
   .col { flex: 1; }
 
-  img { border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+  ul, ol { font-size: 0.88em; margin: 4px 0; padding-left: 1.3em; }
+  li { margin-bottom: 2px; }
+  p { margin: 4px 0; }
 
-  /* Mermaid sizing */
-  .mermaid { font-size: 0.7em; }
+  img { border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 
-  ul, ol { font-size: 0.88em; }
-  li { margin-bottom: 4px; }
+  /* ─── MERMAID ─── */
+  .mermaid svg { max-height: 340px; }
 ---
 
 <!-- _class: cover -->
@@ -211,7 +156,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # The Taskpane Experience
 
-![w:920 center](../images/IMG3.png)
+![w:780 center](../images/IMG3.png)
 
 *Workspace browser • breadcrumb navigation • PNG export • layout options • AI insights*
 
@@ -219,7 +164,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Insert Page with Insights
 
-![w:920 center](../images/IMG1.png)
+![w:780 center](../images/IMG1.png)
 
 *One-click result: chart image (60%) + GPT-4o Vision insights (40%) on the same slide*
 
@@ -227,35 +172,23 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Complete Workflow
 
-![w:920 center](../images/IMG4.png)
+![w:780 center](../images/IMG4.png)
 
-*6 slides populated from Retail Analysis report — image export + AI executive insights side-by-side*
+*6 slides populated from Retail Analysis — image export + AI executive insights side-by-side*
 
 ---
 
 # Architecture
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#6366f1', 'primaryTextColor': '#fff', 'lineColor': '#64748b', 'secondaryColor': '#f1f5f9'}}}%%
-graph TD
-    subgraph PPT["PowerPoint Desktop / Web"]
-        TP["Taskpane<br/><i>React + Fluent UI v9</i>"]
-    end
-    subgraph SWA["Azure Static Web Apps"]
-        API["Azure Functions API"]
-        MW["Auth Middleware<br/><i>JWT + JWKS + OBO</i>"]
-    end
-    ENTRA["Entra ID"]
-    PBI["Power BI<br/>REST API"]
-    AOAI["Azure OpenAI<br/>GPT-4o Vision"]
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
+graph LR
+    TP["Taskpane<br/>React + Fluent UI"] -->|"Custom Auth Header"| API["Azure Functions<br/>Node.js API"]
+    API --> MW["Auth Middleware<br/>JWT + OBO"]
+    MW --> ENTRA["Entra ID"]
+    API --> PBI["Power BI<br/>REST API"]
+    API --> AOAI["Azure OpenAI<br/>GPT-4o Vision"]
 
-    TP -->|"X-Fabric-Storyboard-Authorization"| API
-    MW --> ENTRA
-    API --> PBI
-    API --> AOAI
-
-    style PPT fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
-    style SWA fill:#f1f5f9,stroke:#6366f1,color:#1e293b
     style TP fill:#6366f1,stroke:#4f46e5,color:#fff
     style API fill:#0078d4,stroke:#005a9e,color:#fff
     style MW fill:#f59e0b,stroke:#d97706,color:#000
@@ -263,6 +196,15 @@ graph TD
     style PBI fill:#10b981,stroke:#059669,color:#fff
     style AOAI fill:#8b5cf6,stroke:#6d28d9,color:#fff
 ```
+
+| Layer | Technology | Role |
+|-------|-----------|------|
+| **Frontend** | React 18 + Fluent UI v9 | Taskpane inside PowerPoint |
+| **Backend** | Azure Functions (Node.js 18) | API proxy with auth |
+| **Auth** | MSAL.js → Entra ID → OBO | SSO + delegated token flow |
+| **AI** | Azure OpenAI GPT-4o Vision | Analyze exported report images |
+| **Hosting** | Azure Static Web Apps | Frontend + integrated Functions |
+| **IaC** | Bicep + azd + GitHub Actions | Infrastructure as code + CI/CD |
 
 ---
 
@@ -330,21 +272,11 @@ A project estimated at **43 man-days** using conventional development
 # Our Squad: 8 Specialized Agents
 
 ```mermaid
-%%{init: {'theme': 'base'}}%%
-graph TD
-    subgraph Squad["🎬 Squad — Fabric Storyboard Team"]
-        Lead["🏗️ Lead<br/><b>Claude Sonnet 4</b><br/><i>Architecture · Routing<br/>Code Reviews</i>"]
-        FE["⚛️ Frontend<br/><b>Claude Sonnet 4</b><br/><i>React · Office.js<br/>Fluent UI</i>"]
-        BE["🔧 Backend<br/><b>Claude Sonnet 4</b><br/><i>Azure Functions<br/>Power BI API</i>"]
-        Auth["🔐 Auth<br/><b>Claude Sonnet 4</b><br/><i>Entra ID · MSAL<br/>SSO · OBO</i>"]
-        AI["🧠 AI<br/><b>Claude Sonnet 4</b><br/><i>Azure OpenAI<br/>Prompt Eng.</i>"]
-        Infra["🚀 Infra<br/><b>Claude Haiku 4.5</b><br/><i>Bicep · azd<br/>GitHub Actions</i>"]
-        Test["🧪 Tester<br/><b>Claude Haiku 4.5</b><br/><i>Jest · Mocks<br/>Integration</i>"]
-        Scribe["📋 Scribe<br/><b>Claude Haiku 4.5</b><br/><i>Decisions Log<br/>Documentation</i>"]
-    end
-
-    Lead --> FE & BE & Auth & AI & Infra & Test
-    Scribe -.->|"logs everything"| Lead
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '11px'}}}%%
+graph LR
+    Lead["🏗️ Lead<br/>Sonnet 4"] --> FE["⚛️ Frontend<br/>Sonnet 4"] & BE["🔧 Backend<br/>Sonnet 4"] & Auth["🔐 Auth<br/>Sonnet 4"] & AI["🧠 AI<br/>Sonnet 4"]
+    Lead --> Infra["🚀 Infra<br/>Haiku 4.5"] & Test["🧪 Tester<br/>Haiku 4.5"]
+    Scribe["📋 Scribe<br/>Haiku 4.5"] -.->|"logs"| Lead
 
     style Lead fill:#ef4444,stroke:#dc2626,color:#fff
     style FE fill:#3b82f6,stroke:#2563eb,color:#fff
@@ -355,6 +287,17 @@ graph TD
     style Test fill:#a855f7,stroke:#9333ea,color:#fff
     style Scribe fill:#6b7280,stroke:#4b5563,color:#fff
 ```
+
+| Agent | Model | Role |
+|-------|-------|------|
+| 🏗️ **Lead** | Claude Sonnet 4 | Architecture, task routing, code reviews |
+| ⚛️ **Frontend** | Claude Sonnet 4 | React, Office.js, Fluent UI components |
+| 🔧 **Backend** | Claude Sonnet 4 | Azure Functions, Power BI API, REST |
+| 🔐 **Auth** | Claude Sonnet 4 | Entra ID, MSAL.js, SSO, OBO flow |
+| 🧠 **AI** | Claude Sonnet 4 | Azure OpenAI, prompt engineering |
+| 🚀 **Infra** | Claude Haiku 4.5 | Bicep, azd, SWA, GitHub Actions |
+| 🧪 **Tester** | Claude Haiku 4.5 | Jest, mocks, integration tests |
+| 📋 **Scribe** | Claude Haiku 4.5 | Decision log, docs, session history |
 
 ---
 
@@ -379,32 +322,21 @@ Each agent gets the **right model** for its job — not one-size-fits-all
 
 # Squad × Phases: Parallel Execution
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#6366f1'}}}%%
-gantt
-    title Squad Parallel Execution Timeline
-    dateFormat HH:mm
-    axisFormat %H:%M
+| Phase | Agents | Parallel |
+|-------|--------|:---:|
+| P1 — Scaffolding | 🏗️ Lead + ⚛️ Frontend + 🔧 Backend | ✅ |
+| P2 — Auth | 🔐 Auth + 🔧 Backend | ✅ |
+| P3 — Browse | ⚛️ Frontend + 🔧 Backend | ✅ |
+| P4 — Export | ⚛️ Frontend + 🔧 Backend | ✅ |
+| P5 — Insert | ⚛️ Frontend | — |
+| P6 — AI | 🧠 AI + ⚛️ Frontend | ✅ |
+| P7 — Polish | ⚛️ Frontend + 🏗️ Lead | ✅ |
+| P8 — Infra | 🚀 Infra *(runs in parallel from P1)* | ✅ |
+| P9 — Testing | 🧪 Tester + 🏗️ Lead | ✅ |
+| P10 — Docs | 📋 Scribe + 🏗️ Lead | ✅ |
 
-    section Scaffolding
-    Lead + Frontend + Backend     :crit, s1, 09:27, 17m
-    section Auth
-    Auth + Backend (parallel)     :crit, s2, 09:44, 13m
-    section Browse + Export
-    Frontend + Backend            :crit, s3, 09:44, 13m
-    section Insert + AI
-    Frontend + AI specialist      :crit, s5, 09:57, 38m
-    section UI Polish
-    Frontend + Lead review        :crit, s7, 09:57, 38m
-    section Infrastructure
-    Infra (parallel from start)   :active, s8, 09:27, 68m
-    section Testing
-    Tester + Lead                 :crit, s9, 10:35, 9m
-    section Docs
-    Scribe + Lead                 :crit, s10, 10:35, 9m
-```
-
-> Infrastructure runs **in parallel** with all other phases from the start
+> Infrastructure (P8) runs **in parallel** with all other phases from the start
+> Multiple agents work **simultaneously** within each phase
 
 ---
 
@@ -593,22 +525,19 @@ pie title Actual Effort Breakdown (13.3h total)
 # Copilot CLI + Squad: Complementary, Not Competing
 
 ```mermaid
-%%{init: {'theme': 'base'}}%%
-graph TB
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
+graph LR
     subgraph SQUAD["Squad Framework"]
-        direction TB
-        S1["🎯 Team Structure<br/>Agents · Charters · Roles"]
-        S2["🔄 Coordination<br/>Routing · Parallel Execution"]
-        S3["🧠 Persistent Memory<br/>decisions.md · history.md"]
+        S1["🎯 Team · Charters · Roles"]
+        S2["🔄 Routing · Parallel Exec"]
+        S3["🧠 Persistent Memory"]
     end
     subgraph CLI["GitHub Copilot CLI"]
-        direction TB
-        C1["🔐 Auth & Model Access"]
+        C1["🔐 Auth · Model Access"]
         C2["🛠️ Tool Execution"]
-        C3["📁 Context Management"]
+        C3["📁 Context Mgmt"]
     end
-
-    SQUAD --> CLI
+    SQUAD -->|"runs on top of"| CLI
 
     style SQUAD fill:#f0e7ff,stroke:#7c3aed,color:#1e293b
     style CLI fill:#dbeafe,stroke:#3b82f6,color:#1e293b
@@ -624,8 +553,10 @@ graph TB
 |---|---|---|
 | **Nature** | Platform / Runtime | Orchestration Framework |
 | **Agents** | Single agent | Team of specialists |
-| **Memory** | Session only | Persistent across sessions |
-| **Coordination** | Manual (you direct) | Automatic (Lead routes) |
+| **Memory** | Session only | Persistent (`decisions.md`, `history.md`) |
+| **Coordination** | Manual (you direct) | Automatic (Lead routes tasks) |
+
+> *"People often assume they're competing tools. They're not. Copilot CLI is the foundation. Squad sits on top."* — Dina Berry
 
 ---
 
@@ -684,16 +615,12 @@ graph TB
 
 # Scaling Squad: A Trust Progression
 
-> *"Autonomy is not a switch — it's a progression. You don't start with autonomy. You earn it."*
-> — Tamir Dresher
+> *"Autonomy is not a switch — it's a progression. You earn it."* — Tamir Dresher
 
 ```mermaid
-%%{init: {'theme': 'base'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
 graph LR
-    O["1️⃣ Observe<br/><i>Read-only</i>"] --> A["2️⃣ Assist<br/><i>Drafts, you decide</i>"]
-    A --> Act["3️⃣ Act<br/><i>Scoped execution</i>"]
-    Act --> C["4️⃣ Coordinate<br/><i>Manage workflows</i>"]
-    C --> Auto["5️⃣ Autonomize<br/><i>End-to-end</i>"]
+    O["1️⃣ Observe"] --> A["2️⃣ Assist"] --> Act["3️⃣ Act"] --> C["4️⃣ Coordinate"] --> Auto["5️⃣ Autonomize"]
 
     style O fill:#dbeafe,stroke:#3b82f6,color:#1e293b
     style A fill:#bfdbfe,stroke:#2563eb,color:#1e293b
@@ -702,13 +629,13 @@ graph LR
     style Auto fill:#3b82f6,stroke:#1e3a8a,color:#fff
 ```
 
-| Level | Mode | You | Squad |
+| Level | Mode | Human Role | Squad Role |
 |:---:|------|-----|-------|
-| 1 | **Observe** | Full control | Watches and learns patterns |
-| 2 | **Assist** | Makes decisions | Drafts PRs, analyses, recommendations |
-| 3 | **Act** | Sets guardrails | Executes bounded tasks in repo |
+| 1 | **Observe** | Full control | Watches, learns patterns |
+| 2 | **Assist** | Makes decisions | Drafts PRs, analyses |
+| 3 | **Act** | Sets guardrails | Executes bounded tasks |
 | 4 | **Coordinate** | Defines intent | Links PRs ↔ issues, routes work |
-| 5 | **Autonomize** | Sets goals | Handles execution end-to-end |
+| 5 | **Autonomize** | Sets goals | End-to-end execution |
 
 ---
 
@@ -783,12 +710,12 @@ Pre-built agents for common domains — ready to integrate into Squad or Fleet
 # The Complete Toolchain
 
 ```mermaid
-%%{init: {'theme': 'base'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px'}}}%%
 graph LR
-    SPEC["📋 Speckit<br/><i>Specification</i>"] --> SQUAD["🎬 Squad / Fleet<br/><i>Development</i>"]
-    STORE["🏪 Agent Store<br/><i>Components</i>"] --> SQUAD
-    SQUAD --> CLI["⚡ Copilot CLI<br/><i>Execution</i>"]
-    CLI --> PROD["🚀 Production<br/><i>Deployed</i>"]
+    SPEC["📋 Speckit<br/>Specification"] --> SQUAD["🎬 Squad / Fleet<br/>Development"]
+    STORE["🏪 Agent Store<br/>Components"] --> SQUAD
+    SQUAD --> CLI["⚡ Copilot CLI<br/>Execution"]
+    CLI --> PROD["🚀 Production"]
 
     style SPEC fill:#6366f1,stroke:#4f46e5,color:#fff
     style SQUAD fill:#8b5cf6,stroke:#7c3aed,color:#fff
@@ -799,10 +726,10 @@ graph LR
 
 | Tool | Role | When |
 |------|------|------|
-| **Speckit** | Define *what* to build | Start of project |
-| **Agent Store** | Reusable domain agents | Agent selection |
+| **Speckit** | Define *what* to build (structured markdown) | Start of project |
+| **Agent Store** | Reusable pre-built domain agents | Agent selection |
 | **Squad** | Orchestrated team execution | Scaffolding & features |
-| **Copilot CLI** | Single-agent execution | Integration & debugging |
+| **Copilot CLI** | Single-agent execution platform | Integration & debugging |
 | **Fleet** | Multiple ad-hoc agents | Quick tasks, exploration |
 
 ---
@@ -839,30 +766,27 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 # Cost Optimization: Right Model, Right Job
 
 ```mermaid
-%%{init: {'theme': 'base'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
 graph TD
-    OPUS["⭐ Opus 4.6<br/><b>5-10×</b><br/><i>Coordinator</i>"]
-    S1["Sonnet 4<br/><b>2-3×</b><br/><i>Frontend</i>"]
-    S2["Sonnet 4<br/><b>2-3×</b><br/><i>Backend</i>"]
-    S3["Sonnet 4<br/><b>2-3×</b><br/><i>Auth</i>"]
-    H1["Haiku 4.5<br/><b>1×</b><br/><i>Tester</i>"]
-    H2["Haiku 4.5<br/><b>1×</b><br/><i>Infra</i>"]
-    H3["Haiku 4.5<br/><b>1×</b><br/><i>Scribe</i>"]
-
-    OPUS --> S1 & S2 & S3
-    OPUS --> H1 & H2 & H3
+    OPUS["⭐ Opus 4.6 — 5-10× — Coordinator"]
+    S["Sonnet 4 — 2-3× — Frontend · Backend · Auth · AI"]
+    H["Haiku 4.5 — 1× — Tester · Infra · Scribe"]
+    OPUS --> S --> H
 
     style OPUS fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style S1 fill:#3b82f6,stroke:#2563eb,color:#fff
-    style S2 fill:#3b82f6,stroke:#2563eb,color:#fff
-    style S3 fill:#3b82f6,stroke:#2563eb,color:#fff
-    style H1 fill:#22c55e,stroke:#16a34a,color:#fff
-    style H2 fill:#22c55e,stroke:#16a34a,color:#fff
-    style H3 fill:#22c55e,stroke:#16a34a,color:#fff
+    style S fill:#3b82f6,stroke:#2563eb,color:#fff
+    style H fill:#22c55e,stroke:#16a34a,color:#fff
 ```
 
-> **3 tiers of models** optimizing cost vs. quality
-> Same architecture pattern applies to any Squad or Agent Store deployment
+| Tier | Model | Cost | Use For |
+|:---:|-------|:---:|---------|
+| 🟣 Premium | Claude Opus 4.6 | 5-10× | Strategic orchestration, architecture |
+| 🔵 Standard | Claude Sonnet 4 | 2-3× | Complex code, deep reasoning |
+| 🟢 Fast | Claude Haiku 4.5 | 1× | Structured tasks, tests, docs |
+
+> **Principle**: use the cheapest model **capable** of doing the job well
+> Using Opus everywhere = **5-10× cost** with no gain on test writing
+> Using Haiku for architecture = save money but **miss critical issues**
 
 ---
 
@@ -892,22 +816,18 @@ graph TD
 
 <!-- _class: dark -->
 
-# The Old World
+# The Old World: Selling Time
 
 ### Traditional consulting model
 
-```
-  Client                              Consulting Firm
-    │                                       │
-    │  "I need a PowerPoint add-in"        │
-    │ ─────────────────────────────────────►│
-    │                                       │  Estimate: 43 man-days
-    │  Quote: 43 × $700 = $30,100          │  Team: 2-3 developers
-    │ ◄─────────────────────────────────────│  Duration: 6-9 weeks
-    │                                       │
-    │  Delivery in 2 months                │  Margin: ~30% = $9,030
-    │ ◄─────────────────────────────────────│
-```
+| | Detail |
+|---|---|
+| **Client request** | "I need a PowerPoint add-in" |
+| **Estimate** | 43 man-days |
+| **Team** | 2-3 developers |
+| **Quote** | 43 × $700 = **$30,100** |
+| **Timeline** | 6-9 weeks |
+| **Margin** | ~30% = $9,030 |
 
 ### The constraints
 - 💰 **Revenue = days × rate** — capped by human hours
@@ -917,23 +837,18 @@ graph TD
 
 ---
 
-# The New World
+# The New World: Selling Outcomes
 
 ### Agent-augmented consulting model
 
-```
-  Client                              Consulting Firm
-    │                                       │
-    │  "I need a PowerPoint add-in"        │
-    │ ─────────────────────────────────────►│
-    │                                       │  Agents: 13h + 2 days human
-    │  Quote: $18,000                      │  (supervision, validation, UX)
-    │  (value-based, not hours-based)      │
-    │ ◄─────────────────────────────────────│  Real cost: ~$1,500
-    │                                       │
-    │  Delivery in 1 week                  │  Margin: ~92% = $16,500
-    │ ◄─────────────────────────────────────│
-```
+| | Detail |
+|---|---|
+| **Client request** | "I need a PowerPoint add-in" |
+| **Execution** | Agents: 13h + 2 days human supervision |
+| **Quote** | **$18,000** (value-based, not hours-based) |
+| **Real cost** | ~$1,500 |
+| **Timeline** | **1 week** |
+| **Margin** | ~92% = **$16,500** |
 
 ### The transformation
 - 💰 **Revenue = value delivered**, not hours billed
@@ -991,9 +906,7 @@ graph TD
 
 ### The new delivery chain
 
-```
-Speckit (spec) → Agent Store (components) → Squad / Fleet (dev) → Copilot CLI (integration) → Production
-```
+> Speckit (spec) → Agent Store (components) → Squad / Fleet (dev) → Copilot CLI (integration) → Production
 
 > The **specification** becomes the client deliverable
 > **Code** is generated by agents
@@ -1078,10 +991,7 @@ Speckit (spec) → Agent Store (components) → Squad / Fleet (dev) → Copilot 
 
 ### The complete chain
 
-```
-Speckit → Squad (scaffold) → Copilot CLI (integration) → Agent Store (components) → Production
-   spec       ~10% of time        ~60% of time              reusable               deployed
-```
+> Speckit → Squad (scaffold ~10%) → Copilot CLI (integration ~60%) → Agent Store (reusable) → Production
 
 ---
 
