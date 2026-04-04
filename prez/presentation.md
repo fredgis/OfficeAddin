@@ -670,7 +670,7 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 # Cost Optimization: Right Model, Right Job
 
-<p align="center"><img src="diagrams/cost-tiers.png" width="500" alt="diagram" /></p>
+<p align="center"><img src="diagrams/cost-tiers.png" width="750" alt="diagram" /></p>
 
 | Tier | Model | Cost | Use For |
 |:---:|-------|:---:|---------|
