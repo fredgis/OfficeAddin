@@ -138,25 +138,29 @@ export async function insertTextBoxToCurrentSlide(
 
 /**
  * Insert an image (left 60%) and insights text (right 40%) on a new slide.
- * IMPORTANT: Image must be inserted BEFORE text boxes. If text boxes are added
- * first, they get selected and setSelectedDataAsync tries to put the image
- * inside the text box, causing GeneralException.
+ * Chains two proven working functions: insertImageToNewSlide (creates slide,
+ * adds title, inserts image) then insertTextBoxToCurrentSlide (adds insights).
  */
 export async function insertImageWithInsights(
   imageBase64: string,
   insightsText: string,
   title?: string
 ): Promise<void> {
-  const titleHeight = title ? 35 : 0;
-  const titleGap = title ? MARGIN / 2 : 0;
-  const contentTop = MARGIN + titleHeight + titleGap;
+  const contentTop = MARGIN + (title ? 35 + MARGIN / 2 : 0);
   const contentHeight = SLIDE_HEIGHT - contentTop - MARGIN;
   const imgWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.6;
   const txtLeft = MARGIN + imgWidth + MARGIN;
   const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
-  let slideCount = 0;
 
-  // Step 1: Create slide only (no text boxes yet!)
+  // Step 1: Create new slide with image on the left 60% (this works reliably)
+  const imgPos: InsertPosition = {
+    left: MARGIN,
+    top: contentTop,
+    width: imgWidth,
+    height: contentHeight,
+  };
+
+  let slideCount = 0;
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
     slides.add();
@@ -164,43 +168,31 @@ export async function insertImageWithInsights(
 
     slides.load('items/id');
     await context.sync();
+
     slideCount = slides.items.length;
-  });
-
-  // Step 2: Navigate to the new slide and insert image first
-  await goToSlideByIndex(slideCount - 1);
-  await setImageAsync(imageBase64, {
-    left: MARGIN,
-    top: contentTop,
-    width: imgWidth,
-    height: contentHeight,
-  });
-
-  // Step 3: Now add text boxes (after image is already placed)
-  await PowerPoint.run(async (context) => {
-    const slides = context.presentation.slides;
-    slides.load('items/id');
-    await context.sync();
-
-    const newSlide = slides.items[slides.items.length - 1];
+    const newSlide = slides.items[slideCount - 1];
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
         left: MARGIN,
         top: 5,
         width: SLIDE_WIDTH - 2 * MARGIN,
-        height: titleHeight,
+        height: 35,
       });
     }
 
-    newSlide.shapes.addTextBox(insightsText, {
-      left: txtLeft,
-      top: contentTop,
-      width: txtWidth,
-      height: contentHeight,
-    });
-
     await context.sync();
+  });
+
+  await goToSlideByIndex(slideCount - 1);
+  await setImageAsync(imageBase64, imgPos);
+
+  // Step 2: Add insights text box to the right 40% (this also works reliably)
+  await insertTextBoxToCurrentSlide(insightsText, {
+    left: txtLeft,
+    top: contentTop,
+    width: txtWidth,
+    height: contentHeight,
   });
 }
 

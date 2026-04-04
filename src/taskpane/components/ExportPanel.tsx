@@ -132,9 +132,9 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
           icon={<ArrowExportLtr24Regular />}
           onClick={handleExport}
           disabled={exportMutation.isPending}
-          aria-label={`Export page ${page.displayName} as PNG`}
+          aria-label={`Export page ${page.displayName}`}
         >
-          Export as PNG
+          Export
         </Button>
       </div>
 
