@@ -58,10 +58,10 @@ export function usePages(reportId: string | null) {
 export function useExportPage() {
   const { getToken } = useAuth();
   return useMutation({
-    mutationFn: async ({ reportId, pageName, format }: { reportId: string; pageName: string; format?: 'PNG' | 'JPEG' }) => {
+    mutationFn: async ({ reportId, pageName, format, workspaceId }: { reportId: string; pageName: string; format?: 'PNG'; workspaceId?: string }) => {
       const token = await getToken();
       const client = new PowerBIClient(token);
-      return client.exportPage(reportId, pageName, format || 'PNG');
+      return client.exportPage(reportId, pageName, format || 'PNG', workspaceId);
     },
   });
 }

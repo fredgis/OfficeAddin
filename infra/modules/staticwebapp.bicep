@@ -4,7 +4,11 @@ param tags object = {}
 param appInsightsConnectionString string = ''
 param entraClientId string = ''
 param entraTenantId string = ''
-param keyVaultName string = ''
+
+@secure()
+@description('Entra client secret value (SWA does not support Key Vault references)')
+param entraClientSecret string = ''
+
 param openAiEndpoint string = ''
 param openAiDeployment string = 'gpt-4o'
 
@@ -31,7 +35,7 @@ resource appSettings 'Microsoft.Web/staticSites/config@2023-12-01' = {
   properties: {
     ENTRA_CLIENT_ID: entraClientId
     ENTRA_TENANT_ID: entraTenantId
-    ENTRA_CLIENT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=entra-client-secret)'
+    ENTRA_CLIENT_SECRET: entraClientSecret
     AZURE_OPENAI_ENDPOINT: openAiEndpoint
     AZURE_OPENAI_DEPLOYMENT: openAiDeployment
     APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectionString

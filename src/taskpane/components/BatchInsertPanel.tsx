@@ -46,6 +46,7 @@ const useStyles = makeStyles({
 
 interface BatchInsertPanelProps {
   reportId: string;
+  workspaceId: string;
   pages: ReportPage[];
   exportCache: Record<string, ExportResult>;
   onExportComplete: (result: ExportResult) => void;
@@ -53,6 +54,7 @@ interface BatchInsertPanelProps {
 
 export const BatchInsertPanel: React.FC<BatchInsertPanelProps> = ({
   reportId,
+  workspaceId,
   pages,
   exportCache,
   onExportComplete,
@@ -108,6 +110,7 @@ export const BatchInsertPanel: React.FC<BatchInsertPanelProps> = ({
               reportId,
               pageName: page.name,
               format: 'PNG',
+              workspaceId,
             });
             onExportComplete(result);
           } catch {

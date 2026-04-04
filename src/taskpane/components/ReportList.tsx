@@ -13,7 +13,13 @@ import {
   SkeletonItem,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
+import {
+  DataBarVertical24Regular,
+  Search20Regular,
+  ArrowSync20Regular,
+} from '@fluentui/react-icons';
 import { useReports } from '../hooks/usePowerBI';
 import type { Report } from '../types/powerbi';
 
@@ -24,21 +30,40 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalS,
     width: '100%',
   },
+  label: {
+    color: tokens.colorNeutralForeground3,
+  },
   card: {
     cursor: 'pointer',
-    '&:hover': {
+    transitionProperty: 'background-color, box-shadow',
+    transitionDuration: '150ms',
+    ':hover': {
       backgroundColor: tokens.colorNeutralBackground1Hover,
+      boxShadow: tokens.shadow4,
     },
+  },
+  reportIcon: {
+    color: tokens.colorBrandForeground1,
   },
   empty: {
     textAlign: 'center',
-    paddingTop: tokens.spacingVerticalL,
-    paddingBottom: tokens.spacingVerticalL,
+    paddingTop: tokens.spacingVerticalXXL,
+    paddingBottom: tokens.spacingVerticalXXL,
+    color: tokens.colorNeutralForeground3,
   },
   skeleton: {
     display: 'flex',
     flexDirection: 'column',
     gap: tokens.spacingVerticalS,
+    paddingTop: tokens.spacingVerticalM,
+  },
+  errorRetry: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+  },
+  count: {
+    color: tokens.colorNeutralForeground3,
   },
 });
 
@@ -63,7 +88,7 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
     return (
       <Skeleton aria-label="Loading reports">
         <div className={styles.skeleton}>
-          <SkeletonItem size={32} />
+          <SkeletonItem size={36} />
           <SkeletonItem size={48} />
           <SkeletonItem size={48} />
           <SkeletonItem size={48} />
@@ -74,12 +99,17 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
 
   if (error) {
     return (
-      <div role="alert">
+      <div className={styles.errorRetry} role="alert">
         <MessageBar intent="error">
           <MessageBarBody>Failed to load reports: {(error as Error).message}</MessageBarBody>
         </MessageBar>
-        <Button appearance="subtle" size="small" onClick={() => refetch()} aria-label="Retry loading reports"
-          style={{ marginTop: '8px', minHeight: '44px' }}>
+        <Button
+          appearance="subtle"
+          size="small"
+          icon={<ArrowSync20Regular />}
+          onClick={() => refetch()}
+          aria-label="Retry loading reports"
+        >
           Retry
         </Button>
       </div>
@@ -89,6 +119,7 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
   if (!reports || reports.length === 0) {
     return (
       <div className={styles.empty}>
+        <DataBarVertical24Regular style={{ fontSize: '32px', display: 'block', margin: '0 auto 8px' }} />
         <Text>No reports in this workspace.</Text>
       </div>
     );
@@ -98,10 +129,12 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
     <div className={styles.root}>
       <Input
         aria-label="Filter reports"
-        placeholder="Filter reports…"
+        placeholder="Search reports…"
+        contentBefore={<Search20Regular />}
         value={filter}
         onChange={(_e, data) => setFilter(data.value)}
       />
+      <Text className={styles.count} size={200}>{filtered.length} report{filtered.length !== 1 ? 's' : ''}</Text>
       {filtered.map((report) => (
         <Card
           key={report.id}
@@ -118,7 +151,8 @@ export const ReportList: React.FC<ReportListProps> = ({ workspaceId, onReportSel
           tabIndex={0}
         >
           <CardHeader
-            header={<Body1>{report.name}</Body1>}
+            image={<DataBarVertical24Regular className={styles.reportIcon} />}
+            header={<Text weight="semibold">{report.name}</Text>}
             description={report.datasetId ? <Caption1>Dataset: {report.datasetId}</Caption1> : undefined}
           />
         </Card>

@@ -9,7 +9,12 @@ import {
   MessageBarBody,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
+import {
+  SlideAdd24Regular,
+  SlideLayout24Regular,
+} from '@fluentui/react-icons';
 import type { ExportResult } from '../types/powerbi';
 import {
   insertImageToCurrentSlide,
@@ -23,7 +28,9 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalM,
     width: '100%',
-    paddingTop: tokens.spacingVerticalM,
+  },
+  sectionLabel: {
+    color: tokens.colorNeutralForeground3,
   },
   preview: {
     display: 'flex',
@@ -33,8 +40,17 @@ const useStyles = makeStyles({
   },
   previewImage: {
     maxWidth: '100%',
-    borderRadius: tokens.borderRadiusMedium,
-    boxShadow: tokens.shadow4,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    boxShadow: tokens.shadow8,
+    transitionProperty: 'box-shadow',
+    transitionDuration: '200ms',
+    ':hover': {
+      boxShadow: tokens.shadow16,
+    },
+  },
+  layoutGroup: {
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   actions: {
     display: 'flex',
@@ -94,7 +110,7 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
   return (
     <div className={styles.root}>
       <div className={styles.preview}>
-        <Text weight="semibold">Preview</Text>
+        <Text className={styles.sectionLabel} size={200} weight="semibold">PREVIEW</Text>
         <img
           className={styles.previewImage}
           src={`data:${exportResult.mimeType};base64,${exportResult.image}`}
@@ -102,37 +118,40 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
         />
       </div>
 
-      <Text weight="semibold">Layout</Text>
+      <Text className={styles.sectionLabel} size={200} weight="semibold">LAYOUT</Text>
       <RadioGroup
+        className={styles.layoutGroup}
         layout="horizontal"
         value={layout}
         onChange={(_e, data) => setLayout(data.value as LayoutOption)}
       >
-        <Radio value="full" label="Full Slide" />
-        <Radio value="left-half" label="Left Half" />
-        <Radio value="right-half" label="Right Half" />
-        <Radio value="quarter-tl" label="Quarter ↖" />
-        <Radio value="quarter-tr" label="Quarter ↗" />
-        <Radio value="quarter-bl" label="Quarter ↙" />
-        <Radio value="quarter-br" label="Quarter ↘" />
+        <Radio value="full" label="Full" />
+        <Radio value="left-half" label="Left" />
+        <Radio value="right-half" label="Right" />
+        <Radio value="quarter-tl" label="↖" />
+        <Radio value="quarter-tr" label="↗" />
+        <Radio value="quarter-bl" label="↙" />
+        <Radio value="quarter-br" label="↘" />
       </RadioGroup>
 
       <div className={styles.actions}>
         <Button
           appearance="primary"
+          icon={<SlideLayout24Regular />}
           onClick={handleInsertCurrent}
           disabled={inserting}
           aria-label="Insert image into current slide"
         >
-          Insert into Current Slide
+          Current Slide
         </Button>
         <Button
           appearance="secondary"
+          icon={<SlideAdd24Regular />}
           onClick={handleInsertNew}
           disabled={inserting}
           aria-label="Insert image into new slide"
         >
-          Insert into New Slide
+          New Slide
         </Button>
       </div>
 

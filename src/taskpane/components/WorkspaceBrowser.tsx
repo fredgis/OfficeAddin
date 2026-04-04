@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { Button, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, Divider, makeStyles, tokens } from '@fluentui/react-components';
+import { LayerDiagonal24Regular } from '@fluentui/react-icons';
 import { WorkspacePicker } from './WorkspacePicker';
 import { ReportList } from './ReportList';
 import { PageList } from './PageList';
@@ -80,6 +81,7 @@ export const WorkspaceBrowser: React.FC = () => {
           <div className={styles.modeToggle}>
             <Button
               size="small"
+              icon={<LayerDiagonal24Regular />}
               appearance={batchMode ? 'primary' : 'subtle'}
               onClick={() => setBatchMode((prev) => !prev)}
               aria-label={batchMode ? 'Exit batch insert mode' : 'Enter batch insert mode'}
@@ -90,6 +92,7 @@ export const WorkspaceBrowser: React.FC = () => {
           {batchMode && pages ? (
             <BatchInsertPanel
               reportId={selectedReport.id}
+              workspaceId={selectedWorkspace!.id}
               pages={pages}
               exportCache={exportCache}
               onExportComplete={handleExportComplete}
@@ -108,6 +111,7 @@ export const WorkspaceBrowser: React.FC = () => {
         <ExportPanel
           reportId={selectedReport.id}
           page={selectedPage}
+          workspaceId={selectedWorkspace!.id}
           onExportComplete={handleExportComplete}
           cachedResult={exportCache[`${selectedReport.id}:${selectedPage.name}`] || null}
         />

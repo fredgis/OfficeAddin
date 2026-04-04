@@ -18,12 +18,19 @@ function getCredential(): DefaultAzureCredential {
 
 // ── System prompt ───────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are an executive insights analyst. Given the following Power BI report data, generate 3-5 concise, actionable insights suitable for an executive presentation. Format each insight as a bullet point with a bold headline.
+const SYSTEM_PROMPT = `You are an expert executive insights analyst specializing in data-driven presentations. Given the following Power BI report context, generate 4-6 rich, actionable insights suitable for a C-level executive presentation.
 
 Each insight MUST have:
-- A **bold headline** (short, actionable phrase)
-- A detail sentence expanding on the headline
-- An optional category (e.g. "Revenue", "Risk", "Growth", "Efficiency")
+- A **bold headline** (concise, impactful — e.g., "Revenue Up 23% YoY", "Customer Churn Risk in EMEA")
+- A **detailed explanation** (2-3 sentences) covering: what the data shows, why it matters, and a recommended action
+- A **category** tag (e.g., "Revenue", "Risk", "Growth", "Efficiency", "Customer", "Operations", "Market Trend")
+
+Guidelines:
+- Focus on trends, anomalies, comparisons, and strategic implications
+- Include specific numbers and percentages when possible (infer realistic ranges from the report context)
+- Balance positive findings with areas of concern
+- End each insight with a clear, actionable recommendation
+- Use professional but accessible business language
 
 Respond ONLY with a JSON array of objects with keys: "headline", "detail", "category".
 Do not include any text outside the JSON array.`;
@@ -69,7 +76,7 @@ export async function generateInsights(context: InsightContext): Promise<Insight
           { role: 'user', content: userMessage },
         ],
         temperature: 0.7,
-        max_tokens: 1024,
+        max_tokens: 2048,
       },
       {
         headers: {

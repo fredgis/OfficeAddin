@@ -30,7 +30,7 @@ export interface PowerBIListResponse<T> {
 export interface ExportRequest {
   reportId: string;
   pageName: string;
-  format: 'PNG' | 'JPEG';
+  format: 'PNG' | 'PDF';
   width?: number;
   height?: number;
 }

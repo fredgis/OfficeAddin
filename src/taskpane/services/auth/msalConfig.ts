@@ -28,6 +28,11 @@ export const loginRequest = {
   scopes: [`api://${CLIENT_ID}/access_as_user`],
 };
 
+/** Minimal scopes for interactive account sign-in before acquiring the API token. */
+export const interactiveLoginRequest = {
+  scopes: ['openid', 'profile'],
+};
+
 /** Scopes for Power BI REST API (used in OBO on the backend). */
 export const powerBiScopes = {
   scopes: ['https://analysis.windows.net/powerbi/api/.default'],

@@ -60,7 +60,7 @@ interface InsightsPanelProps {
 }
 
 function formatInsightsText(insights: InsightItem[]): string {
-  return insights.map((item, i) => `${i + 1}. ${item.headline}\n${item.body}`).join('\n\n');
+  return insights.map((item, i) => `${i + 1}. ${item.headline}\n${item.detail}`).join('\n\n');
 }
 
 export const InsightsPanel: React.FC<InsightsPanelProps> = ({
@@ -172,7 +172,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
                 {insights.map((item, index) => (
                   <Card key={index} className={styles.insightCard}>
                     <Text weight="semibold">{item.headline}</Text>
-                    <Text>{item.body}</Text>
+                    <Text>{item.detail}</Text>
                   </Card>
                 ))}
               </div>

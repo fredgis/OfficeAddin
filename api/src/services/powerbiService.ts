@@ -3,6 +3,13 @@ import { Workspace, Report, Page, PowerBIListResponse, ExportRequest, ExportStat
 
 const POWER_BI_BASE_URL = 'https://api.powerbi.com/v1.0/myorg';
 
+class HttpStatusError extends Error {
+  constructor(message: string, readonly statusCode: number) {
+    super(message);
+    this.name = 'HttpStatusError';
+  }
+}
+
 // Re-export types so existing consumers still work
 export type { Workspace, Report, Page, ExportRequest, ExportStatus, ExportResponse } from '../types/powerbi.js';
 /** @deprecated Use Page instead */
@@ -20,11 +27,11 @@ function handlePbiError(err: unknown): never {
         ? JSON.stringify((err.response.data as Record<string, unknown>).error ?? err.response.data)
         : err.message;
 
-    if (status === 401) throw new Error('Power BI: unauthorized – token may be expired');
-    if (status === 403) throw new Error('Power BI: forbidden – insufficient permissions');
-    if (status === 404) throw new Error('Power BI: resource not found');
-    if (status === 429) throw new Error('Power BI: rate limit exceeded – try again later');
-    throw new Error(`Power BI error (${status}): ${detail}`);
+    if (status === 401) throw new HttpStatusError(`Power BI: unauthorized – ${detail}`, 401);
+    if (status === 403) throw new HttpStatusError(`Power BI: forbidden – ${detail}`, 403);
+    if (status === 404) throw new HttpStatusError(`Power BI: resource not found – ${detail}`, 404);
+    if (status === 429) throw new HttpStatusError('Power BI: rate limit exceeded – try again later', 429);
+    throw new HttpStatusError(`Power BI error (${status}): ${detail}`, status);
   }
   throw err;
 }
@@ -93,7 +100,7 @@ export class PowerBIService {
     return getPages(this.accessToken, reportId);
   }
 
-  async startExport(reportId: string, pageName: string, format: 'PNG' | 'JPEG' = 'PNG', width?: number, height?: number): Promise<string> {
+  async startExport(reportId: string, pageName: string, format: 'PNG' | 'PDF' = 'PNG', width?: number, height?: number, workspaceId?: string): Promise<string> {
     try {
       const pageConfig: Record<string, unknown> = { pageName };
       if (width || height) {
@@ -103,8 +110,12 @@ export class PowerBIService {
         };
       }
 
+      const basePath = workspaceId
+        ? `${POWER_BI_BASE_URL}/groups/${encodeURIComponent(workspaceId)}/reports/${encodeURIComponent(reportId)}/ExportTo`
+        : `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/ExportTo`;
+
       const response = await axios.post(
-        `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/ExportTo`,
+        basePath,
         {
           format,
           powerBIReportConfiguration: {
@@ -119,36 +130,36 @@ export class PowerBIService {
     }
   }
 
-  async getExportStatus(reportId: string, exportId: string): Promise<ExportStatus> {
+  async getExportStatus(reportId: string, exportId: string, workspaceId?: string): Promise<ExportStatus> {
     try {
-      const response = await axios.get(
-        `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/exports/${encodeURIComponent(exportId)}`,
-        { headers: this.headers },
-      );
+      const basePath = workspaceId
+        ? `${POWER_BI_BASE_URL}/groups/${encodeURIComponent(workspaceId)}/reports/${encodeURIComponent(reportId)}/exports/${encodeURIComponent(exportId)}`
+        : `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/exports/${encodeURIComponent(exportId)}`;
+      const response = await axios.get(basePath, { headers: this.headers });
       return response.data;
     } catch (err) {
       handlePbiError(err);
     }
   }
 
-  async getExportFile(reportId: string, exportId: string): Promise<Buffer> {
+  async getExportFile(reportId: string, exportId: string, workspaceId?: string): Promise<Buffer> {
     try {
-      const response = await axios.get(
-        `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/exports/${encodeURIComponent(exportId)}/file`,
-        { headers: this.headers, responseType: 'arraybuffer' },
-      );
+      const basePath = workspaceId
+        ? `${POWER_BI_BASE_URL}/groups/${encodeURIComponent(workspaceId)}/reports/${encodeURIComponent(reportId)}/exports/${encodeURIComponent(exportId)}/file`
+        : `${POWER_BI_BASE_URL}/reports/${encodeURIComponent(reportId)}/exports/${encodeURIComponent(exportId)}/file`;
+      const response = await axios.get(basePath, { headers: this.headers, responseType: 'arraybuffer' });
       return Buffer.from(response.data);
     } catch (err) {
       handlePbiError(err);
     }
   }
 
-  async pollExportToCompletion(reportId: string, exportId: string, timeoutMs: number = 300000): Promise<ExportStatus> {
+  async pollExportToCompletion(reportId: string, exportId: string, timeoutMs: number = 300000, workspaceId?: string): Promise<ExportStatus> {
     const startTime = Date.now();
     let delay = 2000;
 
     while (Date.now() - startTime < timeoutMs) {
-      const status = await this.getExportStatus(reportId, exportId);
+      const status = await this.getExportStatus(reportId, exportId, workspaceId);
 
       if (status.status === 'Succeeded') return status;
       if (status.status === 'Failed') throw new Error('Export failed');

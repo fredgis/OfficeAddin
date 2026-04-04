@@ -2,7 +2,6 @@
   "name": "fabric-storyboard-api",
   "version": "1.0.0",
   "description": "Azure Functions backend for Fabric Storyboard Copilot",
-  "main": "dist/functions/*.js",
   "scripts": {
     "build": "tsc",
     "start": "func start",
@@ -11,14 +10,13 @@
     "test": "jest --config jest.config.js"
   },
   "dependencies": {
-    "@azure/functions": "^4",
     "@azure/identity": "^4.13.1",
     "@azure/msal-node": "^2.0.0",
     "axios": "^1.7.0",
-    "jsonwebtoken": "^9.0.3",
-    "jwks-rsa": "^4.0.1"
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
+    "@azure/functions": "^4",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.0.0",

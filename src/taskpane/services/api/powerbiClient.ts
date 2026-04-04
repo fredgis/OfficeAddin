@@ -31,13 +31,14 @@ export interface ExportResult {
 
 export interface InsightItem {
   headline: string;
-  body: string;
+  detail: string;
+  category?: string;
 }
 
 export interface InsightResult {
   insights: InsightItem[];
-  summary: string;
-  tokensUsed?: number;
+  generatedAt?: string;
+  model?: string;
 }
 
 export class PowerBIClient {
@@ -62,8 +63,8 @@ export class PowerBIClient {
     return data;
   }
 
-  async exportPage(reportId: string, pageName: string, format: 'PNG' | 'JPEG' = 'PNG'): Promise<ExportResult> {
-    const { data } = await this.client.post('/export', { reportId, pageName, format });
+  async exportPage(reportId: string, pageName: string, format: 'PNG' = 'PNG', workspaceId?: string): Promise<ExportResult> {
+    const { data } = await this.client.post('/export', { reportId, pageName, format, workspaceId });
     return data;
   }
 

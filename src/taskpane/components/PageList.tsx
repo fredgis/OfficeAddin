@@ -10,9 +10,16 @@ import {
   Button,
   Skeleton,
   SkeletonItem,
+  Badge,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
+import {
+  Document24Regular,
+  ArrowExportLtr20Regular,
+  ArrowSync20Regular,
+} from '@fluentui/react-icons';
 import { usePages } from '../hooks/usePowerBI';
 import type { ReportPage } from '../types/powerbi';
 
@@ -25,8 +32,11 @@ const useStyles = makeStyles({
   },
   card: {
     cursor: 'pointer',
-    '&:hover': {
+    transitionProperty: 'background-color, box-shadow',
+    transitionDuration: '150ms',
+    ':hover': {
       backgroundColor: tokens.colorNeutralBackground1Hover,
+      boxShadow: tokens.shadow4,
     },
   },
   cardContent: {
@@ -35,15 +45,28 @@ const useStyles = makeStyles({
     alignItems: 'center',
     width: '100%',
   },
+  pageIcon: {
+    color: tokens.colorBrandForeground1,
+  },
   empty: {
     textAlign: 'center',
-    paddingTop: tokens.spacingVerticalL,
-    paddingBottom: tokens.spacingVerticalL,
+    paddingTop: tokens.spacingVerticalXXL,
+    paddingBottom: tokens.spacingVerticalXXL,
+    color: tokens.colorNeutralForeground3,
   },
   skeleton: {
     display: 'flex',
     flexDirection: 'column',
     gap: tokens.spacingVerticalS,
+    paddingTop: tokens.spacingVerticalM,
+  },
+  errorRetry: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+  },
+  count: {
+    color: tokens.colorNeutralForeground3,
   },
 });
 
@@ -71,12 +94,17 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
 
   if (error) {
     return (
-      <div role="alert">
+      <div className={styles.errorRetry} role="alert">
         <MessageBar intent="error">
           <MessageBarBody>Failed to load pages: {(error as Error).message}</MessageBarBody>
         </MessageBar>
-        <Button appearance="subtle" size="small" onClick={() => refetch()} aria-label="Retry loading pages"
-          style={{ marginTop: '8px', minHeight: '44px' }}>
+        <Button
+          appearance="subtle"
+          size="small"
+          icon={<ArrowSync20Regular />}
+          onClick={() => refetch()}
+          aria-label="Retry loading pages"
+        >
           Retry
         </Button>
       </div>
@@ -86,6 +114,7 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
   if (!pages || pages.length === 0) {
     return (
       <div className={styles.empty}>
+        <Document24Regular style={{ fontSize: '32px', display: 'block', margin: '0 auto 8px' }} />
         <Text>No pages found.</Text>
       </div>
     );
@@ -93,10 +122,12 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
 
   return (
     <div className={styles.root}>
+      <Text className={styles.count} size={200}>{pages.length} page{pages.length !== 1 ? 's' : ''}</Text>
       {pages.map((page) => (
         <Card
           key={page.name}
           className={styles.card}
+          size="small"
           role="button"
           aria-label={`Select page ${page.displayName}`}
           onClick={() => onPageSelected(page)}
@@ -110,13 +141,15 @@ export const PageList: React.FC<PageListProps> = ({ reportId, onPageSelected, on
         >
           <div className={styles.cardContent}>
             <CardHeader
-              header={<Body1>{page.displayName}</Body1>}
+              image={<Document24Regular className={styles.pageIcon} />}
+              header={<Text weight="semibold">{page.displayName}</Text>}
               description={<Caption1>Page {page.order}</Caption1>}
             />
             {onExportPage && (
               <Button
                 size="small"
                 appearance="subtle"
+                icon={<ArrowExportLtr20Regular />}
                 aria-label={`Export page ${page.displayName}`}
                 onClick={(e) => {
                   e.stopPropagation();

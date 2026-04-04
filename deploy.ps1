@@ -258,7 +258,10 @@ Invoke-Step "Configuring Entra ID" {
             # Power BI Service: Report.Read.All, Dataset.Read.All, Workspace.Read.All
             az ad app permission add --id $EntraClientId `
                 --api "00000009-0000-0000-c000-000000000000" `
-                --api-permissions "4ae1bf56-f562-4747-b7bc-2fa0874ed46f=Scope" `
+                --api-permissions `
+                    "4ae1bf56-f562-4747-b7bc-2fa0874ed46f=Scope" `
+                    "7f33e027-4039-419b-938e-2f8ca153e68e=Scope" `
+                    "b2f1b2fa-f35c-407c-979c-a858a808ba85=Scope" `
                 --output none 2>$null
 
             # Pre-authorize Office client applications (must include scopes too, or Graph overwrites the api block)

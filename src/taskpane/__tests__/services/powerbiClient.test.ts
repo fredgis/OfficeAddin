@@ -43,7 +43,10 @@ describe('PowerBIClient', () => {
       expect(mockedAxios.create).toHaveBeenCalledWith(
         expect.objectContaining({
           baseURL: '/api',
-          headers: expect.objectContaining({ Authorization: 'Bearer my-token' }),
+          headers: expect.objectContaining({
+            Authorization: 'Bearer my-token',
+            'X-Fabric-Storyboard-Authorization': 'my-token',
+          }),
         }),
       );
     });

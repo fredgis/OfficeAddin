@@ -88,7 +88,7 @@ module web './modules/staticwebapp.bicep' = {
     appInsightsConnectionString: monitoring.outputs.connectionString
     entraClientId: entraClientId
     entraTenantId: entraTenantId
-    keyVaultName: keyVault.outputs.name
+    entraClientSecret: entraClientSecret
     openAiEndpoint: deployOpenAi ? 'https://${openAiResourceName}.openai.azure.com/' : openAiEndpoint
     openAiDeployment: openAiDeployment
   }

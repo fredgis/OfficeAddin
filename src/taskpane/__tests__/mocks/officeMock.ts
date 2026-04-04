@@ -14,8 +14,15 @@ const mockSetSelectedDataAsync = jest.fn(
   }
 );
 
+const mockGoToByIdAsync = jest.fn(
+  (_id: unknown, _goToType: unknown, callback: (result: unknown) => void) => {
+    callback(mockAsyncResult('succeeded'));
+  }
+);
+
 const mockDocument = {
   setSelectedDataAsync: mockSetSelectedDataAsync,
+  goToByIdAsync: mockGoToByIdAsync,
 };
 
 const mockContext = {
@@ -57,6 +64,7 @@ const mockPowerPointRun = jest.fn(async (callback: (ctx: unknown) => Promise<voi
 (global as Record<string, unknown>).Office = {
   context: mockContext,
   CoercionType: { Image: 'image' },
+  GoToType: { Slide: 'slide' },
   AsyncResultStatus: { Succeeded: 0, Failed: 1 },
   onReady: jest.fn((callback?: () => void) => {
     callback?.();
@@ -70,6 +78,7 @@ const mockPowerPointRun = jest.fn(async (callback: (ctx: unknown) => Promise<voi
 
 export {
   mockSetSelectedDataAsync,
+  mockGoToByIdAsync,
   mockDocument,
   mockContext,
   mockSlides,

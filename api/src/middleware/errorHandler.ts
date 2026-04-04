@@ -13,6 +13,14 @@ export function createErrorResponse(message: string, code: number = 500): HttpRe
 }
 
 export function handleError(error: unknown): HttpResponseInit {
+  if (typeof error === 'object' && error !== null && 'statusCode' in error) {
+    const typedError = error as { statusCode?: number; message?: string };
+    const statusCode = typedError.statusCode;
+    if (typeof statusCode === 'number' && statusCode >= 400 && statusCode < 600) {
+      return createErrorResponse(typedError.message || 'Request failed', statusCode);
+    }
+  }
+
   // Axios errors carry the upstream HTTP status
   if (typeof error === 'object' && error !== null && 'response' in error) {
     const axiosErr = error as { response?: { status?: number; data?: { error?: { message?: string } } }; message?: string };
@@ -25,8 +33,20 @@ export function handleError(error: unknown): HttpResponseInit {
   }
 
   if (error instanceof Error) {
-    if (error.message.includes('authorization') || error.message.includes('Token')) {
-      return createErrorResponse(error.message, 401);
+    const normalizedMessage = error.message.toLowerCase();
+    if (
+      normalizedMessage.includes('authorization') ||
+      normalizedMessage.includes('token') ||
+      normalizedMessage.includes('bearer') ||
+      normalizedMessage.includes('audience') ||
+      normalizedMessage.includes('issuer') ||
+      normalizedMessage.includes('jwt') ||
+      normalizedMessage.includes('signing key') ||
+      normalizedMessage.includes('forbidden') ||
+      normalizedMessage.includes('permission')
+    ) {
+      const statusCode = normalizedMessage.includes('forbidden') || normalizedMessage.includes('permission') ? 403 : 401;
+      return createErrorResponse(error.message, statusCode);
     }
     return createErrorResponse(error.message, 500);
   }

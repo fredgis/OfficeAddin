@@ -10,7 +10,12 @@ import {
   SkeletonItem,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
+import {
+  Folder24Regular,
+  ArrowSync20Regular,
+} from '@fluentui/react-icons';
 import { useWorkspaces } from '../hooks/usePowerBI';
 import type { Workspace } from '../types/powerbi';
 
@@ -18,15 +23,28 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
+    gap: tokens.spacingVerticalM,
     width: '100%',
+  },
+  label: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    color: tokens.colorNeutralForeground3,
   },
   empty: {
     textAlign: 'center',
-    paddingTop: tokens.spacingVerticalL,
-    paddingBottom: tokens.spacingVerticalL,
+    paddingTop: tokens.spacingVerticalXXL,
+    paddingBottom: tokens.spacingVerticalXXL,
+    color: tokens.colorNeutralForeground3,
   },
   skeleton: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+    paddingTop: tokens.spacingVerticalM,
+  },
+  errorRetry: {
     display: 'flex',
     flexDirection: 'column',
     gap: tokens.spacingVerticalS,
@@ -53,7 +71,7 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
     return (
       <Skeleton aria-label="Loading workspaces">
         <div className={styles.skeleton}>
-          <SkeletonItem size={32} />
+          <SkeletonItem size={36} />
         </div>
       </Skeleton>
     );
@@ -61,12 +79,17 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
 
   if (error) {
     return (
-      <div role="alert">
+      <div className={styles.errorRetry} role="alert">
         <MessageBar intent="error">
           <MessageBarBody>Failed to load workspaces: {(error as Error).message}</MessageBarBody>
         </MessageBar>
-        <Button appearance="subtle" size="small" onClick={() => refetch()} aria-label="Retry loading workspaces"
-          style={{ marginTop: '8px', minHeight: '44px' }}>
+        <Button
+          appearance="subtle"
+          size="small"
+          icon={<ArrowSync20Regular />}
+          onClick={() => refetch()}
+          aria-label="Retry loading workspaces"
+        >
           Retry
         </Button>
       </div>
@@ -76,6 +99,7 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
   if (!workspaces || workspaces.length === 0) {
     return (
       <div className={styles.empty}>
+        <Folder24Regular style={{ fontSize: '32px', marginBottom: '8px', display: 'block', margin: '0 auto 8px' }} />
         <Text>No workspaces found.</Text>
       </div>
     );
@@ -83,6 +107,7 @@ export const WorkspacePicker: React.FC<WorkspacePickerProps> = ({ onWorkspaceSel
 
   return (
     <div className={styles.root}>
+      <Text className={styles.label} size={200} weight="semibold">SELECT WORKSPACE</Text>
       <Combobox
         aria-label="Select a workspace"
         placeholder="Search workspaces…"

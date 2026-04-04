@@ -51,6 +51,23 @@ function setImageAsync(base64Image: string, pos: InsertPosition): Promise<void> 
   });
 }
 
+/** Navigate to a slide by 1-based index, ensuring it is ready for content insertion */
+function goToSlideAsync(slideIndex: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    Office.context.document.goToByIdAsync(
+      slideIndex,
+      Office.GoToType.Slide,
+      (result) => {
+        if (result.status === Office.AsyncResultStatus.Failed) {
+          reject(new Error(result.error.message));
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
 /**
  * Insert a base64 image into the current slide
  */
@@ -64,6 +81,7 @@ export async function insertImageToCurrentSlide(base64Image: string, layout: Lay
  */
 export async function insertImageToNewSlide(base64Image: string, layout: LayoutOption = 'full', title?: string): Promise<void> {
   const pos = LAYOUT_POSITIONS[layout];
+  let slideCount = 0;
 
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
@@ -73,8 +91,8 @@ export async function insertImageToNewSlide(base64Image: string, layout: LayoutO
     slides.load('items/id');
     await context.sync();
 
-    const newSlide = slides.items[slides.items.length - 1];
-    context.presentation.setSelectedSlides([newSlide.id]);
+    slideCount = slides.items.length;
+    const newSlide = slides.items[slideCount - 1];
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
@@ -88,6 +106,8 @@ export async function insertImageToNewSlide(base64Image: string, layout: LayoutO
     await context.sync();
   });
 
+  // Navigate to the new slide using Common API before inserting the image
+  await goToSlideAsync(slideCount);
   await setImageAsync(base64Image, pos);
 }
 
@@ -131,6 +151,7 @@ export async function insertImageWithInsights(
   const contentHeight = SLIDE_HEIGHT - contentTop - MARGIN;
   const imgWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.6;
   const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
+  let slideCount = 0;
 
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
@@ -140,8 +161,8 @@ export async function insertImageWithInsights(
     slides.load('items/id');
     await context.sync();
 
-    const newSlide = slides.items[slides.items.length - 1];
-    context.presentation.setSelectedSlides([newSlide.id]);
+    slideCount = slides.items.length;
+    const newSlide = slides.items[slideCount - 1];
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
@@ -161,6 +182,8 @@ export async function insertImageWithInsights(
     await context.sync();
   });
 
+  // Navigate to the new slide using Common API before inserting the image
+  await goToSlideAsync(slideCount);
   await setImageAsync(imageBase64, {
     left: MARGIN,
     top: contentTop,

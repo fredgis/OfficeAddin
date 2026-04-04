@@ -1,9 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   Button,
   Spinner,
-  RadioGroup,
-  Radio,
   Text,
   Card,
   CardHeader,
@@ -11,9 +9,16 @@ import {
   Caption1,
   MessageBar,
   MessageBarBody,
+  Divider,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
+import {
+  ArrowExportLtr24Regular,
+  ArrowSync24Regular,
+  Image24Regular,
+} from '@fluentui/react-icons';
 import { useExportPage } from '../hooks/usePowerBI';
 import type { ReportPage, ExportResult } from '../types/powerbi';
 import { InsertPanel } from './InsertPanel';
@@ -24,12 +29,19 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
+    gap: tokens.spacingVerticalL,
     width: '100%',
-    paddingTop: tokens.spacingVerticalM,
   },
-  header: {
-    fontWeight: tokens.fontWeightSemibold,
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+  },
+  sectionLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    color: tokens.colorNeutralForeground3,
   },
   formatGroup: {
     display: 'flex',
@@ -47,8 +59,10 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     alignItems: 'center',
     gap: tokens.spacingVerticalS,
-    paddingTop: tokens.spacingVerticalM,
-    paddingBottom: tokens.spacingVerticalM,
+    paddingTop: tokens.spacingVerticalL,
+    paddingBottom: tokens.spacingVerticalL,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    backgroundColor: tokens.colorNeutralBackground3,
   },
   preview: {
     display: 'flex',
@@ -58,14 +72,31 @@ const useStyles = makeStyles({
   },
   previewImage: {
     maxWidth: '100%',
-    borderRadius: tokens.borderRadiusMedium,
-    boxShadow: tokens.shadow4,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    boxShadow: tokens.shadow8,
+    transitionProperty: 'box-shadow',
+    transitionDuration: '200ms',
+    ':hover': {
+      boxShadow: tokens.shadow16,
+    },
+  },
+  pageHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalS,
+  },
+  pageIcon: {
+    color: tokens.colorBrandForeground1,
+    fontSize: '20px',
   },
 });
+
+type ExportFormat = 'PNG';
 
 interface ExportPanelProps {
   reportId: string;
   page: ReportPage;
+  workspaceId: string;
   onExportComplete?: (result: ExportResult) => void;
   cachedResult?: ExportResult | null;
 }
@@ -73,48 +104,40 @@ interface ExportPanelProps {
 export const ExportPanel: React.FC<ExportPanelProps> = ({
   reportId,
   page,
+  workspaceId,
   onExportComplete,
   cachedResult,
 }) => {
   const styles = useStyles();
-  const [format, setFormat] = useState<'PNG' | 'JPEG'>('PNG');
   const exportMutation = useExportPage();
 
   const handleExport = useCallback(() => {
     exportMutation.mutate(
-      { reportId, pageName: page.name, format },
+      { reportId, pageName: page.name, format: 'PNG', workspaceId },
       {
         onSuccess: (result) => {
           onExportComplete?.(result);
         },
       }
     );
-  }, [reportId, page.name, format, exportMutation, onExportComplete]);
+  }, [reportId, page.name, workspaceId, exportMutation, onExportComplete]);
 
   const result = exportMutation.data || cachedResult;
 
   return (
     <div className={styles.root}>
-      <Card>
+      <Card size="small">
         <CardHeader
-          header={<Body1 className={styles.header}>Export: {page.displayName}</Body1>}
+          image={<Image24Regular className={styles.pageIcon} />}
+          header={<Text weight="semibold">{page.displayName}</Text>}
           description={<Caption1>Page {page.order}</Caption1>}
         />
       </Card>
 
-      <Text weight="semibold">Format</Text>
-      <RadioGroup
-        layout="horizontal"
-        value={format}
-        onChange={(_e, data) => setFormat(data.value as 'PNG' | 'JPEG')}
-      >
-        <Radio value="PNG" label="PNG" />
-        <Radio value="JPEG" label="JPEG" />
-      </RadioGroup>
-
       <div className={styles.actions}>
         <Button
           appearance="primary"
+          icon={<ArrowExportLtr24Regular />}
           onClick={handleExport}
           disabled={exportMutation.isPending}
           aria-label={`Export page ${page.displayName}`}
@@ -139,9 +162,10 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
           <Button
             appearance="subtle"
             size="small"
+            icon={<ArrowSync24Regular />}
             onClick={handleExport}
             aria-label="Retry export"
-            style={{ marginTop: '8px', minHeight: '44px' }}
+            style={{ marginTop: '8px' }}
           >
             Retry Export
           </Button>
@@ -150,11 +174,14 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
 
       {result && !exportMutation.isPending && (
         <>
+          <Divider />
           <InsertPanel exportResult={result} pageName={page.displayName} />
+          <Divider />
           <InsightsPanel
             reportId={reportId}
             pageName={page.displayName}
           />
+          <Divider />
           <CombinedInsertPanel
             reportId={reportId}
             page={page}
