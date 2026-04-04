@@ -138,8 +138,9 @@ export async function insertTextBoxToCurrentSlide(
 
 /**
  * Insert an image (left 60%) and insights text (right 40%) on a new slide.
- * Creates slide + text boxes in one PowerPoint.run, then navigates with
- * GoToType.Index (0-based) and inserts the image via Common API.
+ * IMPORTANT: Image must be inserted BEFORE text boxes. If text boxes are added
+ * first, they get selected and setSelectedDataAsync tries to put the image
+ * inside the text box, causing GeneralException.
  */
 export async function insertImageWithInsights(
   imageBase64: string,
@@ -155,6 +156,7 @@ export async function insertImageWithInsights(
   const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
   let slideCount = 0;
 
+  // Step 1: Create slide only (no text boxes yet!)
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
     slides.add();
@@ -162,9 +164,25 @@ export async function insertImageWithInsights(
 
     slides.load('items/id');
     await context.sync();
-
     slideCount = slides.items.length;
-    const newSlide = slides.items[slideCount - 1];
+  });
+
+  // Step 2: Navigate to the new slide and insert image first
+  await goToSlideByIndex(slideCount - 1);
+  await setImageAsync(imageBase64, {
+    left: MARGIN,
+    top: contentTop,
+    width: imgWidth,
+    height: contentHeight,
+  });
+
+  // Step 3: Now add text boxes (after image is already placed)
+  await PowerPoint.run(async (context) => {
+    const slides = context.presentation.slides;
+    slides.load('items/id');
+    await context.sync();
+
+    const newSlide = slides.items[slides.items.length - 1];
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
@@ -183,15 +201,6 @@ export async function insertImageWithInsights(
     });
 
     await context.sync();
-  });
-
-  // Navigate using 0-based index then insert image
-  await goToSlideByIndex(slideCount - 1);
-  await setImageAsync(imageBase64, {
-    left: MARGIN,
-    top: contentTop,
-    width: imgWidth,
-    height: contentHeight,
   });
 }
 

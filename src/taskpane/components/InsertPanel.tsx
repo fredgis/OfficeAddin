@@ -12,14 +12,12 @@ import {
   shorthands,
 } from '@fluentui/react-components';
 import {
-  SlideAdd24Regular,
   SlideLayout24Regular,
   ImageMultiple24Regular,
 } from '@fluentui/react-icons';
 import type { ExportResult } from '../types/powerbi';
 import {
   insertImageToCurrentSlide,
-  insertImageToNewSlide,
   LayoutOption,
 } from '../services/officeInsert';
 
@@ -107,20 +105,6 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
     }
   }, [exportResult, layout, clearMessages]);
 
-  const handleInsertNew = useCallback(async () => {
-    if (!exportResult) return;
-    clearMessages();
-    setInserting(true);
-    try {
-      await insertImageToNewSlide(exportResult.image, layout, pageName);
-      setSuccessMsg('Image inserted into a new slide.');
-    } catch (err) {
-      setErrorMsg(`Insert failed: ${(err as Error).message}`);
-    } finally {
-      setInserting(false);
-    }
-  }, [exportResult, layout, pageName, clearMessages]);
-
   if (!exportResult) return null;
 
   return (
@@ -162,16 +146,7 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
           disabled={inserting}
           aria-label="Insert image into current slide"
         >
-          Current Slide
-        </Button>
-        <Button
-          appearance="secondary"
-          icon={<SlideAdd24Regular />}
-          onClick={handleInsertNew}
-          disabled={inserting}
-          aria-label="Insert image into new slide"
-        >
-          New Slide
+          Insert to Current Slide
         </Button>
       </div>
 
