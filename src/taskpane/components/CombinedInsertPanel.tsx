@@ -116,7 +116,7 @@ export const CombinedInsertPanel: React.FC<CombinedInsertPanelProps> = ({
         <Text weight="semibold" size={300}>One-Click Insert</Text>
       </div>
       <Text className={styles.description}>
-        Image (60%) + AI insights (40%) on a new slide
+        Image (60%) + AI insights (40%) on the current slide
       </Text>
 
       <Button
@@ -140,7 +140,7 @@ export const CombinedInsertPanel: React.FC<CombinedInsertPanelProps> = ({
       {step === 'done' && (
         <MessageBar intent="success" icon={<CheckmarkCircle24Regular />}>
           <MessageBarBody>
-            <Text>Slide created with page image and AI insights.</Text>
+            <Text>Image and AI insights added to current slide.</Text>
           </MessageBarBody>
         </MessageBar>
       )}
