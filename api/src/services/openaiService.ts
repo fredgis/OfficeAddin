@@ -18,19 +18,22 @@ function getCredential(): DefaultAzureCredential {
 
 // ── System prompt ───────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are an expert executive insights analyst specializing in data-driven presentations. Given the following Power BI report context, generate 4-6 rich, actionable insights suitable for a C-level executive presentation.
+const SYSTEM_PROMPT_WITH_IMAGE = `You are an executive insights analyst. You are given a screenshot of a Power BI report page. Analyze the charts, tables, KPIs, and data visualizations in the image and generate 3-5 concise, actionable insights suitable for an executive presentation.
 
 Each insight MUST have:
-- A **bold headline** (concise, impactful — e.g., "Revenue Up 23% YoY", "Customer Churn Risk in EMEA")
-- A **detailed explanation** (2-3 sentences) covering: what the data shows, why it matters, and a recommended action
-- A **category** tag (e.g., "Revenue", "Risk", "Growth", "Efficiency", "Customer", "Operations", "Market Trend")
+- A **bold headline** (short, actionable phrase)
+- A detail sentence referencing specific numbers, trends, or patterns visible in the report
+- A category (e.g. "Revenue", "Risk", "Growth", "Efficiency", "Trend", "Anomaly")
 
-Guidelines:
-- Focus on trends, anomalies, comparisons, and strategic implications
-- Include specific numbers and percentages when possible (infer realistic ranges from the report context)
-- Balance positive findings with areas of concern
-- End each insight with a clear, actionable recommendation
-- Use professional but accessible business language
+Respond ONLY with a JSON array of objects with keys: "headline", "detail", "category".
+Do not include any text outside the JSON array.`;
+
+const SYSTEM_PROMPT_TEXT_ONLY = `You are an executive insights analyst. Given the following Power BI report metadata, generate 3-5 concise, actionable insights suitable for an executive presentation. Since you don't have the actual data, provide analytical observations and questions an executive should ask based on the report/page name and context.
+
+Each insight MUST have:
+- A **bold headline** (short, actionable phrase)
+- A detail sentence expanding on the headline
+- A category (e.g. "Revenue", "Risk", "Growth", "Efficiency")
 
 Respond ONLY with a JSON array of objects with keys: "headline", "detail", "category".
 Do not include any text outside the JSON array.`;
@@ -55,7 +58,7 @@ async function buildAuthHeaders(oboToken?: string): Promise<Record<string, strin
 export async function generateInsights(context: InsightContext): Promise<InsightItem[]> {
   const endpoint = process.env.AZURE_OPENAI_ENDPOINT || '';
   const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || '';
-  const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-02-01';
+  const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-10-21';
 
   if (!endpoint) {
     throw new Error('AZURE_OPENAI_ENDPOINT environment variable is not configured');
@@ -64,19 +67,18 @@ export async function generateInsights(context: InsightContext): Promise<Insight
     throw new Error('AZURE_OPENAI_DEPLOYMENT environment variable is not configured');
   }
 
-  const userMessage = buildUserMessage(context);
+  const hasImage = !!context.imageBase64;
+  const systemPrompt = hasImage ? SYSTEM_PROMPT_WITH_IMAGE : SYSTEM_PROMPT_TEXT_ONLY;
+  const messages = buildMessages(context, systemPrompt, hasImage);
   const url = `${endpoint.replace(/\/+$/, '')}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
 
   try {
     const response = await axios.post(
       url,
       {
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: userMessage },
-        ],
+        messages,
         temperature: 0.7,
-        max_tokens: 2048,
+        max_tokens: 1024,
       },
       {
         headers: {
@@ -84,6 +86,8 @@ export async function generateInsights(context: InsightContext): Promise<Insight
           ...(await buildAuthHeaders(context.openAIToken)),
         },
         timeout: 60_000,
+        maxBodyLength: 20 * 1024 * 1024, // 20MB for image payloads
+        maxContentLength: 20 * 1024 * 1024,
       },
     );
 
@@ -100,7 +104,36 @@ export async function generateInsights(context: InsightContext): Promise<Insight
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function buildUserMessage(context: InsightContext): string {
+/** Build the OpenAI messages array. Uses multimodal content when an image is available. */
+function buildMessages(context: InsightContext, systemPrompt: string, hasImage: boolean): Array<Record<string, unknown>> {
+  const messages: Array<Record<string, unknown>> = [
+    { role: 'system', content: systemPrompt },
+  ];
+
+  if (hasImage) {
+    // GPT-4o vision: send image + text context as multimodal content
+    const contentParts: Array<Record<string, unknown>> = [
+      {
+        type: 'image_url',
+        image_url: {
+          url: `data:image/png;base64,${context.imageBase64}`,
+          detail: 'high',
+        },
+      },
+      {
+        type: 'text',
+        text: buildTextContext(context),
+      },
+    ];
+    messages.push({ role: 'user', content: contentParts });
+  } else {
+    messages.push({ role: 'user', content: buildTextContext(context) });
+  }
+
+  return messages;
+}
+
+function buildTextContext(context: InsightContext): string {
   const parts: string[] = [
     `Report: ${context.reportName || context.reportId}`,
     `Page: ${context.pageName}`,

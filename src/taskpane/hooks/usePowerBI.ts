@@ -58,7 +58,7 @@ export function usePages(reportId: string | null) {
 export function useExportPage() {
   const { getToken } = useAuth();
   return useMutation({
-    mutationFn: async ({ reportId, pageName, format, workspaceId }: { reportId: string; pageName: string; format?: 'PNG'; workspaceId?: string }) => {
+    mutationFn: async ({ reportId, pageName, format, workspaceId }: { reportId: string; pageName: string; format?: 'PNG' | 'PDF'; workspaceId?: string }) => {
       const token = await getToken();
       const client = new PowerBIClient(token);
       return client.exportPage(reportId, pageName, format || 'PNG', workspaceId);
@@ -75,6 +75,7 @@ export function useGenerateInsights() {
       reportName?: string;
       workspaceName?: string;
       datasetId?: string;
+      imageBase64?: string;
       customPrompt?: string;
     }) => {
       const token = await getToken();

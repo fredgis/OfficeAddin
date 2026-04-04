@@ -56,6 +56,7 @@ interface InsightsPanelProps {
   reportName?: string;
   workspaceName?: string;
   datasetId?: string;
+  imageBase64?: string;
   onInsightsGenerated?: (result: InsightResult) => void;
 }
 
@@ -69,6 +70,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
   reportName,
   workspaceName,
   datasetId,
+  imageBase64,
   onInsightsGenerated,
 }) => {
   const styles = useStyles();
@@ -94,6 +96,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
         reportName,
         workspaceName,
         datasetId,
+        imageBase64,
         customPrompt: customPrompt || undefined,
       },
       {
@@ -104,7 +107,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
         },
       }
     );
-  }, [reportId, pageName, reportName, workspaceName, datasetId, customPrompt, insightsMutation, clearMessages, onInsightsGenerated]);
+  }, [reportId, pageName, reportName, workspaceName, datasetId, imageBase64, customPrompt, insightsMutation, clearMessages, onInsightsGenerated]);
 
   const handleInsertText = useCallback(async () => {
     clearMessages();
@@ -126,7 +129,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
       <Card>
         <CardHeader
           header={<Body1 className={styles.header}>AI Insights</Body1>}
-          description={<Caption1>Generate executive insights for this report page</Caption1>}
+          description={<Caption1>{imageBase64 ? 'AI will analyze the exported report image' : 'Generate insights based on report metadata'}</Caption1>}
         />
       </Card>
 

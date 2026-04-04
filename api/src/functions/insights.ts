@@ -24,6 +24,7 @@ export async function insightsHandler(request: HttpRequest, context: InvocationC
       reportName: body.reportName,
       dataContext: body.dataContext,
       customPrompt: body.customPrompt,
+      imageBase64: body.imageBase64,
       openAIToken,
     });
 

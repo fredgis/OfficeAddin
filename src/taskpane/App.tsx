@@ -66,6 +66,7 @@ const useStyles = makeStyles({
   content: {
     flex: '1',
     overflowY: 'auto',
+    overflowX: 'hidden',
     paddingTop: tokens.spacingVerticalL,
     paddingBottom: tokens.spacingVerticalXXL,
     paddingLeft: tokens.spacingHorizontalL,

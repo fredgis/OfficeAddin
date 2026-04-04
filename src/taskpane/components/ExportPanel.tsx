@@ -1,7 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Button,
   Spinner,
+  RadioGroup,
+  Radio,
   Text,
   Card,
   CardHeader,
@@ -91,7 +93,7 @@ const useStyles = makeStyles({
   },
 });
 
-type ExportFormat = 'PNG';
+type ExportFormat = 'PNG' | 'PDF';
 
 interface ExportPanelProps {
   reportId: string;
@@ -109,18 +111,19 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
   cachedResult,
 }) => {
   const styles = useStyles();
+  const [format, setFormat] = useState<ExportFormat>('PNG');
   const exportMutation = useExportPage();
 
   const handleExport = useCallback(() => {
     exportMutation.mutate(
-      { reportId, pageName: page.name, format: 'PNG', workspaceId },
+      { reportId, pageName: page.name, format, workspaceId },
       {
         onSuccess: (result) => {
           onExportComplete?.(result);
         },
       }
     );
-  }, [reportId, page.name, workspaceId, exportMutation, onExportComplete]);
+  }, [reportId, page.name, format, workspaceId, exportMutation, onExportComplete]);
 
   const result = exportMutation.data || cachedResult;
 
@@ -133,6 +136,18 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
           description={<Caption1>Page {page.order}</Caption1>}
         />
       </Card>
+
+      <div className={styles.section}>
+        <Text className={styles.sectionLabel} size={200} weight="semibold">FORMAT</Text>
+        <RadioGroup
+          layout="horizontal"
+          value={format}
+          onChange={(_e, data) => setFormat(data.value as ExportFormat)}
+        >
+          <Radio value="PNG" label="PNG" />
+          <Radio value="PDF" label="PDF" />
+        </RadioGroup>
+      </div>
 
       <div className={styles.actions}>
         <Button
@@ -180,6 +195,7 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
           <InsightsPanel
             reportId={reportId}
             pageName={page.displayName}
+            imageBase64={result?.image}
           />
           <Divider />
           <CombinedInsertPanel

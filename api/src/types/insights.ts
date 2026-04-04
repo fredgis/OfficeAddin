@@ -6,6 +6,7 @@ export interface InsightRequest {
   reportName?: string;
   dataContext?: string;
   customPrompt?: string;
+  imageBase64?: string;
 }
 
 export interface InsightItem {
@@ -27,5 +28,6 @@ export interface InsightContext {
   reportName?: string;
   dataContext?: string;
   customPrompt?: string;
+  imageBase64?: string;
   openAIToken: string;
 }
