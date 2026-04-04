@@ -676,7 +676,7 @@ img { border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 " lang="en-US" data-marpit-pagination="7" style="--paginate:true;--theme:uncover;--style:@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&amp;display=swap')
 ;" data-marpit-pagination-total="42" data-size="16:9">
 <h1 id="architecture">Architecture</h1>
-<p align="center"><img src="diagrams/architecture.png" width="900" /></p>
+<p align="center"><img src="diagrams/architecture.png" width="750" /></p>
 <table>
 <thead>
 <tr>
@@ -1169,10 +1169,14 @@ img { border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 " lang="en-US" data-marpit-pagination="11" style="--paginate:true;--theme:uncover;--style:@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&amp;display=swap')
 ;" data-marpit-pagination-total="42" data-size="16:9">
 <h1 id="our-squad-8-specialized-agents">Our Squad: 8 Specialized Agents</h1>
-<p align="center"><img src="diagrams/squad-agents.png" width="900" alt="diagram" /></p>
+<p align="center"><img src="diagrams/squad-agents.png" width="850" alt="diagram" /></p>
+<div style="font-size:0.65em; margin-top:0.2em;">
 <table>
 <thead>
 <tr>
+<th>Agent</th>
+<th>Model</th>
+<th>Role</th>
 <th>Agent</th>
 <th>Model</th>
 <th>Role</th>
@@ -1181,46 +1185,39 @@ img { border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 <tbody>
 <tr>
 <td><img class="emoji" draggable="false" alt="🏗️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f3d7.svg" data-marp-twemoji=""/> <strong>Lead</strong></td>
-<td>Claude Sonnet 4</td>
-<td>Architecture, task routing, code reviews</td>
+<td>Sonnet 4</td>
+<td>Architecture &amp; routing</td>
+<td><img class="emoji" draggable="false" alt="🧠" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f9e0.svg" data-marp-twemoji=""/> <strong>AI</strong></td>
+<td>Sonnet 4</td>
+<td>Prompt engineering</td>
 </tr>
 <tr>
 <td><img class="emoji" draggable="false" alt="⚛️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/269b.svg" data-marp-twemoji=""/> <strong>Frontend</strong></td>
-<td>Claude Sonnet 4</td>
-<td>React, Office.js, Fluent UI components</td>
+<td>Sonnet 4</td>
+<td>React, Office.js</td>
+<td><img class="emoji" draggable="false" alt="🚀" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f680.svg" data-marp-twemoji=""/> <strong>Infra</strong></td>
+<td>Haiku 4.5</td>
+<td>Bicep, SWA, CI/CD</td>
 </tr>
 <tr>
 <td><img class="emoji" draggable="false" alt="🔧" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f527.svg" data-marp-twemoji=""/> <strong>Backend</strong></td>
-<td>Claude Sonnet 4</td>
-<td>Azure Functions, Power BI API, REST</td>
+<td>Sonnet 4</td>
+<td>Functions, REST API</td>
+<td><img class="emoji" draggable="false" alt="🧪" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f9ea.svg" data-marp-twemoji=""/> <strong>Tester</strong></td>
+<td>Haiku 4.5</td>
+<td>Jest, mocks</td>
 </tr>
 <tr>
 <td><img class="emoji" draggable="false" alt="🔐" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f510.svg" data-marp-twemoji=""/> <strong>Auth</strong></td>
-<td>Claude Sonnet 4</td>
-<td>Entra ID, MSAL.js, SSO, OBO flow</td>
-</tr>
-<tr>
-<td><img class="emoji" draggable="false" alt="🧠" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f9e0.svg" data-marp-twemoji=""/> <strong>AI</strong></td>
-<td>Claude Sonnet 4</td>
-<td>Azure OpenAI, prompt engineering</td>
-</tr>
-<tr>
-<td><img class="emoji" draggable="false" alt="🚀" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f680.svg" data-marp-twemoji=""/> <strong>Infra</strong></td>
-<td>Claude Haiku 4.5</td>
-<td>Bicep, azd, SWA, GitHub Actions</td>
-</tr>
-<tr>
-<td><img class="emoji" draggable="false" alt="🧪" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f9ea.svg" data-marp-twemoji=""/> <strong>Tester</strong></td>
-<td>Claude Haiku 4.5</td>
-<td>Jest, mocks, integration tests</td>
-</tr>
-<tr>
+<td>Sonnet 4</td>
+<td>Entra ID, MSAL, OBO</td>
 <td><img class="emoji" draggable="false" alt="📋" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.2/assets/svg/1f4cb.svg" data-marp-twemoji=""/> <strong>Scribe</strong></td>
-<td>Claude Haiku 4.5</td>
-<td>Decision log, docs, session history</td>
+<td>Haiku 4.5</td>
+<td>Docs &amp; decision log</td>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-paginate="true" data-theme="uncover" data-style="@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&amp;display=swap');
 

@@ -166,7 +166,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Architecture
 
-<p align="center"><img src="diagrams/architecture.png" width="900" /></p>
+<p align="center"><img src="diagrams/architecture.png" width="750" /></p>
 
 | Layer | Technology | Role |
 |-------|-----------|------|
@@ -242,18 +242,18 @@ A project estimated at **43 man-days** using conventional development
 
 # Our Squad: 8 Specialized Agents
 
-<p align="center"><img src="diagrams/squad-agents.png" width="900" alt="diagram" /></p>
+<p align="center"><img src="diagrams/squad-agents.png" width="850" alt="diagram" /></p>
 
-| Agent | Model | Role |
-|-------|-------|------|
-| 🏗️ **Lead** | Claude Sonnet 4 | Architecture, task routing, code reviews |
-| ⚛️ **Frontend** | Claude Sonnet 4 | React, Office.js, Fluent UI components |
-| 🔧 **Backend** | Claude Sonnet 4 | Azure Functions, Power BI API, REST |
-| 🔐 **Auth** | Claude Sonnet 4 | Entra ID, MSAL.js, SSO, OBO flow |
-| 🧠 **AI** | Claude Sonnet 4 | Azure OpenAI, prompt engineering |
-| 🚀 **Infra** | Claude Haiku 4.5 | Bicep, azd, SWA, GitHub Actions |
-| 🧪 **Tester** | Claude Haiku 4.5 | Jest, mocks, integration tests |
-| 📋 **Scribe** | Claude Haiku 4.5 | Decision log, docs, session history |
+<div style="font-size:0.65em; margin-top:0.2em;">
+
+| Agent | Model | Role | Agent | Model | Role |
+|-------|-------|------|-------|-------|------|
+| 🏗️ **Lead** | Sonnet 4 | Architecture & routing | 🧠 **AI** | Sonnet 4 | Prompt engineering |
+| ⚛️ **Frontend** | Sonnet 4 | React, Office.js | 🚀 **Infra** | Haiku 4.5 | Bicep, SWA, CI/CD |
+| 🔧 **Backend** | Sonnet 4 | Functions, REST API | 🧪 **Tester** | Haiku 4.5 | Jest, mocks |
+| 🔐 **Auth** | Sonnet 4 | Entra ID, MSAL, OBO | 📋 **Scribe** | Haiku 4.5 | Docs & decision log |
+
+</div>
 
 ---
 

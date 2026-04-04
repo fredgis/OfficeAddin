@@ -1,10 +1,14 @@
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '11px'}}}%%
-graph LR
-    Lead["🏗️ Lead<br/>Sonnet 4"] --> FE["⚛️ Frontend<br/>Sonnet 4"] & BE["🔧 Backend<br/>Sonnet 4"] & Auth["🔐 Auth<br/>Sonnet 4"] & AI["🧠 AI<br/>Sonnet 4"]
-    Lead --> Infra["🚀 Infra<br/>Haiku 4.5"] & Test["🧪 Tester<br/>Haiku 4.5"]
-    Scribe["📋 Scribe<br/>Haiku 4.5"] -.->|"logs"| Lead
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '14px', 'nodeSpacing': 20, 'rankSpacing': 50}}}%%
+graph TB
+    Scribe["📋 Scribe<br/>Haiku 4.5"] -.->|logs| Lead["🏗️ Lead Agent<br/>Sonnet 4"]
+    Lead --> FE["⚛️ Frontend<br/>Sonnet 4"]
+    Lead --> BE["🔧 Backend<br/>Sonnet 4"]
+    Lead --> Auth["🔐 Auth<br/>Sonnet 4"]
+    Lead --> AI["🧠 AI<br/>Sonnet 4"]
+    Lead --> Infra["🚀 Infra<br/>Haiku 4.5"]
+    Lead --> Test["🧪 Tester<br/>Haiku 4.5"]
 
-    style Lead fill:#ef4444,stroke:#dc2626,color:#fff
+    style Lead fill:#ef4444,stroke:#dc2626,color:#fff,font-weight:bold
     style FE fill:#3b82f6,stroke:#2563eb,color:#fff
     style BE fill:#f97316,stroke:#ea580c,color:#fff
     style Auth fill:#eab308,stroke:#ca8a04,color:#000
