@@ -372,14 +372,14 @@ The entire Azure deployment — Entra ID, infrastructure, build, tests, deploy �
 
 <img src="DEPLOY1.png" width="480" style="border-radius:8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);" />
 
-*Deployment in progress — agent orchestrates all 11 steps*
+*Add-in result — chart image + AI-generated insights*
 
 </div>
 <div class="col">
 
 <img src="DEPLOY2.png" width="480" style="border-radius:8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);" />
 
-*Deployment complete — production URL, secrets, redeploy command*
+*One-click deployment — Entra ID, infra, build, tests, deploy*
 
 </div>
 </div>
