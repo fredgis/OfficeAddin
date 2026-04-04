@@ -180,22 +180,7 @@ A **PowerPoint Office Add-in** connecting Microsoft Fabric & Power BI to slide a
 
 # Architecture
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
-graph LR
-    TP["Taskpane<br/>React + Fluent UI"] -->|"Custom Auth Header"| API["Azure Functions<br/>Node.js API"]
-    API --> MW["Auth Middleware<br/>JWT + OBO"]
-    MW --> ENTRA["Entra ID"]
-    API --> PBI["Power BI<br/>REST API"]
-    API --> AOAI["Azure OpenAI<br/>GPT-4o Vision"]
-
-    style TP fill:#6366f1,stroke:#4f46e5,color:#fff
-    style API fill:#0078d4,stroke:#005a9e,color:#fff
-    style MW fill:#f59e0b,stroke:#d97706,color:#000
-    style ENTRA fill:#fbbf24,stroke:#b45309,color:#000
-    style PBI fill:#10b981,stroke:#059669,color:#fff
-    style AOAI fill:#8b5cf6,stroke:#6d28d9,color:#fff
-```
+``![w:900 center](diagrams/architecture.png)``
 
 | Layer | Technology | Role |
 |-------|-----------|------|
@@ -271,22 +256,7 @@ A project estimated at **43 man-days** using conventional development
 
 # Our Squad: 8 Specialized Agents
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '11px'}}}%%
-graph LR
-    Lead["🏗️ Lead<br/>Sonnet 4"] --> FE["⚛️ Frontend<br/>Sonnet 4"] & BE["🔧 Backend<br/>Sonnet 4"] & Auth["🔐 Auth<br/>Sonnet 4"] & AI["🧠 AI<br/>Sonnet 4"]
-    Lead --> Infra["🚀 Infra<br/>Haiku 4.5"] & Test["🧪 Tester<br/>Haiku 4.5"]
-    Scribe["📋 Scribe<br/>Haiku 4.5"] -.->|"logs"| Lead
-
-    style Lead fill:#ef4444,stroke:#dc2626,color:#fff
-    style FE fill:#3b82f6,stroke:#2563eb,color:#fff
-    style BE fill:#f97316,stroke:#ea580c,color:#fff
-    style Auth fill:#eab308,stroke:#ca8a04,color:#000
-    style AI fill:#22c55e,stroke:#16a34a,color:#fff
-    style Infra fill:#06b6d4,stroke:#0891b2,color:#fff
-    style Test fill:#a855f7,stroke:#9333ea,color:#fff
-    style Scribe fill:#6b7280,stroke:#4b5563,color:#fff
-```
+``![w:900 center](diagrams/squad-agents.png)``
 
 | Agent | Model | Role |
 |-------|-------|------|
@@ -436,13 +406,7 @@ Built with **GitHub Copilot CLI** (Claude Opus 4.6) after the Squad scaffold
 </div>
 </div>
 
-```mermaid
-%%{init: {'theme': 'dark', 'themeVariables': {'pie1': '#22c55e', 'pie2': '#ef4444', 'pie3': '#3b82f6', 'pieStrokeWidth': '2px'}}}%%
-pie title Actual Effort Breakdown (13.3h total)
-    "v0.1 Scaffold (Squad) — 1.3h" : 1.3
-    "Integration Debugging — 7.5h" : 7.5
-    "v1 Features & Polish — 4.5h" : 4.5
-```
+``![w:500 center](diagrams/effort-pie.png)``
 
 ---
 
@@ -524,30 +488,7 @@ pie title Actual Effort Breakdown (13.3h total)
 
 # Copilot CLI + Squad: Complementary, Not Competing
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
-graph LR
-    subgraph SQUAD["Squad Framework"]
-        S1["🎯 Team · Charters · Roles"]
-        S2["🔄 Routing · Parallel Exec"]
-        S3["🧠 Persistent Memory"]
-    end
-    subgraph CLI["GitHub Copilot CLI"]
-        C1["🔐 Auth · Model Access"]
-        C2["🛠️ Tool Execution"]
-        C3["📁 Context Mgmt"]
-    end
-    SQUAD -->|"runs on top of"| CLI
-
-    style SQUAD fill:#f0e7ff,stroke:#7c3aed,color:#1e293b
-    style CLI fill:#dbeafe,stroke:#3b82f6,color:#1e293b
-    style S1 fill:#8b5cf6,stroke:#7c3aed,color:#fff
-    style S2 fill:#a78bfa,stroke:#7c3aed,color:#fff
-    style S3 fill:#c4b5fd,stroke:#7c3aed,color:#1e293b
-    style C1 fill:#3b82f6,stroke:#2563eb,color:#fff
-    style C2 fill:#60a5fa,stroke:#3b82f6,color:#fff
-    style C3 fill:#93c5fd,stroke:#3b82f6,color:#1e293b
-```
+``![w:800 center](diagrams/cli-squad.png)``
 
 | | Copilot CLI | Squad |
 |---|---|---|
@@ -617,17 +558,7 @@ graph LR
 
 > *"Autonomy is not a switch — it's a progression. You earn it."* — Tamir Dresher
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
-graph LR
-    O["1️⃣ Observe"] --> A["2️⃣ Assist"] --> Act["3️⃣ Act"] --> C["4️⃣ Coordinate"] --> Auto["5️⃣ Autonomize"]
-
-    style O fill:#dbeafe,stroke:#3b82f6,color:#1e293b
-    style A fill:#bfdbfe,stroke:#2563eb,color:#1e293b
-    style Act fill:#93c5fd,stroke:#1d4ed8,color:#fff
-    style C fill:#60a5fa,stroke:#1e40af,color:#fff
-    style Auto fill:#3b82f6,stroke:#1e3a8a,color:#fff
-```
+``![w:900 center](diagrams/scaling.png)``
 
 | Level | Mode | Human Role | Squad Role |
 |:---:|------|-----|-------|
@@ -709,20 +640,7 @@ Pre-built agents for common domains — ready to integrate into Squad or Fleet
 
 # The Complete Toolchain
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px'}}}%%
-graph LR
-    SPEC["📋 Speckit<br/>Specification"] --> SQUAD["🎬 Squad / Fleet<br/>Development"]
-    STORE["🏪 Agent Store<br/>Components"] --> SQUAD
-    SQUAD --> CLI["⚡ Copilot CLI<br/>Execution"]
-    CLI --> PROD["🚀 Production"]
-
-    style SPEC fill:#6366f1,stroke:#4f46e5,color:#fff
-    style SQUAD fill:#8b5cf6,stroke:#7c3aed,color:#fff
-    style STORE fill:#f59e0b,stroke:#d97706,color:#fff
-    style CLI fill:#3b82f6,stroke:#2563eb,color:#fff
-    style PROD fill:#22c55e,stroke:#16a34a,color:#fff
-```
+``![w:900 center](diagrams/toolchain.png)``
 
 | Tool | Role | When |
 |------|------|------|
@@ -765,18 +683,7 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 # Cost Optimization: Right Model, Right Job
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
-graph TD
-    OPUS["⭐ Opus 4.6 — 5-10× — Coordinator"]
-    S["Sonnet 4 — 2-3× — Frontend · Backend · Auth · AI"]
-    H["Haiku 4.5 — 1× — Tester · Infra · Scribe"]
-    OPUS --> S --> H
-
-    style OPUS fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style S fill:#3b82f6,stroke:#2563eb,color:#fff
-    style H fill:#22c55e,stroke:#16a34a,color:#fff
-```
+``![w:500 center](diagrams/cost-tiers.png)``
 
 | Tier | Model | Cost | Use For |
 |:---:|-------|:---:|---------|

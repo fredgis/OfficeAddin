@@ -1,0 +1,8 @@
+{
+  "theme": "base",
+  "backgroundColor": "transparent",
+  "flowchart": { "curve": "basis" },
+  "themeVariables": {
+    "fontSize": "14px"
+  }
+}

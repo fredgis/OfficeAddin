@@ -1,0 +1,12 @@
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px'}}}%%
+graph LR
+    SPEC["📋 Speckit<br/>Specification"] --> SQUAD["🎬 Squad / Fleet<br/>Development"]
+    STORE["🏪 Agent Store<br/>Components"] --> SQUAD
+    SQUAD --> CLI["⚡ Copilot CLI<br/>Execution"]
+    CLI --> PROD["🚀 Production"]
+
+    style SPEC fill:#6366f1,stroke:#4f46e5,color:#fff
+    style SQUAD fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style STORE fill:#f59e0b,stroke:#d97706,color:#fff
+    style CLI fill:#3b82f6,stroke:#2563eb,color:#fff
+    style PROD fill:#22c55e,stroke:#16a34a,color:#fff

@@ -1,0 +1,14 @@
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
+graph LR
+    TP["Taskpane<br/>React + Fluent UI"] -->|"Custom Auth Header"| API["Azure Functions<br/>Node.js API"]
+    API --> MW["Auth Middleware<br/>JWT + OBO"]
+    MW --> ENTRA["Entra ID"]
+    API --> PBI["Power BI<br/>REST API"]
+    API --> AOAI["Azure OpenAI<br/>GPT-4o Vision"]
+
+    style TP fill:#6366f1,stroke:#4f46e5,color:#fff
+    style API fill:#0078d4,stroke:#005a9e,color:#fff
+    style MW fill:#f59e0b,stroke:#d97706,color:#000
+    style ENTRA fill:#fbbf24,stroke:#b45309,color:#000
+    style PBI fill:#10b981,stroke:#059669,color:#fff
+    style AOAI fill:#8b5cf6,stroke:#6d28d9,color:#fff

@@ -1,0 +1,22 @@
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
+graph LR
+    subgraph SQUAD["Squad Framework"]
+        S1["🎯 Team · Charters · Roles"]
+        S2["🔄 Routing · Parallel Exec"]
+        S3["🧠 Persistent Memory"]
+    end
+    subgraph CLI["GitHub Copilot CLI"]
+        C1["🔐 Auth · Model Access"]
+        C2["🛠️ Tool Execution"]
+        C3["📁 Context Mgmt"]
+    end
+    SQUAD -->|"runs on top of"| CLI
+
+    style SQUAD fill:#f0e7ff,stroke:#7c3aed,color:#1e293b
+    style CLI fill:#dbeafe,stroke:#3b82f6,color:#1e293b
+    style S1 fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style S2 fill:#a78bfa,stroke:#7c3aed,color:#fff
+    style S3 fill:#c4b5fd,stroke:#7c3aed,color:#1e293b
+    style C1 fill:#3b82f6,stroke:#2563eb,color:#fff
+    style C2 fill:#60a5fa,stroke:#3b82f6,color:#fff
+    style C3 fill:#93c5fd,stroke:#3b82f6,color:#1e293b
