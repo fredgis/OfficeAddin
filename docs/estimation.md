@@ -2,7 +2,7 @@
 
 ## Actual v0.1 Delivery Metrics
 
-The v0.1 of **Fabric Storyboard Copilot** was delivered in a single working session using the Squad agent framework with GitHub Copilot.
+The v0.1 of **Fabric Storyboard Copilot** was delivered in a single working session using the Squad agent framework with GitHub Copilot. Post-v0.1 integration, debugging, and v1 features were completed using GitHub Copilot CLI.
 
 ### Timeline
 
@@ -16,20 +16,24 @@ The v0.1 of **Fabric Storyboard Copilot** was delivered in a single working sess
 | Phase 7 (UI polish, a11y, offline detection) | 10:35 | +1h08 |
 | Phase 8 (infra) — completed earlier in parallel | — | — |
 | Docs (architecture.md, README, plan status) | 10:44 | +1h17 |
-| **Total wall-clock: spec → v0.1 pushed** | | **~1h17min** |
+| **v0.1 scaffold complete** | | **~1.3h** |
+| Post-v0.1 integration debugging (Copilot CLI) | | +7.5h |
+| v1 features & polish (GPT-4o Vision, combined insert, UI) | | +4.5h |
+| **v1 deployed to Azure Static Web Apps** | | **~13.3h total** |
 
 ### Codebase Produced
 
 | Metric | Value |
 |--------|-------|
-| TypeScript files | 58 |
-| TypeScript lines of code | ~5,267 |
+| TypeScript files | 57 |
+| TypeScript lines of code | ~5,351 |
 | Documentation (Markdown) | ~5,600 lines |
 | Bicep IaC templates | 4 modules |
 | CI/CD workflows | 2 (ci.yml, deploy.yml) |
 | Test suites | 2 (frontend + backend) |
 | Tests passing | 68/68 (23 frontend + 45 backend) |
 | Phases completed | 10/10 |
+| Deployed to | Azure Static Web Apps |
 
 ### Agent Usage
 
@@ -46,14 +50,18 @@ The v0.1 of **Fabric Storyboard Copilot** was delivered in a single working sess
 
 | Item | Status | Remaining Effort |
 |------|--------|-----------------|
-| Core features (Phases 1-7) | ✅ v0.1 complete | Integration testing with real Power BI tenant |
-| Infrastructure (Phase 8) | ✅ Bicep + azd ready | First `azd up` + Entra ID app registration |
+| Core features (Phases 1-7) | ✅ Complete | — |
+| Infrastructure (Phase 8) | ✅ Deployed | — |
 | Unit tests | ✅ 68 passing | Expand coverage to >80% (~2-3h) |
+| GPT-4o Vision integration | ✅ Complete | — |
+| Combined insert (image + insights) | ✅ Complete | — |
+| UI polish (Fluent UI v9, cards, icons) | ✅ Complete | — |
+| Azure deployment (SWA) | ✅ Deployed | — |
 | E2E / integration tests | 🔲 Not started | Real Power BI + Office.js sideload testing (~4-6h) |
 | Icon assets | 🔲 Placeholder | Design real icons (~1h design) |
 | Security hardening | 🔲 Pending | CSP headers, token validation audit (~2-3h) |
 | Performance optimization | 🔲 Pending | Code splitting, lazy loading (~2h) |
-| **Total to production-ready** | | **~12-16h additional** |
+| **Total to production-ready** | | **~10-14h additional** |
 
 ### Cost Comparison: Planned vs. Actual
 
@@ -72,34 +80,68 @@ xychart-beta
 | Individual Copilot agents | ~27 days | — |
 | Squad framework (planned) | ~14 days | — |
 | **Squad framework (actual v0.1)** | — | **~1.3 hours (0.16 days)** |
+| **Total actual (v0.1 → v1 deployed)** | — | **~13.3 hours (1.66 days)** |
 
-> The actual delivery was **~270x faster** than the manual estimate and **~87x faster** than the original Squad estimate. This is partly because the agent team works at machine speed with no context-switching overhead, and partly because v0.1 is a working scaffold that still needs integration testing with real services.
+> The v0.1 scaffold was delivered **~270x faster** than the manual estimate. The complete v1 — from zero to deployed — took ~13.3 hours, representing a **~26x acceleration** compared to the manual estimate of 43 person-days.
 
 ### Post-v0.1 Integration Work (Actual)
 
-After the initial v0.1 was deployed, significant integration debugging was required. This reflects the reality that scaffolding is fast but wiring up real cloud services requires iterative troubleshooting.
+After the initial v0.1 was deployed, significant integration debugging was required using GitHub Copilot CLI. This reflects the reality that scaffolding is fast but wiring up real cloud services requires iterative troubleshooting.
 
 | Issue | Root Cause | Resolution Time (est.) |
 |-------|-----------|----------------------|
 | SWA Key Vault references | SWA does **not** support `@Microsoft.KeyVault()` — secret was a literal string | ~1h |
-| Export 400 — invalid format | JPEG is not a valid Power BI ExportToFile format; replaced with PDF | ~30min |
+| Export 400 — invalid format | JPEG is not a valid Power BI ExportToFile format; changed to PNG only | ~30min |
 | Export 403 — forbidden | Used `/reports/{id}/ExportTo` (My Workspace only); needed `/groups/{workspaceId}/...` | ~1h |
 | Auth header hijacked by SWA | SWA overwrites `Authorization`; switched to `X-Fabric-Storyboard-Authorization` | ~1h |
 | Malformed token / invalid algorithm | JWT verification against JWKS keys required `jsonwebtoken` + `jwks-rsa` | ~1h |
 | Azure OpenAI 404 | Endpoint had `/openai/v1/` appended; code already builds the path | ~15min |
 | AADSTS65001 consent error | Missing `user_impersonation` scope for Azure Cognitive Services | ~30min |
 | UI redesign with Fluent UI v9 | Added branded header, icons, card redesign, better UX | ~2h |
-| **Total post-v0.1 integration** | | **~7-8h** |
+| **Total post-v0.1 integration** | | **~7.5h** |
+
+### v1 Features & Polish (Actual)
+
+After integration was stable, additional v1 features and polish were implemented with GitHub Copilot CLI.
+
+| Feature | Description | Time (est.) |
+|---------|-----------|-------------|
+| GPT-4o Vision integration | Analyze exported report images directly with GPT-4o Vision for richer insights | ~1.5h |
+| Combined insert debugging | GeneralException fixes, goToByIdAsync issues in PowerPoint Online | ~2h |
+| UI polish iterations | Colored section headers, card sections, icons, layout refinements | ~1h |
+| **Total v1 features & polish** | | **~4.5h** |
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'pie1': '#27AE60', 'pie2': '#E74C3C', 'pie3': '#3498DB', 'pieStrokeWidth': '2px'}}}%%
 pie title Actual Total Effort Breakdown
     "v0.1 scaffold (Squad) — 1.3h" : 1.3
     "Integration debugging — 7.5h" : 7.5
-    "Remaining (E2E, hardening) — 12h" : 12
+    "v1 features & polish — 4.5h" : 4.5
 ```
 
-> 💡 **Key learning**: Agent-generated scaffolds are ~90% correct but the remaining 10% — auth token flows, API endpoint formats, SWA platform quirks — requires hands-on debugging with real services. The total effort from zero to production-ready is estimated at **~21 hours** (1.3h scaffold + 7.5h integration + ~12h remaining).
+> 💡 **Key learning**: Agent-generated scaffolds are ~90% correct but the remaining 10% — auth token flows, API endpoint formats, SWA platform quirks — requires hands-on debugging with real services. The total effort from zero to v1 deployed was **~13.3 hours** (1.3h scaffold + 7.5h integration + 4.5h v1 features). Compared to the manual estimate of 43 person-days, this represents a **~26x acceleration**.
+
+---
+
+## Development Tools
+
+This project was built entirely with AI-powered development tools, without any manual coding in a traditional IDE.
+
+### GitHub Copilot CLI
+The primary development tool. An interactive terminal assistant powered by Claude Opus 4.6 that:
+- Edits code directly via file operations (create, edit, view)
+- Runs builds, tests, and deployments in-terminal
+- Manages git commits and pushes
+- Deploys to Azure via SWA CLI
+- Debugs issues iteratively by reading error output and fixing code
+- Used for ALL post-v0.1 work: integration debugging, GPT-4o Vision, UI polish, Office.js fixes
+
+### Squad Framework
+Used for the initial v0.1 scaffolding. Squad ([github.com/bradygaster/squad](https://github.com/bradygaster/squad)) orchestrates a persistent AI agent team:
+- **8 specialist agents**: Lead, Frontend, Backend, Auth, AI, Infra, Tester, Scribe
+- **Parallel execution**: Multiple agents work simultaneously within each phase
+- **Persistent knowledge**: Each agent retains context across sessions via history files
+- Generated the complete v0.1 scaffold (57 files, 5K+ LOC, 62 tests) in ~1.3 hours
 
 ---
 

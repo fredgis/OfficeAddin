@@ -1,5 +1,7 @@
 # PowerPoint Office Add-in for Microsoft Fabric & Power BI
 
+> **Status: v1 COMPLETE** — All 10 phases implemented, 68 tests passing, deployed to Azure Static Web Apps.
+
 ## Implementation Status
 
 | Phase | Status | Commit |
@@ -250,7 +252,7 @@ sequenceDiagram
 
 ### 4.1 Backend — Export endpoint
 - `POST /api/export` — Export a report page as an image
-  - Request body: `{ reportId, pageName, workspaceId, format: "PNG" | "PDF", width?, height? }`
+  - Request body: `{ reportId, pageName, workspaceId, format: "PNG", width?, height? }`
   - Uses the Power BI Export API (workspace-scoped):
     1. `POST https://api.powerbi.com/v1.0/myorg/groups/{workspaceId}/reports/{reportId}/ExportTo` with:
        ```json
@@ -271,7 +273,8 @@ sequenceDiagram
 - Add `exportPage(reportId, pageName, workspaceId, format)` to the API client
 - Show a progress indicator while the export is running
 - Cache recently exported images to avoid redundant API calls
-- Allow the user to select image format (PNG/PDF) and optional resolution
+- Allow the user to select image resolution
+- Export format is PNG only (JPEG and PDF are not supported by the Power BI ExportToFile API for image output)
 
 **Validation**: Selecting a report page triggers an export; the image is returned successfully and can be previewed in the taskpane.
 
@@ -315,16 +318,12 @@ sequenceDiagram
 
 ### 6.1 Backend — Insights endpoint
 - `POST /api/insights` — Generate executive insights for a report/page
-  - Request body: `{ reportId, pageName, dataContext?, customPrompt? }`
+  - Request body: `{ reportId, pageName, imageBase64?, dataContext?, customPrompt? }`
   - Flow:
     1. Retrieve report metadata (title, page name, dataset info) from Power BI API
     2. Optionally query the dataset for summary data via Power BI `executeQueries` API (DAX queries)
-    3. Call Azure OpenAI GPT-4o with a system prompt + the data context:
-       ```
-       System: You are an executive insights analyst. Given the following Power BI report data,
-       generate 3-5 concise, actionable insights suitable for an executive presentation.
-       Format each insight as a bullet point with a bold headline.
-       ```
+    3. Call Azure OpenAI GPT-4o with a system prompt + the data context
+       - If `imageBase64` is provided, uses **GPT-4o Vision** to analyze the actual exported report image for richer, visual-aware insights
     4. Return the generated insights as structured text/HTML
 
 ### 6.2 Backend — DAX query support (optional enrichment)
@@ -346,11 +345,12 @@ sequenceDiagram
 
 ### 6.4 Combined insert — Image + Insights on a slide
 - One-click "Insert Page with Insights" action
-- Creates a new slide with:
+- Inserts on the **current slide** with:
   - Report page image (e.g., left 60% of slide)
   - AI insights text box (e.g., right 40% of slide)
   - Slide title from report page name
 - Predefined layout templates for consistent branding
+- Note: Uses current slide due to PowerPoint Online limitations with `goToByIdAsync`
 
 **Validation**: AI generates relevant, well-formatted insights from report data; insights are correctly inserted as text boxes; combined image+insights layout looks professional.
 

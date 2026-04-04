@@ -232,7 +232,7 @@ graph LR
 | `/api/workspaces` | GET | List user workspaces | Power BI `GET /v1.0/myorg/groups` |
 | `/api/workspaces/:id/reports` | GET | List reports in workspace | Power BI `GET /v1.0/myorg/groups/:id/reports` |
 | `/api/reports/:id/pages` | GET | List pages in report | Power BI `GET /v1.0/myorg/reports/:id/pages` |
-| `/api/export` | POST | Export page as image (PNG/PDF) | Power BI Export API (async polling) |
+| `/api/export` | POST | Export page as image (PNG) | Power BI Export API (async polling) |
 | `/api/insights` | POST | Generate AI executive insights | Azure OpenAI GPT-4o |
 | `/api/query` | POST | Execute DAX query on dataset | Power BI `executeQueries` |
 
@@ -282,7 +282,7 @@ sequenceDiagram
     participant AOAI as Azure OpenAI
 
     User->>UI: "Generate Insights"
-    UI->>API: POST /api/insights {reportId, pageName}
+    UI->>API: POST /api/insights {reportId, pageName, imageBase64}
     API->>PBI: Get report metadata + dataset info
     PBI-->>API: Report context
 
@@ -291,7 +291,8 @@ sequenceDiagram
         PBI-->>API: Summary statistics
     end
 
-    API->>AOAI: Chat completion (system prompt + context)
+    API->>AOAI: GPT-4o Vision (system prompt + report image + context)
+    Note over API,AOAI: Sends the exported PNG as a vision input<br/>for visual chart analysis
     AOAI-->>API: Executive insights (3-5 bullet points)
     API-->>UI: {insights: [{headline, body}], summary}
 
@@ -424,7 +425,7 @@ OfficeAddin/
 | Token Flow | On-Behalf-Of (OBO) | Delegated access, respects user permissions |
 | OpenAI Auth | Managed Identity (DefaultAzureCredential) | No API keys, RBAC-based, auto-rotated |
 | Export Approach | Power BI Export API (async, workspace-scoped) | High-quality images, supports all visuals; uses `/groups/{workspaceId}/...` endpoints |
-| Export Formats | PNG, PDF | JPEG is not a valid Power BI ExportToFile format (returns 400) |
-| AI Model | GPT-4o | Best quality/speed balance for insights |
+| Export Formats | PNG | Only PNG is supported by the Power BI ExportToFile API for image output |
+| AI Model | GPT-4o (text) / GPT-4o Vision (image analysis) | Best quality/speed balance for insights; Vision enables visual chart analysis |
 | IaC | Bicep + azd | First-class Azure support, repeatable deployments |
 | Secrets | Direct SWA app settings | SWA does **not** support `@Microsoft.KeyVault()` references (App Service-only) |

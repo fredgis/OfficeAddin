@@ -163,7 +163,7 @@ After the initial code review, additional issues were discovered during live int
 | # | Severity | Issue | Fix |
 |---|----------|-------|-----|
 | P1 | 🔴 Critical | SWA does not support `@Microsoft.KeyVault()` references; secret was literal string → AADSTS7000215 | Set `ENTRA_CLIENT_SECRET` directly as SWA app setting |
-| P2 | 🟠 High | Power BI Export API: JPEG is not a valid format (returns 400) | Replaced JPEG with PDF across entire stack |
+| P2 | 🟠 High | Power BI Export API: JPEG is not a valid format (returns 400) | Changed to PNG only (JPEG and PDF removed) |
 | P3 | 🟠 High | Export 403: using `/reports/{id}/ExportTo` (My Workspace only) | Threaded `workspaceId` through entire export flow; use `/groups/{workspaceId}/...` |
 | P4 | 🟠 High | SWA overwrites `Authorization` header with internal HS256 token | Switched to custom `X-Fabric-Storyboard-Authorization` header |
 | P5 | 🟡 Medium | Azure OpenAI 404: endpoint had `/openai/v1/` suffix, code already builds path | Fixed endpoint to base URL only |
