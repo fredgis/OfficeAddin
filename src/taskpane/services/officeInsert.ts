@@ -1,7 +1,7 @@
 /**
  * Service for inserting images and text into PowerPoint slides via Office.js API.
  * Uses the Common API (setSelectedDataAsync) for image insertion with positioning,
- * and the PowerPoint-specific API for slide management and text boxes.
+ * and the PowerPoint-specific API for slide management, text boxes, and combined inserts.
  */
 
 export type LayoutOption = 'full' | 'left-half' | 'right-half' | 'quarter-tl' | 'quarter-tr' | 'quarter-bl' | 'quarter-br';
@@ -51,12 +51,12 @@ function setImageAsync(base64Image: string, pos: InsertPosition): Promise<void> 
   });
 }
 
-/** Navigate to a slide by 1-based index, ensuring it is ready for content insertion */
-function goToSlideAsync(slideIndex: number): Promise<void> {
+/** Navigate to a slide by 0-based index using GoToType.Index */
+function goToSlideByIndex(zeroBasedIndex: number): Promise<void> {
   return new Promise((resolve, reject) => {
     Office.context.document.goToByIdAsync(
-      slideIndex,
-      Office.GoToType.Slide,
+      zeroBasedIndex,
+      Office.GoToType.Index,
       (result) => {
         if (result.status === Office.AsyncResultStatus.Failed) {
           reject(new Error(result.error.message));
@@ -106,8 +106,7 @@ export async function insertImageToNewSlide(base64Image: string, layout: LayoutO
     await context.sync();
   });
 
-  // Navigate to the new slide using Common API before inserting the image
-  await goToSlideAsync(slideCount);
+  await goToSlideByIndex(slideCount - 1);
   await setImageAsync(base64Image, pos);
 }
 
@@ -139,8 +138,8 @@ export async function insertTextBoxToCurrentSlide(
 
 /**
  * Insert an image (left 60%) and insights text (right 40%) on a new slide.
- * Strategy: create slide → navigate → insert image first (before text boxes
- * steal the selection) → then add text boxes in a separate context.
+ * Creates slide + text boxes in one PowerPoint.run, then navigates with
+ * GoToType.Index (0-based) and inserts the image via Common API.
  */
 export async function insertImageWithInsights(
   imageBase64: string,
@@ -156,7 +155,6 @@ export async function insertImageWithInsights(
   const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
   let slideCount = 0;
 
-  // Step 1: Create a new blank slide
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
     slides.add();
@@ -164,27 +162,9 @@ export async function insertImageWithInsights(
 
     slides.load('items/id');
     await context.sync();
+
     slideCount = slides.items.length;
-  });
-
-  // Step 2: Navigate to the new slide
-  await goToSlideAsync(slideCount);
-
-  // Step 3: Insert image FIRST (before any text box steals selection)
-  await setImageAsync(imageBase64, {
-    left: MARGIN,
-    top: contentTop,
-    width: imgWidth,
-    height: contentHeight,
-  });
-
-  // Step 4: Add text boxes (title + insights) in a separate context
-  await PowerPoint.run(async (context) => {
-    const slides = context.presentation.slides;
-    slides.load('items/id');
-    await context.sync();
-
-    const newSlide = slides.items[slides.items.length - 1];
+    const newSlide = slides.items[slideCount - 1];
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
@@ -203,6 +183,15 @@ export async function insertImageWithInsights(
     });
 
     await context.sync();
+  });
+
+  // Navigate using 0-based index then insert image
+  await goToSlideByIndex(slideCount - 1);
+  await setImageAsync(imageBase64, {
+    left: MARGIN,
+    top: contentTop,
+    width: imgWidth,
+    height: contentHeight,
   });
 }
 

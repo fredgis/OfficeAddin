@@ -34,6 +34,7 @@ const createSlideMock = (id: string) => ({
   id,
   shapes: {
     addTextBox: jest.fn(),
+    addImage: jest.fn(),
   },
 });
 
@@ -64,7 +65,7 @@ const mockPowerPointRun = jest.fn(async (callback: (ctx: unknown) => Promise<voi
 (global as Record<string, unknown>).Office = {
   context: mockContext,
   CoercionType: { Image: 'image' },
-  GoToType: { Slide: 'slide' },
+  GoToType: { Slide: 'slide', Index: 'index' },
   AsyncResultStatus: { Succeeded: 0, Failed: 1 },
   onReady: jest.fn((callback?: () => void) => {
     callback?.();

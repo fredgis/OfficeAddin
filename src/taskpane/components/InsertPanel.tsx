@@ -14,6 +14,7 @@ import {
 import {
   SlideAdd24Regular,
   SlideLayout24Regular,
+  ImageMultiple24Regular,
 } from '@fluentui/react-icons';
 import type { ExportResult } from '../types/powerbi';
 import {
@@ -26,27 +27,42 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
+    gap: '12px',
     width: '100%',
   },
-  sectionLabel: {
-    color: tokens.colorNeutralForeground3,
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    paddingBottom: '6px',
+    ...shorthands.borderBottom('2px', 'solid', '#0078d4'),
+    color: '#0078d4',
   },
   preview: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
+    gap: '8px',
     alignItems: 'center',
+    paddingTop: '8px',
+    paddingBottom: '8px',
   },
   previewImage: {
     maxWidth: '100%',
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    boxShadow: tokens.shadow8,
-    transitionProperty: 'box-shadow',
+    ...shorthands.borderRadius('6px'),
+    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+    transitionProperty: 'box-shadow, transform',
     transitionDuration: '200ms',
     ':hover': {
-      boxShadow: tokens.shadow16,
+      boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+      transform: 'scale(1.01)',
     },
+  },
+  layoutLabel: {
+    color: '#616161',
+    fontSize: '11px',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
   },
   layoutGroup: {
     display: 'flex',
@@ -55,7 +71,7 @@ const useStyles = makeStyles({
   actions: {
     display: 'flex',
     flexDirection: 'row',
-    gap: tokens.spacingHorizontalS,
+    gap: '8px',
     flexWrap: 'wrap',
   },
 });
@@ -109,8 +125,12 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
 
   return (
     <div className={styles.root}>
+      <div className={styles.sectionHeader}>
+        <ImageMultiple24Regular />
+        <Text weight="semibold" size={300}>Preview & Insert</Text>
+      </div>
+
       <div className={styles.preview}>
-        <Text className={styles.sectionLabel} size={200} weight="semibold">PREVIEW</Text>
         <img
           className={styles.previewImage}
           src={`data:${exportResult.mimeType};base64,${exportResult.image}`}
@@ -118,7 +138,7 @@ export const InsertPanel: React.FC<InsertPanelProps> = ({ exportResult, pageName
         />
       </div>
 
-      <Text className={styles.sectionLabel} size={200} weight="semibold">LAYOUT</Text>
+      <Text className={styles.layoutLabel}>Layout</Text>
       <RadioGroup
         className={styles.layoutGroup}
         layout="horizontal"

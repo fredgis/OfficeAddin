@@ -5,12 +5,9 @@ import {
   Text,
   MessageBar,
   MessageBarBody,
-  Card,
-  CardHeader,
-  Caption1,
   ProgressBar,
   makeStyles,
-  tokens,
+  shorthands,
 } from '@fluentui/react-components';
 import {
   Sparkle24Regular,
@@ -25,14 +22,33 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
+    gap: '12px',
     width: '100%',
-    paddingTop: tokens.spacingVerticalM,
+  },
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    paddingBottom: '6px',
+    ...shorthands.borderBottom('2px', 'solid', '#d83b01'),
+    color: '#d83b01',
+  },
+  description: {
+    color: '#616161',
+    fontSize: '12px',
   },
   progress: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
+    gap: '6px',
+  },
+  insertBtn: {
+    background: 'linear-gradient(135deg, #d83b01 0%, #a4262c 100%)',
+    color: '#ffffff',
+    ':hover': {
+      background: 'linear-gradient(135deg, #a4262c 0%, #8a2121 100%)',
+      color: '#ffffff',
+    },
   },
 });
 
@@ -95,18 +111,17 @@ export const CombinedInsertPanel: React.FC<CombinedInsertPanelProps> = ({
 
   return (
     <div className={styles.root}>
-      <Card size="small">
-        <CardHeader
-          image={<Sparkle24Regular />}
-          header={<Text weight="semibold">One-Click Insert</Text>}
-          description={
-            <Caption1>Image (60%) + AI insights (40%) on a new slide</Caption1>
-          }
-        />
-      </Card>
+      <div className={styles.sectionHeader}>
+        <Sparkle24Regular />
+        <Text weight="semibold" size={300}>One-Click Insert</Text>
+      </div>
+      <Text className={styles.description}>
+        Image (60%) + AI insights (40%) on a new slide
+      </Text>
 
       <Button
         appearance="primary"
+        className={styles.insertBtn}
         icon={<Sparkle24Regular />}
         onClick={handleCombinedInsert}
         disabled={!exportResult || step === 'generating' || step === 'inserting'}

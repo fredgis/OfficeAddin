@@ -122,10 +122,17 @@ describe('officeInsert service', () => {
 
   // ── insertImageWithInsights ───────────────────────────────────────────
   describe('insertImageWithInsights', () => {
-    it('creates a new slide and inserts both image and text box', async () => {
+    it('creates a new slide with text boxes and inserts image via Common API', async () => {
       await insertImageWithInsights('base64img', 'Key insight: Revenue up 15%');
 
       expect(mockPowerPointRun).toHaveBeenCalled();
+      // Text box added via PowerPoint API
+      const lastSlide = mockSlideItems[mockSlideItems.length - 1];
+      expect(lastSlide.shapes.addTextBox).toHaveBeenCalledWith(
+        'Key insight: Revenue up 15%',
+        expect.objectContaining({ left: expect.any(Number) }),
+      );
+      // Image inserted via Common API
       expect(mockSetSelectedDataAsync).toHaveBeenCalled();
     });
   });

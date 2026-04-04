@@ -8,7 +8,6 @@ import {
   Caption1,
   MessageBar,
   MessageBarBody,
-  Divider,
   makeStyles,
   tokens,
   shorthands,
@@ -28,28 +27,58 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
+    gap: '16px',
     width: '100%',
+  },
+  pageCard: {
+    backgroundColor: '#ffffff',
+    ...shorthands.borderRadius('8px'),
+    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
   },
   actions: {
     display: 'flex',
     flexDirection: 'row',
-    gap: tokens.spacingHorizontalS,
+    gap: '8px',
     alignItems: 'center',
+  },
+  exportBtn: {
+    background: 'linear-gradient(135deg, #0078d4 0%, #106ebe 100%)',
+    ':hover': {
+      background: 'linear-gradient(135deg, #106ebe 0%, #005a9e 100%)',
+    },
   },
   progressContainer: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: tokens.spacingVerticalS,
-    paddingTop: tokens.spacingVerticalL,
-    paddingBottom: tokens.spacingVerticalL,
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    backgroundColor: tokens.colorNeutralBackground3,
+    gap: '12px',
+    paddingTop: '20px',
+    paddingBottom: '20px',
+    ...shorthands.borderRadius('8px'),
+    backgroundColor: '#f0f4ff',
+    ...shorthands.border('1px', 'dashed', '#c7d8f4'),
   },
   pageIcon: {
-    color: tokens.colorBrandForeground1,
+    color: '#0078d4',
     fontSize: '20px',
+  },
+  section: {
+    ...shorthands.borderRadius('8px'),
+    backgroundColor: '#ffffff',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+    paddingTop: '12px',
+    paddingBottom: '12px',
+    paddingLeft: '14px',
+    paddingRight: '14px',
+  },
+  sectionTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '12px',
+    paddingBottom: '8px',
+    ...shorthands.borderBottom('2px', 'solid', '#0078d4'),
+    color: '#0078d4',
   },
 });
 
@@ -89,7 +118,7 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
 
   return (
     <div className={styles.root}>
-      <Card size="small">
+      <Card size="small" className={styles.pageCard}>
         <CardHeader
           image={<Image24Regular className={styles.pageIcon} />}
           header={<Text weight="semibold">{page.displayName}</Text>}
@@ -137,20 +166,23 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
 
       {result && !exportMutation.isPending && (
         <>
-          <Divider />
-          <InsertPanel exportResult={result} pageName={page.displayName} />
-          <Divider />
-          <InsightsPanel
-            reportId={reportId}
-            pageName={page.displayName}
-            imageBase64={result?.image}
-          />
-          <Divider />
-          <CombinedInsertPanel
-            reportId={reportId}
-            page={page}
-            exportResult={result}
-          />
+          <div className={styles.section}>
+            <InsertPanel exportResult={result} pageName={page.displayName} />
+          </div>
+          <div className={styles.section}>
+            <InsightsPanel
+              reportId={reportId}
+              pageName={page.displayName}
+              imageBase64={result?.image}
+            />
+          </div>
+          <div className={styles.section}>
+            <CombinedInsertPanel
+              reportId={reportId}
+              page={page}
+              exportResult={result}
+            />
+          </div>
         </>
       )}
     </div>

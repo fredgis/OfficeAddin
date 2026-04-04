@@ -6,11 +6,9 @@ import {
   Textarea,
   MessageBar,
   MessageBarBody,
-  Card,
-  CardHeader,
-  Caption1,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
 import {
   Lightbulb24Regular,
@@ -26,22 +24,35 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
+    gap: '12px',
     width: '100%',
-    paddingTop: tokens.spacingVerticalM,
+  },
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    paddingBottom: '6px',
+    ...shorthands.borderBottom('2px', 'solid', '#5c2d91'),
+    color: '#5c2d91',
   },
   insightsList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
+    gap: '8px',
   },
   insightCard: {
-    padding: tokens.spacingVerticalS,
+    backgroundColor: '#faf9ff',
+    ...shorthands.border('1px', 'solid', '#e8e0f0'),
+    ...shorthands.borderRadius('6px'),
+    paddingTop: '10px',
+    paddingBottom: '10px',
+    paddingLeft: '12px',
+    paddingRight: '12px',
   },
   actions: {
     display: 'flex',
     flexDirection: 'row',
-    gap: tokens.spacingHorizontalS,
+    gap: '8px',
     flexWrap: 'wrap',
   },
   editArea: {
@@ -49,6 +60,13 @@ const useStyles = makeStyles({
   },
   promptArea: {
     width: '100%',
+  },
+  subLabel: {
+    color: '#616161',
+    fontSize: '11px',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
   },
 });
 
@@ -128,13 +146,13 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
 
   return (
     <div className={styles.root} role="region" aria-label="AI Insights">
-      <Card size="small">
-        <CardHeader
-          image={<Lightbulb24Regular />}
-          header={<Text weight="semibold">AI Insights</Text>}
-          description={<Caption1>{imageBase64 ? 'AI will analyze the exported report image' : 'Generate insights based on report metadata'}</Caption1>}
-        />
-      </Card>
+      <div className={styles.sectionHeader}>
+        <Lightbulb24Regular />
+        <Text weight="semibold" size={300}>AI Insights</Text>
+      </div>
+      <Text size={200} style={{ color: '#616161' }}>
+        {imageBase64 ? 'AI will analyze the exported report image' : 'Generate insights based on report metadata'}
+      </Text>
 
       <Textarea
         className={styles.promptArea}
@@ -174,13 +192,14 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
         <>
           {!isEditing ? (
             <>
-              <Text weight="semibold">Generated Insights</Text>
+              <Text className={styles.subLabel}>Generated Insights</Text>
               <div className={styles.insightsList}>
                 {insights.map((item, index) => (
-                  <Card key={index} className={styles.insightCard}>
-                    <Text weight="semibold">{item.headline}</Text>
-                    <Text>{item.body}</Text>
-                  </Card>
+                  <div key={index} className={styles.insightCard}>
+                    <Text weight="semibold" size={300}>{item.headline}</Text>
+                    <br />
+                    <Text size={200}>{item.body}</Text>
+                  </div>
                 ))}
               </div>
               <Button
