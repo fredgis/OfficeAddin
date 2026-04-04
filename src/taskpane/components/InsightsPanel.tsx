@@ -8,11 +8,16 @@ import {
   MessageBarBody,
   Card,
   CardHeader,
-  Body1,
   Caption1,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
+import {
+  Lightbulb24Regular,
+  TextBulletListSquare24Regular,
+  Edit24Regular,
+  Checkmark24Regular,
+} from '@fluentui/react-icons';
 import type { InsightItem, InsightResult } from '../services/api/powerbiClient';
 import { useGenerateInsights } from '../hooks/usePowerBI';
 import { insertTextBoxToCurrentSlide } from '../services/officeInsert';
@@ -24,9 +29,6 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalM,
     width: '100%',
     paddingTop: tokens.spacingVerticalM,
-  },
-  header: {
-    fontWeight: tokens.fontWeightSemibold,
   },
   insightsList: {
     display: 'flex',
@@ -126,9 +128,10 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
 
   return (
     <div className={styles.root} role="region" aria-label="AI Insights">
-      <Card>
+      <Card size="small">
         <CardHeader
-          header={<Body1 className={styles.header}>AI Insights</Body1>}
+          image={<Lightbulb24Regular />}
+          header={<Text weight="semibold">AI Insights</Text>}
           description={<Caption1>{imageBase64 ? 'AI will analyze the exported report image' : 'Generate insights based on report metadata'}</Caption1>}
         />
       </Card>
@@ -146,6 +149,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
       <div className={styles.actions}>
         <Button
           appearance="primary"
+          icon={<Lightbulb24Regular />}
           onClick={handleGenerate}
           disabled={insightsMutation.isPending}
           aria-label="Generate AI insights"
@@ -182,6 +186,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
               <Button
                 appearance="subtle"
                 size="small"
+                icon={<Edit24Regular />}
                 onClick={() => setIsEditing(true)}
                 aria-label="Edit insights before inserting"
               >
@@ -202,6 +207,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
               <Button
                 appearance="subtle"
                 size="small"
+                icon={<Checkmark24Regular />}
                 onClick={() => setIsEditing(false)}
               >
                 Done editing
@@ -212,6 +218,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
           <div className={styles.actions}>
             <Button
               appearance="primary"
+              icon={<TextBulletListSquare24Regular />}
               onClick={handleInsertText}
               disabled={inserting || !editedText}
               aria-label="Insert insights as text box"

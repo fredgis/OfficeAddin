@@ -1,6 +1,6 @@
 export interface InsightItem {
   headline: string;
-  detail: string;
+  body: string;
   category?: string;
 }
 

@@ -2,12 +2,9 @@ import React, { useState, useCallback } from 'react';
 import {
   Button,
   Spinner,
-  RadioGroup,
-  Radio,
   Text,
   Card,
   CardHeader,
-  Body1,
   Caption1,
   MessageBar,
   MessageBarBody,
@@ -34,22 +31,6 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalL,
     width: '100%',
   },
-  section: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
-  },
-  sectionLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalXS,
-    color: tokens.colorNeutralForeground3,
-  },
-  formatGroup: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: tokens.spacingHorizontalM,
-  },
   actions: {
     display: 'flex',
     flexDirection: 'row',
@@ -66,34 +47,13 @@ const useStyles = makeStyles({
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
     backgroundColor: tokens.colorNeutralBackground3,
   },
-  preview: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
-    alignItems: 'center',
-  },
-  previewImage: {
-    maxWidth: '100%',
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    boxShadow: tokens.shadow8,
-    transitionProperty: 'box-shadow',
-    transitionDuration: '200ms',
-    ':hover': {
-      boxShadow: tokens.shadow16,
-    },
-  },
-  pageHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalS,
-  },
   pageIcon: {
     color: tokens.colorBrandForeground1,
     fontSize: '20px',
   },
 });
 
-type ExportFormat = 'PNG' | 'PDF';
+type ExportFormat = 'PNG';
 
 interface ExportPanelProps {
   reportId: string;
@@ -111,7 +71,7 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
   cachedResult,
 }) => {
   const styles = useStyles();
-  const [format, setFormat] = useState<ExportFormat>('PNG');
+  const [format] = useState<ExportFormat>('PNG');
   const exportMutation = useExportPage();
 
   const handleExport = useCallback(() => {
@@ -137,27 +97,15 @@ export const ExportPanel: React.FC<ExportPanelProps> = ({
         />
       </Card>
 
-      <div className={styles.section}>
-        <Text className={styles.sectionLabel} size={200} weight="semibold">FORMAT</Text>
-        <RadioGroup
-          layout="horizontal"
-          value={format}
-          onChange={(_e, data) => setFormat(data.value as ExportFormat)}
-        >
-          <Radio value="PNG" label="PNG" />
-          <Radio value="PDF" label="PDF" />
-        </RadioGroup>
-      </div>
-
       <div className={styles.actions}>
         <Button
           appearance="primary"
           icon={<ArrowExportLtr24Regular />}
           onClick={handleExport}
           disabled={exportMutation.isPending}
-          aria-label={`Export page ${page.displayName}`}
+          aria-label={`Export page ${page.displayName} as PNG`}
         >
-          Export Page
+          Export as PNG
         </Button>
       </div>
 

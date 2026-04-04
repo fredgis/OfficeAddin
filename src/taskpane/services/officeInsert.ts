@@ -138,7 +138,9 @@ export async function insertTextBoxToCurrentSlide(
 }
 
 /**
- * Insert an image (left 60%) and insights text (right 40%) on a new slide
+ * Insert an image (left 60%) and insights text (right 40%) on a new slide.
+ * Strategy: create slide → navigate → insert image first (before text boxes
+ * steal the selection) → then add text boxes in a separate context.
  */
 export async function insertImageWithInsights(
   imageBase64: string,
@@ -150,9 +152,11 @@ export async function insertImageWithInsights(
   const contentTop = MARGIN + titleHeight + titleGap;
   const contentHeight = SLIDE_HEIGHT - contentTop - MARGIN;
   const imgWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.6;
+  const txtLeft = MARGIN + imgWidth + MARGIN;
   const txtWidth = (SLIDE_WIDTH - 3 * MARGIN) * 0.4;
   let slideCount = 0;
 
+  // Step 1: Create a new blank slide
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
     slides.add();
@@ -160,9 +164,27 @@ export async function insertImageWithInsights(
 
     slides.load('items/id');
     await context.sync();
-
     slideCount = slides.items.length;
-    const newSlide = slides.items[slideCount - 1];
+  });
+
+  // Step 2: Navigate to the new slide
+  await goToSlideAsync(slideCount);
+
+  // Step 3: Insert image FIRST (before any text box steals selection)
+  await setImageAsync(imageBase64, {
+    left: MARGIN,
+    top: contentTop,
+    width: imgWidth,
+    height: contentHeight,
+  });
+
+  // Step 4: Add text boxes (title + insights) in a separate context
+  await PowerPoint.run(async (context) => {
+    const slides = context.presentation.slides;
+    slides.load('items/id');
+    await context.sync();
+
+    const newSlide = slides.items[slides.items.length - 1];
 
     if (title) {
       newSlide.shapes.addTextBox(title, {
@@ -174,21 +196,13 @@ export async function insertImageWithInsights(
     }
 
     newSlide.shapes.addTextBox(insightsText, {
-      left: MARGIN + imgWidth + MARGIN,
+      left: txtLeft,
       top: contentTop,
       width: txtWidth,
       height: contentHeight,
     });
-    await context.sync();
-  });
 
-  // Navigate to the new slide using Common API before inserting the image
-  await goToSlideAsync(slideCount);
-  await setImageAsync(imageBase64, {
-    left: MARGIN,
-    top: contentTop,
-    width: imgWidth,
-    height: contentHeight,
+    await context.sync();
   });
 }
 

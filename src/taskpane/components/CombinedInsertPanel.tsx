@@ -7,12 +7,15 @@ import {
   MessageBarBody,
   Card,
   CardHeader,
-  Body1,
   Caption1,
   ProgressBar,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
+import {
+  Sparkle24Regular,
+  CheckmarkCircle24Regular,
+} from '@fluentui/react-icons';
 import type { ExportResult, ReportPage } from '../types/powerbi';
 import type { InsightItem } from '../types/insights';
 import { useGenerateInsights } from '../hooks/useInsights';
@@ -43,7 +46,7 @@ type InsertStep = 'idle' | 'generating' | 'inserting' | 'done' | 'error';
 
 function formatInsightsText(insights: InsightItem[]): string {
   return insights
-    .map((item, i) => `${i + 1}. ${item.headline}\n${item.detail}`)
+    .map((item, i) => `${i + 1}. ${item.headline}\n${item.body}`)
     .join('\n\n');
 }
 
@@ -92,17 +95,19 @@ export const CombinedInsertPanel: React.FC<CombinedInsertPanelProps> = ({
 
   return (
     <div className={styles.root}>
-      <Card>
+      <Card size="small">
         <CardHeader
-          header={<Body1>One-Click Insert</Body1>}
+          image={<Sparkle24Regular />}
+          header={<Text weight="semibold">One-Click Insert</Text>}
           description={
-            <Caption1>Insert page image (60%) with AI insights (40%) on a new slide</Caption1>
+            <Caption1>Image (60%) + AI insights (40%) on a new slide</Caption1>
           }
         />
       </Card>
 
       <Button
         appearance="primary"
+        icon={<Sparkle24Regular />}
         onClick={handleCombinedInsert}
         disabled={!exportResult || step === 'generating' || step === 'inserting'}
         aria-label="Insert page with AI insights"
@@ -118,7 +123,7 @@ export const CombinedInsertPanel: React.FC<CombinedInsertPanelProps> = ({
       )}
 
       {step === 'done' && (
-        <MessageBar intent="success">
+        <MessageBar intent="success" icon={<CheckmarkCircle24Regular />}>
           <MessageBarBody>
             <Text>Slide created with page image and AI insights.</Text>
           </MessageBarBody>
