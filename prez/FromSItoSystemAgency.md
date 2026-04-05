@@ -96,10 +96,10 @@ style: |
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-# Fabric Storyboard Copilot
+# From SI to System Agency
 
-## From 43 Man-Days to 13 Hours with AI Agents
-### How AI-Powered Development Transforms Software Delivery
+## How AI Agents Transform Software Delivery
+### From 43 Man-Days to 13 Hours — A Real-World Case Study
 
 ---
 
@@ -1236,9 +1236,9 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 # Thank You
 
-## From 43 Man-Days to 13 Hours
+## From SI to System Agency
 ### The transformation is already here
 
 **Fabric Storyboard Copilot** — github.com/fredgis/OfficeAddin
 
-🛠️ GitHub Copilot CLI · Squad · Agent Store · Speckit
+🛠️ GitHub Copilot CLI · Squad · Agent Store · Speckit · Agent Forge
