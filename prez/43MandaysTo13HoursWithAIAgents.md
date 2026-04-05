@@ -606,21 +606,21 @@ The review validated 5 key architectural decisions:
 
 # Fleet vs Squad: When to Use Which
 
-| Criteria | Copilot Fleet | Squad |
+| Criteria | `/fleet` (Copilot CLI) | Squad |
 |----------|:---:|:---:|
-| **Agents** | Multiple, ad-hoc | Structured persistent team |
-| **Shared context** | ❌ Resets between sessions | ✅ `decisions.md` shared |
-| **Specialization** | Generalists | Deep domain charters |
-| **Parallelism** | One agent at a time | Coordinator fans out |
-| **Knowledge compounding** | Starts fresh | Improves over time |
-| **Coordination** | You are the coordinator | Lead auto-routes |
-| **Documentation** | Afterthought | Scribe logs continuously |
+| **How it works** | `/fleet` slash command dispatches sub-agents | Persistent team with Lead coordinator |
+| **Parallelism** | ✅ Orchestrator decomposes & parallelizes | ✅ Lead fans out to specialists |
+| **Agents** | Ad-hoc, same model (or custom `.md` agents) | Structured team with per-agent charters & models |
+| **Memory** | ❌ Resets between sessions | ✅ Persistent (`decisions.md`, `history.md`) |
+| **File safety** | ⚠️ No file locking — last write wins | ✅ Coordinated writes via Lead |
+| **Specialization** | Generalists (or custom agent files) | Deep domain charters per agent |
+| **Best for** | Refactoring, docs, independent file changes | Complex multi-domain projects |
 
 ### Why we chose Squad for this project
 
-✅ **Multi-domain** — Auth + Power BI + Office.js + AI + Infra all at once
-✅ **Real parallelism** — Frontend + Backend + Infra agents work simultaneously
-✅ **Deep specialization** — Each agent carries domain expertise in its charter
+✅ **Multi-domain** — Auth + Power BI + Office.js + AI + Infra = deep specialization needed
+✅ **Persistent memory** — decisions and context compound across sessions
+✅ **Per-agent models** — Opus for orchestration, Sonnet for code, Haiku for tests
 
 ---
 
@@ -709,6 +709,24 @@ The real paradigm shift: from **code-first** to **specification-first**
 
 ---
 
+# The Three Pillars: Spec → Context → Team
+
+| Tool | Role | Key Question |
+|------|------|:---:|
+| 📋 **Spec Kit** | **Spec-Driven Development** — Define *what* to build | *"What are we building?"* |
+| 🔧 **Agent Forge** | **Context Engineering** — Configure *how* AI understands your project | *"How does AI work on this project?"* |
+| 👥 **Squad** | **Team Orchestration** — Organize *who* does the work | *"Who codes what, in parallel?"* |
+
+### The workflow
+
+> 1️⃣ **Spec Kit** produces a structured specification (markdown)
+> 2️⃣ **Agent Forge** shapes the AI context — rules, memory, project knowledge
+> 3️⃣ **Squad** orchestrates a team of specialized agents to execute
+
+This is the new **development pipeline**: from idea → spec → context → execution → production
+
+---
+
 # Agent Store: The Marketplace
 
 Pre-built agents for common domains — ready to integrate into Squad or Fleet
@@ -747,11 +765,12 @@ Pre-built agents for common domains — ready to integrate into Squad or Fleet
 
 | Tool | Role | When |
 |------|------|------|
-| **Speckit** | Define *what* to build (structured markdown) | Start of project |
+| **Spec Kit** | Define *what* to build (structured markdown) | Start of project |
+| **Agent Forge** | Configure *how* AI understands your project | Context setup |
 | **Agent Store** | Reusable pre-built domain agents | Agent selection |
 | **Squad** | Orchestrated team execution | Scaffolding & features |
 | **Copilot CLI** | Single-agent execution platform | Integration & debugging |
-| **Fleet** | Multiple ad-hoc agents | Quick tasks, exploration |
+| **Fleet** (`/fleet`) | Parallel ad-hoc agents via CLI | Refactoring, multi-file changes |
 
 ---
 
@@ -1062,9 +1081,11 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 | Resource | Link |
 |----------|------|
 | 🛠️ **GitHub Copilot CLI** | [docs.github.com/en/copilot/github-copilot-in-the-cli](https://docs.github.com/en/copilot/github-copilot-in-the-cli) |
+| 🚀 **Fleet** (`/fleet` in CLI) | [github.blog/.../run-multiple-agents-at-once-with-fleet](https://github.blog/ai-and-ml/github-copilot/run-multiple-agents-at-once-with-fleet-in-copilot-cli/) |
 | 👥 **Squad** (by Brady Gaster) | [github.com/bradygaster/squad](https://github.com/bradygaster/squad) |
 | 🏪 **Agent Store** | [github.com/marketplace?type=agents](https://github.com/marketplace?type=agents) |
-| 📋 **Speckit** | [github.com/github/spec-kit](https://github.com/github/spec-kit) |
+| 📋 **Spec Kit** | [github.com/github/spec-kit](https://github.com/github/spec-kit) |
+| 🔧 **Agent Forge** | [github.com/microsoft/agent-forge](https://github.com/microsoft/agent-forge) |
 | 🤖 **GitHub Copilot** | [github.com/features/copilot](https://github.com/features/copilot) |
 
 ### This Project
