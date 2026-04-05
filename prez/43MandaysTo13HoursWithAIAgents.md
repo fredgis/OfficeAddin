@@ -839,8 +839,72 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 <!-- _class: divider -->
 <!-- _paginate: false -->
 
-# 05 — Transforming Consulting Services
+# 05 — From SI to Systems Agency
 ## From selling man-days to selling outcomes
+
+---
+
+# The Shift: Human Capital → Agent Capital
+
+> *Systems Integrators must evolve into* ***Systems Agencies*** *— firms that combine human expertise with AI agent teams*
+
+<div class="cols">
+<div class="col">
+
+### 🔴 Systems Integrator (SI)
+- Revenue = **headcount × daily rate**
+- Value = human hours on-site
+- Scale = **hire more people**
+- Competitive edge = team size
+- KPIs: utilization rate, billable days
+
+</div>
+<div class="col">
+
+### 🟢 Systems Agency (SA)
+- Revenue = **outcomes delivered**
+- Value = speed + quality + IP
+- Scale = **deploy more agents**
+- Competitive edge = agent capabilities
+- KPIs: **agent utilization**, **time-to-value**, cost-per-outcome
+
+</div>
+</div>
+
+> **Agent Capital** complements Human Capital — the firm's value is no longer just its people, but its *agent fleet + encoded IP*
+
+---
+
+# Why SIs Must Act Now
+
+<div class="cols">
+<div class="col">
+
+### ⚡ Competitive Pressure
+- Early adopters deliver **26× faster** at lower cost
+- Clients will prefer agencies that deliver in **days, not months**
+- New entrants (startups, freelancers + agents) can now compete with large SIs
+
+### 📉 Margin Compression
+- Traditional margins (**25-35%**) under pressure
+- Agent-augmented margins: **70-90%**
+- Waiting = competing on price with shrinking margins
+
+</div>
+<div class="col">
+
+### 🎯 Client Expectations Shifting
+- Clients increasingly ask: *"Why does this take 6 weeks?"*
+- AI-native delivery becomes the **baseline expectation**
+- Value-based pricing replaces time-based billing
+
+### 🏆 First-Mover Advantage
+- Firms that build **agent IP** now compound their advantage
+- Skills, charters, playbooks = **reusable competitive moat**
+- Late adopters will buy agent IP from early movers
+
+</div>
+</div>
 
 ---
 
@@ -938,6 +1002,55 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 ---
 
+# The 3 Phases: Copilot → Agency → Autonomous
+
+| | Phase 1 — **Copilot** | Phase 2 — **Agency** | Phase 3 — **Autonomous** |
+|---|---|---|---|
+| **Scope** | Individual productivity | Team orchestration | Self-managing delivery |
+| **How** | Developer + Copilot | Squad + Fleet + human oversight | Agent teams plan, execute, validate |
+| **Human role** | Codes with AI assist | Supervises agent teams | Sets goals, validates outcomes |
+| **Scale** | 1 dev = 2× output | 1 human = 8+ agents | 1 human = N projects |
+| **Example** | Copilot autocomplete | Our Fabric Storyboard project | Future: spec-to-production |
+
+### Where most SIs are today vs where they need to be
+
+> **Phase 1** → Most firms are here (individual Copilot use)
+> **Phase 2** → Early movers (Squad, Fleet, agent orchestration) ← ***We demonstrated this***
+> **Phase 3** → Emerging (requires mature agent IP + trust framework)
+
+---
+
+# What SIs Encode into Agency
+
+### The IP that makes agent teams effective — not generic, but **your firm's knowledge**
+
+<div class="cols">
+<div class="col">
+
+### 📦 IP Categories
+- 🏗️ **Architecture patterns** — reference architectures, design decisions
+- 🔐 **Security playbooks** — auth flows, compliance checklists
+- ✅ **Quality standards** — code review rules, test coverage thresholds
+- 📋 **Delivery playbooks** — onboarding, sprint patterns, deployment procedures
+
+</div>
+<div class="col">
+
+### 🔄 End-to-End Delivery Flow
+
+> **Request** → Spec (Speckit) → Agent Squad → AI Code Review → CI/CD → **Production**
+
+### ⚠️ The Critical Principle
+
+> ***"Accountability never leaves the SI"***
+> Agents execute — **humans own the outcome**
+> Client trust is built on **human accountability** backed by agent speed
+
+</div>
+</div>
+
+---
+
 # Emerging Roles in Consulting
 
 ### What fades vs what emerges
@@ -956,6 +1069,25 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 1. 🎯 **Squad Manager** — orchestrates agents, writes specs, validates outputs
 2. 🧠 **Domain Expert** — brings the business expertise agents don't have
 3. 🔧 **Integration Engineer** — connects agents to real cloud services
+
+---
+
+# Getting Started: Your First Agency Project
+
+### From Phase 1 (Copilot) to Phase 2 (Agency) — a practical roadmap
+
+| Step | Action | Outcome |
+|:---:|--------|---------|
+| 1 | **Pick a pilot project** — small, well-scoped, low risk | Proof of concept |
+| 2 | **Write a detailed spec** (Speckit) — not code, but *what to build* | Agent-ready input |
+| 3 | **Configure your Squad** — define agents, charters, models | Team ready |
+| 4 | **Scaffold with Squad** — generate 90% of the codebase | v0.1 in hours |
+| 5 | **Iterate with Copilot CLI** — debug the last 10% | Production-ready |
+| 6 | **Measure the impact** — time saved, cost delta, quality | Business case |
+| 7 | **Encode your learnings** — update skills, charters, playbooks | Reusable IP |
+
+> **Start small, measure everything, encode what works**
+> Each project makes your agent fleet **smarter and faster**
 
 ---
 
