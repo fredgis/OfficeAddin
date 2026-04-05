@@ -386,9 +386,102 @@ The entire Azure deployment — Entra ID, infrastructure, build, tests, deploy �
 
 ---
 
-<!-- _class: dark -->
+# 🔍 AI-Powered Code Review
 
-# 📊 The Result: 43 Days → 13.3 Hours
+**4 parallel review agents** analyzed the entire codebase in one pass
+
+| Severity | Found | Fixed | Remaining |
+|:---:|:---:|:---:|:---:|
+| 🔴 Critical | 2 | 2 | 0 |
+| 🟠 High | 3 | 3 | 0 |
+| 🟡 Medium | 10 | 10 | 0 |
+| 🔵 Low | 4 | 0 | 4 |
+| **Total** | **19** | **15** | **4** |
+
+> Scope: **56 source files**, 19 config/infra files, 7 doc files
+> Test results after fixes: **68/68 passing** (45 backend + 23 frontend)
+
+---
+
+# Critical Issues Caught by Agents
+
+<div class="cols">
+<div class="col">
+
+### 🔴 JWT — No Signature Verification
+
+Auth middleware decoded tokens with `Buffer.from(base64)` — **no cryptographic verification**
+
+**Fix:** Installed `jsonwebtoken` + `jwks-rsa`, verify against Microsoft JWKS public keys
+
+```typescript
+// Before (insecure)
+payload = JSON.parse(
+  Buffer.from(parts[1], 'base64').toString()
+);
+// After (verified)
+payload = jwt.verify(token, signingKey,
+  { algorithms: ['RS256'] });
+```
+
+</div>
+<div class="col">
+
+### 🔴 Bicep Circular Dependency
+
+`openAi` → `web.outputs` and `web` → `openAi.outputs` = deployment failure
+
+**Fix:** Construct endpoint URL from resource name (predictable pattern)
+
+```bicep
+// Before (circular)
+openAiEndpoint: openAi.outputs.endpoint
+// After (no cycle)
+var name = 'oai-${resourceToken}'
+openAiEndpoint: 'https://${name}
+  .openai.azure.com/'
+```
+
+</div>
+</div>
+
+---
+
+# Integration Issues: Discovered in Production
+
+Beyond the code review, **7 additional issues** were found during live integration
+
+| # | Severity | Issue | Fix |
+|---|:---:|-------|-----|
+| P1 | 🔴 | SWA doesn't support Key Vault references | Set secrets directly as app settings |
+| P2 | 🟠 | Power BI Export API rejects JPEG format | Switched to PNG only |
+| P3 | 🟠 | Export 403 — wrong API path for shared workspaces | Thread `workspaceId` through entire flow |
+| P4 | 🟠 | SWA overwrites `Authorization` header | Custom `X-Fabric-Storyboard-Authorization` |
+| P5 | 🟡 | Azure OpenAI 404 — double path suffix | Fixed endpoint to base URL only |
+| P6 | 🟡 | Missing Cognitive Services scope | Added `user_impersonation` + admin consent |
+
+> **Key insight**: AI catches code-level bugs fast, but **cloud integration** issues require real deployment testing
+
+---
+
+# Code Review: Architectural Validation
+
+The review validated 5 key architectural decisions:
+
+1. ✅ **Auth flow** — SSO → dialog fallback → OBO exchange for Power BI + OpenAI scopes
+2. ✅ **Managed Identity** — `DefaultAzureCredential` with OBO-first fallback (recommended Azure pattern)
+3. ✅ **Bicep modularity** — separate modules per resource, conditional deployment, RBAC properly scoped
+4. ✅ **Frontend separation** — clean split: API clients → hooks (React Query) → components
+5. ✅ **Test coverage** — 68 tests across auth, middleware, services, API clients, Office.js insertion
+
+### What agents can and can't review
+
+| ✅ Agents excel at | ❌ Agents miss |
+|---|---|
+| Security patterns (JWT, RBAC) | Cloud service-specific quirks |
+| Code duplication & dead code | Runtime integration failures |
+| Error handling gaps | Platform limitations (SWA, PPTX) |
+| Dependency issues | UX/design judgment |
 
 <div class="cols">
 <div class="col">
@@ -684,10 +777,11 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 | Resource | Detail | Est. Requests |
 |----------|--------|:---:|
-| Coordinator (Opus) | Orchestration, routing | ~20-30 |
-| 5× Sonnet agents (Lead, FE, BE, Auth, AI) | Code generation, reviews | ~40-60 |
-| 3× Haiku agents (Infra, Test, Scribe) | IaC, tests, docs | ~20-30 |
-| **Total estimated** | | **~80-120** |
+| Coordinator (Opus) | Orchestration, routing | ~30-50 |
+| 5× Sonnet agents (Lead, FE, BE, Auth, AI) | Code generation, reviews | ~100-120 |
+| 3× Haiku agents (Infra, Test, Scribe) | IaC, tests, docs | ~40-60 |
+| Copilot CLI (Opus) | Integration, debugging, polish | ~80-100 |
+| **Total for v1.0** | | **~300** |
 
 ---
 
@@ -730,8 +824,6 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 ## From selling man-days to selling outcomes
 
 ---
-
-<!-- _class: dark -->
 
 # The Old World: Selling Time
 
@@ -848,8 +940,6 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 
 ---
 
-<!-- _class: dark -->
-
 # What We Learned in Practice
 
 ### Real lessons from building Fabric Storyboard Copilot
@@ -887,7 +977,7 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 - **57 files**, **5,351 lines**
 - **68 tests** passing
 - **8 AI agents** specialized
-- **~100** premium requests
+- **~300** premium requests
 
 </div>
 <div class="col">
@@ -905,6 +995,86 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 ### The complete chain
 
 > Speckit → Squad (scaffold ~10%) → Copilot CLI (integration ~60%) → Agent Store (reusable) → Production
+
+---
+
+# How to Develop With AI Agents
+
+### A practical workflow for your next project
+
+| Step | Action | Tool | Human Role |
+|:---:|--------|------|:---:|
+| 1 | Write a **detailed specification** (markdown) | Speckit | 🧑 Author |
+| 2 | Generate scaffold with **Squad** (8+ agents) | Squad | 🧑 Review output |
+| 3 | Deploy and **test in real environment** | Copilot CLI | 🧑 Validate |
+| 4 | **Iterate** on bugs & integration issues | Copilot CLI | 🧑+🤖 Pair |
+| 5 | Run **AI code review** (4 parallel agents) | Squad / Copilot CLI | 🧑 Triage |
+| 6 | **Deploy to production** via agent-driven script | Copilot CLI | 🧑 Monitor |
+
+> **Golden rule**: invest time in the **spec**, not in the code
+> The better your spec, the better the scaffold — the less integration work
+
+---
+
+# Lessons Learned: What Works and What Doesn't
+
+<div class="cols">
+<div class="col">
+
+### ✅ What works great
+- **Spec-first approach** — 30 min spec = hours saved
+- **Squad for scaffolding** — 90% correct code in ~1h
+- **Copilot CLI for debugging** — real-time iteration
+- **Different models per task** — cost-efficient
+- **AI code review** — finds security issues fast
+- **One-click deploy scripts** — agents handle IaC
+
+</div>
+<div class="col">
+
+### ⚠️ What still needs humans
+- **Cloud integration** — platform quirks, undocumented behaviors
+- **UX decisions** — layout, colors, user flows
+- **Security validation** — penetration testing, threat modeling
+- **Business logic** — domain expertise agents don't have
+- **Final QA** — real user testing in real environments
+- **Architecture trade-offs** — cost vs performance vs complexity
+
+</div>
+</div>
+
+> **Bottom line**: agents handle **~70% of the work**, humans focus on the **30% that matters most**
+
+---
+
+<!-- _class: divider -->
+<!-- _paginate: false -->
+
+# 📎 Appendix
+## Resources & Links
+
+---
+
+# Public Resources
+
+### Tools & Frameworks
+
+| Resource | Link |
+|----------|------|
+| 🛠️ **GitHub Copilot CLI** | [docs.github.com/en/copilot/github-copilot-in-the-cli](https://docs.github.com/en/copilot/github-copilot-in-the-cli) |
+| 👥 **Squad** (by Brady Gaster) | [github.com/bradygaster/squad](https://github.com/bradygaster/squad) |
+| 🏪 **Agent Store** | [github.com/marketplace?type=agents](https://github.com/marketplace?type=agents) |
+| 📋 **Speckit** | [github.com/nicobailon/speckit](https://github.com/nicobailon/speckit) |
+| 🤖 **GitHub Copilot** | [github.com/features/copilot](https://github.com/features/copilot) |
+
+### This Project
+
+| Resource | Link |
+|----------|------|
+| 📂 **Source Code** | [github.com/fredgis/OfficeAddin](https://github.com/fredgis/OfficeAddin) |
+| 📊 **Estimation & Metrics** | `docs/estimation.md` |
+| 🔍 **Code Review Report** | `docs/code-review.md` |
+| 🏗️ **Architecture** | `docs/architecture.md` |
 
 ---
 
