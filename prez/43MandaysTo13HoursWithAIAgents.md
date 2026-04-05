@@ -1064,7 +1064,7 @@ Every agent interaction consumes **premium requests** — the cost unit of AI de
 | 🛠️ **GitHub Copilot CLI** | [docs.github.com/en/copilot/github-copilot-in-the-cli](https://docs.github.com/en/copilot/github-copilot-in-the-cli) |
 | 👥 **Squad** (by Brady Gaster) | [github.com/bradygaster/squad](https://github.com/bradygaster/squad) |
 | 🏪 **Agent Store** | [github.com/marketplace?type=agents](https://github.com/marketplace?type=agents) |
-| 📋 **Speckit** | [github.com/nicobailon/speckit](https://github.com/nicobailon/speckit) |
+| 📋 **Speckit** | [github.com/github/spec-kit](https://github.com/github/spec-kit) |
 | 🤖 **GitHub Copilot** | [github.com/features/copilot](https://github.com/features/copilot) |
 
 ### This Project
