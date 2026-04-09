@@ -321,7 +321,3 @@ OfficeAddin/
 ```
 
 See [docs/architecture.md](docs/architecture.md) for detailed component diagrams and data flows.
-
-## License
-
-Private — Microsoft Internal.
